@@ -103,8 +103,9 @@ mt19937 gen(rd());
 uniform_real_distribution<> rand_color(0.0f, 1.0f);
 void keyBoard(unsigned char key, int x, int y) {
 
-	uniform_int_distribution<> rand_select(0, shapes.size());
-
+	uniform_int_distribution<> rand_select(0, shapes.size() > 0 ? shapes.size() - 1 : 0);
+	const float moveDistance = 0.05f;
+	cout << selectStatus << endl;
 	switch (key)
 	{
 	case 'p': // 점
@@ -123,13 +124,29 @@ void keyBoard(unsigned char key, int x, int y) {
 		statusType = ShapeType::SQUARE;
 		selectStatus = rand_select(gen);
 		break;
-	case 'w':
+	case 'w': // 위로 이동
+		for (auto& vertex : shapes[selectStatus].vertices) {
+			vertex.y += moveDistance;
+		}
+		cout << "w" << endl;
 		break;
-	case 'a':
+	case 's': // 아래로 이동
+		for (auto& vertex : shapes[selectStatus].vertices) {
+			vertex.y -= moveDistance;
+		}
+		cout << "s" << endl;
 		break;
-	case 's':
+	case 'a': // 왼쪽으로 이동
+		for (auto& vertex : shapes[selectStatus].vertices) {
+			vertex.x -= moveDistance;
+		}
+		cout << "a" << endl;
 		break;
-	case 'd':
+	case 'd': // 오른쪽으로 이동
+		for (auto& vertex : shapes[selectStatus].vertices) {
+			vertex.x += moveDistance;
+		}
+		cout << "d" << endl;
 		break;
 	case 'c':
 		shapes.clear();
@@ -137,10 +154,15 @@ void keyBoard(unsigned char key, int x, int y) {
 	default:
 		break;
 	}
+	InitBuffer();
 	glutPostRedisplay();
 }
 
 void mouse(int button, int state, int x, int y) {
+
+	static glm::vec3 lineStart; // 선의 시작점을 저장
+	static bool lineStarted = false; // 선이 시작되었는지 여부
+
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 		//std::cout << "x = " << x << " y = " << y << std::endl;
 
@@ -156,21 +178,46 @@ void mouse(int button, int state, int x, int y) {
 		switch (statusType)
 		{
 		case TRIANGLE:
-			insert_triangle(glm::vec3(-0.7f, -0.5f, 0.0f), glm::vec3(0.7f, -0.5f, 0.0f), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), shapes);
+			insert_triangle(
+				glm::vec3(glX - 0.1f, glY - 0.1f, 0.0f),
+				glm::vec3(glX + 0.1f, glY - 0.1f, 0.0f),
+				glm::vec3(glX, glY + 0.1f, 0.0f), 
+				glm::vec3(rand_color(gen), rand_color(gen), rand_color(gen)),
+				shapes
+			);
 			break;
 		case SQUARE:
+			// 사각형 정점 추가 (0.1 크기로)
+			insert_square(
+				glm::vec3(glX - 0.1f, glY - 0.1f, 0.0f), // 왼쪽 아래
+				glm::vec3(glX + 0.1f, glY - 0.1f, 0.0f), // 오른쪽 아래
+				glm::vec3(glX + 0.1f, glY + 0.1f, 0.0f), // 오른쪽 위
+				glm::vec3(glX - 0.1f, glY + 0.1f, 0.0f), // 왼쪽 위
+				glm::vec3(glX - 0.1f, glY - 0.1f, 0.0f), // 왼쪽 아래 (중복)
+				glm::vec3(glX + 0.1f, glY + 0.1f, 0.0f), // 오른쪽 위 (중복)
+				glm::vec3(rand_color(gen), rand_color(gen), rand_color(gen)), // 색상
+				shapes
+			);
 			break;
 		case POINT_:
 			insert_point(glm::vec3(glX, glY, 0.0f), glm::vec3(rand_color(gen), rand_color(gen), rand_color(gen)), shapes);
-			InitBuffer();
 			break;
 		case LINE:
+			if (!lineStarted) {
+				lineStart = glm::vec3(glX, glY, 0.0f); // 선의 시작점 설정
+				lineStarted = true; // 선이 시작됨
+			}
+			else {
+				// 선의 끝점을 추가하고 선을 저장
+				insert_line(lineStart, glm::vec3(glX, glY, 0.0f), glm::vec3(rand_color(gen), rand_color(gen), rand_color(gen)), shapes);
+				lineStarted = false; // 선 시작점 초기화
+			}
 			break;
 		default:
 			break;
 		}
 	}
-
+	InitBuffer();
 	glutPostRedisplay();
 }
 
