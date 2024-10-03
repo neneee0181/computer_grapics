@@ -50,11 +50,13 @@ void initShapes() {
 		glm::vec3(1.0f, 0.0f, 0.0f) // 빨간색
 		});
 
-	// 사각형 추가
 	shapes.push_back({
-		SQUARE,
-		{ glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.5f, -0.5f, 0.0f), glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(-0.5f, 0.5f, 0.0f) },
-		glm::vec3(0.0f, 1.0f, 0.0f) // 초록색
+	  SQUARE,
+	  { glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.5f, -0.5f, 0.0f), // 첫 번째 삼각형
+		glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(-0.5f, 0.5f, 0.0f), // 두 번째 삼각형
+		glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.5f, 0.5f, 0.0f) // 첫 번째 삼각형 (중복)
+	  },
+	  glm::vec3(0.0f, 1.0f, 0.0f) // 초록색
 		});
 
 	// 점 추가
@@ -65,6 +67,18 @@ void initShapes() {
 		});
 }
 
+void keyBoard(unsigned char key, int x, int y) {
+	switch (key)
+	{
+	default:
+		break;
+	}
+}
+
+void mouse(int button, int state, int x, int y) {
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+		std::cout << "x = " << x << " y = " << y << std::endl;
+}
 
 int main(int argc, char** argv) {
 
@@ -93,6 +107,8 @@ int main(int argc, char** argv) {
 
 	glutDisplayFunc(drawScene);
 	glutReshapeFunc(Reshape);
+	glutKeyboardFunc(keyBoard);
+	glutMouseFunc(mouse);
 	glutMainLoop();
 
 	return 0;
@@ -107,8 +123,8 @@ void drawShapes() {
 			currentIndex += 3; // 삼각형의 정점 수만큼 인덱스를 증가
 		}
 		else if (shape.type == SQUARE) {
-			glDrawArrays(GL_QUADS, currentIndex, 4); // 사각형은 4개의 정점
-			currentIndex += 4; // 사각형의 정점 수만큼 인덱스를 증가
+			glDrawArrays(GL_TRIANGLES, currentIndex, 6); // 사각형은 2개의 삼각형 (6개의 정점)
+			currentIndex += 6; // 사각형의 정점 수만큼 인덱스를 증가
 		}
 		else if (shape.type == POINT_) {
 			glPointSize(10.0f); // 점 크기 설정
