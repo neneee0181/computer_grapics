@@ -1,3 +1,2 @@
 ﻿  main.cpp
-C:\Users\neneee\computer_grapics-main\project_p\a_7\main.cpp(82,2): warning C4065: switch문에 'default'가 있으나 'case' 레이블이 없습니다.
   a_7.vcxproj -> C:\Users\neneee\computer_grapics-main\project_p\x64\Debug\a_7.exe

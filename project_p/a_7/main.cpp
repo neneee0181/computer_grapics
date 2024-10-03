@@ -31,55 +31,95 @@ enum ShapeType {
 	LINE
 };
 
-struct Shape {
+struct Shape_gl {
 	ShapeType type;
 	vector<glm::vec3> vertices; // 도형의 정점
 	glm::vec3 color; // 도형의 색상
 };
 
+
+void insert_triangle(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 color, vector<Shape_gl>& shapes) {
+	shapes.push_back(
+		{
+			TRIANGLE,
+		{v1,v2,v3},
+		color
+		}
+	);
+}
+
+void insert_square(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 v4, glm::vec3 v5, glm::vec3 v6, glm::vec3 color, vector<Shape_gl>& shapes) {
+	shapes.push_back(
+		{
+			SQUARE,
+		{v1,v2,v3,v4,v5,v6},
+		color
+		}
+	);
+}
+
+void insert_point(glm::vec3 v1, glm::vec3 color, vector<Shape_gl>& shapes) {
+	shapes.push_back(
+		{
+			POINT_,
+		{v1},
+		color
+		}
+	);
+}
+
+void insert_line(glm::vec3 v1, glm::vec3 v2, glm::vec3 color, vector<Shape_gl>& shapes) {
+	shapes.push_back(
+		{
+			LINE,
+		{v1,v2},
+		color
+		}
+	);
+}
+
 // 모든 도형을 담는 벡터
-vector<Shape> shapes;
+vector<Shape_gl> shapes;
 
 GLuint vao, vbo[2];
 
 void initShapes() {
 	// 삼각형 추가
-	shapes.push_back({
-		TRIANGLE,
-		{ glm::vec3(-0.7f, -0.5f, 0.0f), glm::vec3(0.7f, -0.5f, 0.0f), glm::vec3(0.0f, 0.5f, 0.0f) },
-		glm::vec3(1.0f, 0.0f, 0.0f) // 빨간색
-		});
 
-	shapes.push_back({
-	  SQUARE,
-	  { glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.5f, -0.5f, 0.0f), // 첫 번째 삼각형
-		glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(-0.5f, 0.5f, 0.0f), // 두 번째 삼각형
-		glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.5f, 0.5f, 0.0f) // 첫 번째 삼각형 (중복)
-	  },
-	  glm::vec3(0.0f, 1.0f, 0.0f) // 초록색
-		});
+	insert_triangle(glm::vec3(-0.7f, -0.5f, 0.0f), glm::vec3(0.7f, -0.5f, 0.0f), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), shapes);
+	insert_square(glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.5f, -0.5f, 0.0f), glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(-0.5f, 0.5f, 0.0f),
+		glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), shapes);
+	insert_point(glm::vec3(0.0f, 0.9f, 0.4f), glm::vec3(0.0f, 0.0f, 1.0f), shapes);
+	insert_line(glm::vec3(-0.9f, 0.0f, 0.0f), glm::vec3(0.9f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), shapes);
 
-	// 점 추가
-	shapes.push_back({
-		POINT_,
-		{ glm::vec3(0.0f, 0.9f, 0.4f) },
-		glm::vec3(0.0f, 0.0f, 1.0f) // 파란색
-		});
-
-	// 선 추가
-	shapes.push_back({
-		LINE,
-		{ glm::vec3(-0.9f, 0.0f, 0.0f), glm::vec3(0.9f, 0.0f, 0.0f) },
-		glm::vec3(0.0f, 0.0f, 0.0f) // 검은색
-		});
 }
 
 void keyBoard(unsigned char key, int x, int y) {
 	switch (key)
 	{
+	case 'p': // 점
+		break;
+	case 'l': //선
+		break;
+	case 't': //삼각형
+		break;
+	case 'r': //사각형
+		break;
+	case 'w':
+		break;
+	case 'a':
+		break;
+	case 's':
+		break;
+	case 'd':
+		break;
+	case 'c':
+		shapes.clear();
+		break;
 	default:
 		break;
 	}
+	glutPostRedisplay();
 }
 
 void mouse(int button, int state, int x, int y) {
@@ -124,7 +164,7 @@ int main(int argc, char** argv) {
 void drawShapes() {
 	int currentIndex = 0; // 현재 정점 인덱스
 
-	for (const Shape& shape : shapes) {
+	for (const Shape_gl& shape : shapes) {
 		if (shape.type == TRIANGLE) {
 			glDrawArrays(GL_TRIANGLES, currentIndex, 3); // 삼각형은 3개의 정점
 			currentIndex += 3; // 삼각형의 정점 수만큼 인덱스를 증가
@@ -233,7 +273,7 @@ void InitBuffer() {
 	vector<glm::vec3> allVertices;
 	vector<glm::vec3> allColors;
 
-	for (const Shape& shape : shapes) {
+	for (const Shape_gl& shape : shapes) {
 		// 정점 추가
 		allVertices.insert(allVertices.end(), shape.vertices.begin(), shape.vertices.end());
 
