@@ -2,6 +2,9 @@
 #include <gl/glew.h>
 #include <gl/freeglut.h>
 #include <gl/freeglut_ext.h>
+#include <gl/glm/glm/glm.hpp>
+
+#include <vector>
 
 #include "filetobuf.h"
 
@@ -21,17 +24,47 @@ GLuint fragmentShader;
 
 GLchar* vertexSource, * fragmentSource;
 
-const GLfloat triShape[3][3] = {
-	{-0.5,-0.5,0.0},{0.5,-0.5,0.0},{0.0,0.5,0.0}
-	// x,y,z 기준
-	// 삼각형에서 반시계로 왼쪽아래 -> 우측아래 -> 가운대 위
+
+enum ShapeType {
+	TRIANGLE,
+	SQUARE,
+	POINT_
 };
 
-const GLfloat colors[3][3] = {
-	{1.0,0.0,0.0}, {0.0,1.0,0.0},{0.0,0.0,1.0}
+struct Shape {
+	ShapeType type;
+	vector<glm::vec3> vertices; // 도형의 정점
+	glm::vec3 color; // 도형의 색상
 };
+
+// 모든 도형을 담는 벡터
+vector<Shape> shapes;
 
 GLuint vao, vbo[2];
+
+void initShapes() {
+	// 삼각형 추가
+	shapes.push_back({
+		TRIANGLE,
+		{ glm::vec3(-0.7f, -0.5f, 0.0f), glm::vec3(0.7f, -0.5f, 0.0f), glm::vec3(0.0f, 0.5f, 0.0f) },
+		glm::vec3(1.0f, 0.0f, 0.0f) // 빨간색
+		});
+
+	// 사각형 추가
+	shapes.push_back({
+		SQUARE,
+		{ glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.5f, -0.5f, 0.0f), glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(-0.5f, 0.5f, 0.0f) },
+		glm::vec3(0.0f, 1.0f, 0.0f) // 초록색
+		});
+
+	// 점 추가
+	shapes.push_back({
+		POINT_,
+		{ glm::vec3(0.0f, 0.9f, 0.4f) },
+		glm::vec3(0.0f, 0.0f, 1.0f) // 파란색
+		});
+}
+
 
 int main(int argc, char** argv) {
 
@@ -55,6 +88,7 @@ int main(int argc, char** argv) {
 		cout << "GLEW Initialized\n";
 
 	make_shaderProgram();
+	initShapes();
 	InitBuffer();
 
 	glutDisplayFunc(drawScene);
@@ -62,6 +96,26 @@ int main(int argc, char** argv) {
 	glutMainLoop();
 
 	return 0;
+}
+
+void drawShapes() {
+	int currentIndex = 0; // 현재 정점 인덱스
+
+	for (const Shape& shape : shapes) {
+		if (shape.type == TRIANGLE) {
+			glDrawArrays(GL_TRIANGLES, currentIndex, 3); // 삼각형은 3개의 정점
+			currentIndex += 3; // 삼각형의 정점 수만큼 인덱스를 증가
+		}
+		else if (shape.type == SQUARE) {
+			glDrawArrays(GL_QUADS, currentIndex, 4); // 사각형은 4개의 정점
+			currentIndex += 4; // 사각형의 정점 수만큼 인덱스를 증가
+		}
+		else if (shape.type == POINT_) {
+			glPointSize(10.0f); // 점 크기 설정
+			glDrawArrays(GL_POINTS, currentIndex, 1); // 점은 1개의 정점
+			currentIndex += 1; // 점의 정점 수만큼 인덱스를 증가
+		}
+	}
 }
 
 GLvoid drawScene() {
@@ -73,9 +127,14 @@ GLvoid drawScene() {
 
 	glBindVertexArray(vao);
 
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	drawShapes(); // 도형 그리기
 
 	glutSwapBuffers();
+
+	GLenum err;
+	while ((err = glGetError()) != GL_NO_ERROR) {
+		cout << "OpenGL error: " << err << endl;
+	}
 }
 
 GLvoid Reshape(int w, int h) {
@@ -142,13 +201,29 @@ void InitBuffer() {
 
 	glGenBuffers(2, vbo);
 
+	// 모든 도형의 정점을 한 배열에 담기
+	vector<glm::vec3> allVertices;
+	vector<glm::vec3> allColors;
+
+	for (const Shape& shape : shapes) {
+		// 정점 추가
+		allVertices.insert(allVertices.end(), shape.vertices.begin(), shape.vertices.end());
+
+		// 색상 추가 (정점의 수만큼 색상 추가)
+		for (size_t i = 0; i < shape.vertices.size(); ++i) {
+			allColors.push_back(shape.color);
+		}
+	}
+
+	// 정점 데이터 OpenGL에 전송
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-	glBufferData(GL_ARRAY_BUFFER, 9 * sizeof(GLfloat), triShape, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, allVertices.size() * sizeof(glm::vec3), allVertices.data(), GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(0);
 
+	// 색상 데이터 OpenGL에 전송
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-	glBufferData(GL_ARRAY_BUFFER, 9 * sizeof(GLfloat), colors, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, allColors.size() * sizeof(glm::vec3), allColors.data(), GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(1);
 }
