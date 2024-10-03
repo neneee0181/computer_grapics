@@ -24,11 +24,11 @@ GLuint fragmentShader;
 
 GLchar* vertexSource, * fragmentSource;
 
-
 enum ShapeType {
 	TRIANGLE,
 	SQUARE,
-	POINT_
+	POINT_,
+	LINE
 };
 
 struct Shape {
@@ -64,6 +64,13 @@ void initShapes() {
 		POINT_,
 		{ glm::vec3(0.0f, 0.9f, 0.4f) },
 		glm::vec3(0.0f, 0.0f, 1.0f) // 파란색
+		});
+
+	// 선 추가
+	shapes.push_back({
+		LINE,
+		{ glm::vec3(-0.9f, 0.0f, 0.0f), glm::vec3(0.9f, 0.0f, 0.0f) },
+		glm::vec3(0.0f, 0.0f, 0.0f) // 검은색
 		});
 }
 
@@ -130,6 +137,11 @@ void drawShapes() {
 			glPointSize(10.0f); // 점 크기 설정
 			glDrawArrays(GL_POINTS, currentIndex, 1); // 점은 1개의 정점
 			currentIndex += 1; // 점의 정점 수만큼 인덱스를 증가
+		}
+		else if (shape.type == LINE) {
+			glLineWidth(2.0f); // 선 두께 설정
+			glDrawArrays(GL_LINES, currentIndex, 2); // 선은 2개의 정점
+			currentIndex += 2; // 선의 정점 수만큼 인덱스를 증가
 		}
 	}
 }
