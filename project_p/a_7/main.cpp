@@ -5,6 +5,7 @@
 #include <gl/glm/glm/glm.hpp>
 
 #include <vector>
+#include <random>
 
 #include "filetobuf.h"
 
@@ -83,6 +84,9 @@ vector<Shape_gl> shapes;
 
 GLuint vao, vbo[2];
 
+ShapeType statusType = ShapeType::TRIANGLE;
+int selectStatus = 0;
+
 void initShapes() {
 	// 삼각형 추가
 
@@ -94,16 +98,30 @@ void initShapes() {
 
 }
 
+random_device rd;
+mt19937 gen(rd);
+
 void keyBoard(unsigned char key, int x, int y) {
+
+	uniform_int_distribution<> rand_select(0, shapes.size());
+
 	switch (key)
 	{
 	case 'p': // 점
+		statusType = ShapeType::POINT_;
+		selectStatus = rand_select(gen);
 		break;
 	case 'l': //선
+		statusType = ShapeType::LINE;
+		selectStatus = rand_select(gen);
 		break;
 	case 't': //삼각형
+		statusType = ShapeType::TRIANGLE;
+		selectStatus = rand_select(gen);
 		break;
 	case 'r': //사각형
+		statusType = ShapeType::SQUARE;
+		selectStatus = rand_select(gen);
 		break;
 	case 'w':
 		break;
