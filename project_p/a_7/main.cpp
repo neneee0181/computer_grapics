@@ -90,7 +90,7 @@ int selectStatus = 0;
 void initShapes() {
 	// 삼각형 추가
 
-	insert_triangle(glm::vec3(-0.7f, -0.5f, 0.0f), glm::vec3(0.7f, -0.5f, 0.0f), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), shapes);
+	//insert_triangle(glm::vec3(-0.7f, -0.5f, 0.0f), glm::vec3(0.7f, -0.5f, 0.0f), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), shapes);
 	insert_square(glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.5f, -0.5f, 0.0f), glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(-0.5f, 0.5f, 0.0f),
 		glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), shapes);
 	insert_point(glm::vec3(0.0f, 0.9f, 0.4f), glm::vec3(0.0f, 0.0f, 1.0f), shapes);
@@ -99,8 +99,8 @@ void initShapes() {
 }
 
 random_device rd;
-mt19937 gen(rd);
-
+mt19937 gen(rd());
+uniform_real_distribution<> rand_color(0.0f, 1.0f);
 void keyBoard(unsigned char key, int x, int y) {
 
 	uniform_int_distribution<> rand_select(0, shapes.size());
@@ -141,8 +141,37 @@ void keyBoard(unsigned char key, int x, int y) {
 }
 
 void mouse(int button, int state, int x, int y) {
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
-		std::cout << "x = " << x << " y = " << y << std::endl;
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+		//std::cout << "x = " << x << " y = " << y << std::endl;
+
+		float glX = (x / (float)width) * 2.0f - 1.0f; // x 좌표 변환
+		float glY = 1.0f - (y / (float)height) * 2.0f; // y 좌표 변환
+
+		// 변환된 좌표를 콘솔에 출력
+		std::cout << "x = " << glX << ", y = " << glY << std::endl;
+
+		if (shapes.size() > 10)
+			return;
+
+		switch (statusType)
+		{
+		case TRIANGLE:
+			insert_triangle(glm::vec3(-0.7f, -0.5f, 0.0f), glm::vec3(0.7f, -0.5f, 0.0f), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), shapes);
+			break;
+		case SQUARE:
+			break;
+		case POINT_:
+			insert_point(glm::vec3(glX, glY, 0.0f), glm::vec3(rand_color(gen), rand_color(gen), rand_color(gen)), shapes);
+			InitBuffer();
+			break;
+		case LINE:
+			break;
+		default:
+			break;
+		}
+	}
+
+	glutPostRedisplay();
 }
 
 int main(int argc, char** argv) {
@@ -167,7 +196,7 @@ int main(int argc, char** argv) {
 		cout << "GLEW Initialized\n";
 
 	make_shaderProgram();
-	initShapes();
+	//initShapes();
 	InitBuffer();
 
 	glutDisplayFunc(drawScene);
@@ -290,6 +319,12 @@ void InitBuffer() {
 	// 모든 도형의 정점을 한 배열에 담기
 	vector<glm::vec3> allVertices;
 	vector<glm::vec3> allColors;
+
+	// shapes 벡터가 비어 있는지 확인
+	if (shapes.empty()) {
+		cout << "No shapes to initialize buffers." << endl;
+		return; // shapes가 비어있으면 초기화 중단
+	}
 
 	for (const Shape_gl& shape : shapes) {
 		// 정점 추가
