@@ -23,6 +23,8 @@ GLchar* vertexSource, * fragmentSource;
 
 const GLfloat triShape[3][3] = {
 	{-0.5,-0.5,0.0},{0.5,-0.5,0.0},{0.0,0.5,0.0}
+	// x,y,z 기준
+	// 삼각형에서 반시계로 왼쪽아래 -> 우측아래 -> 가운대 위
 };
 
 const GLfloat colors[3][3] = {
@@ -81,7 +83,7 @@ GLvoid Reshape(int w, int h) {
 }
 
 void make_vertexShaders() {
-	
+
 	vertexSource = filetobuf("vertex.glsl");
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, (const GLchar**)&vertexSource, 0);
@@ -109,7 +111,7 @@ void make_fragmentShaders() {
 	GLint result;
 	GLchar errorLog[512];
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &result);
-	
+
 	if (!result) {
 		glGetShaderInfoLog(fragmentShader, 512, NULL, errorLog);
 		cerr << "ERROR: frag_shader 컴파일 실패\n" << errorLog << endl;
@@ -126,7 +128,7 @@ void make_shaderProgram() {
 	glAttachShader(shaderProgramID, vertexShader);
 	glAttachShader(shaderProgramID, fragmentShader);
 	glLinkProgram(shaderProgramID);
-	
+
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
@@ -139,7 +141,7 @@ void InitBuffer() {
 	glBindVertexArray(vao);
 
 	glGenBuffers(2, vbo);
-	
+
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
 	glBufferData(GL_ARRAY_BUFFER, 9 * sizeof(GLfloat), triShape, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
