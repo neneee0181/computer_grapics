@@ -214,6 +214,7 @@ void check() {
 
 void timer(int value) {
 	for (auto& shape : shapes) {
+
 		switch (modeMove)
 		{
 		case 1:
@@ -235,7 +236,6 @@ void timer(int value) {
 					vertex.y += speed;
 				}
 			}
-
 			// 경계에 부딪힐 때 방향을 반전
 			for (const auto& vertex : shape.vertices) {
 				if (vertex.x >= 1.0f || vertex.x <= -1.0f) {
@@ -245,11 +245,31 @@ void timer(int value) {
 					shape.y = shape.y == 0 ? 1 : 0;
 				}
 			}
-			
 			break;
 		}
 		case 2:
+		{
+			float speed = 0.01f;
+
+			for (auto& vertex : shape.vertices) {
+				if (shape.x == 0) {
+					vertex.x -= speed;
+				}
+				else if (shape.x == 1) {
+					vertex.x += speed;
+				}
+			}
+
+			for (auto& vertex : shape.vertices) {
+				if (vertex.x >= 1.0f || vertex.x <= -1.0f) {
+					shape.x = shape.x == 0 ? 1 : 0;
+				}
+				if (vertex.y >= 1.0f || vertex.y - 0.2 <= -1.0f) {
+					shape.y = shape.y == 0 ? 1 : 0;
+				}
+			}
 			break;
+		}
 		case 3:
 			break;
 		case 4:
