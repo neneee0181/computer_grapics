@@ -105,6 +105,24 @@ void keyBoard(unsigned char key, int x, int y) {
 	glutPostRedisplay();
 }
 
+void make_triangle(float glX, float glY) {
+	// 랜덤한 크기와 색상 생성
+	float triangleSize = size_(gen); // 랜덤한 삼각형 크기
+	glm::vec3 randomColor(rand_(gen), rand_(gen), rand_(gen)); // 랜덤 색상
+
+	// 삼각형의 세 개의 정점을 정의 (클릭한 위치를 기준으로)
+	glm::vec3 v1(glX, glY, 0.0f); // 클릭한 위치가 첫 번째 정점
+	glm::vec3 v2(glX + triangleSize, glY, 0.0f);
+	glm::vec3 v3(glX + triangleSize / 2.0f, glY + triangleSize + 0.1, 0.0f);
+
+	// 사분면 찾기
+	int quadrant = findQuadrant(glX, glY);
+
+	// 새로운 삼각형 삽입
+	insert_triangle(v1, v2, v3, randomColor, shapes, quadrant);
+
+}
+
 void mouse(int button, int state, int x, int y) {
 
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
@@ -113,31 +131,37 @@ void mouse(int button, int state, int x, int y) {
 		float glX = (x / (float)width) * 2.0f - 1.0f; // x 좌표 변환
 		float glY = 1.0f - (y / (float)height) * 2.0f; // y 좌표 변환
 
-		/*int quadmant = findQuadrant(glX, glY);
+		int quadmant = findQuadrant(glX, glY);
 
 		for (int i = 0; i < shapes.size(); ++i) {
 			if (shapes[i].quadrant == quadmant) {
 				shapes.erase(shapes.begin() + i);
-				break;
+				i--;
 			}
-		}*/
+		}
 
-		// 랜덤한 크기와 색상 생성
-		float triangleSize = size_(gen); // 랜덤한 삼각형 크기
-		glm::vec3 randomColor(rand_(gen), rand_(gen), rand_(gen)); // 랜덤 색상
+		make_triangle(glX, glY);
+		return;
+	}
 
-		// 삼각형의 세 개의 정점을 정의 (클릭한 위치를 기준으로)
-		glm::vec3 v1(glX, glY, 0.0f); // 클릭한 위치가 첫 번째 정점
-		glm::vec3 v2(glX + triangleSize, glY, 0.0f);
-		glm::vec3 v3(glX + triangleSize / 2.0f, glY + triangleSize, 0.0f);
+	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
+		float glX = (x / (float)width) * 2.0f - 1.0f; // x 좌표 변환
+		float glY = 1.0f - (y / (float)height) * 2.0f; // y 좌표 변환
 
-		// 사분면 찾기
-		int quadrant = findQuadrant(glX, glY);
+		int quadmant = findQuadrant(glX, glY);
+		int cnt = 0;
+		for (int i = 0; i < shapes.size(); ++i) {
+			if (shapes[i].quadrant == quadmant) {
+				cnt++;
+			}
+		}
 
-		// 새로운 삼각형 삽입
-		insert_triangle(v1, v2, v3, randomColor, shapes, quadrant);
+		if (cnt >= 3)
+			return;
 
+				make_triangle(glX, glY);
 
+		return;
 	}
 	
 	InitBuffer();
