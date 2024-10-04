@@ -218,26 +218,34 @@ void timer(int value) {
 		{
 		case 1:
 		{
-			// 자유롭게 움직이도록 x와 y 방향에 따라 업데이트
-			float speed = 0.01f; // 움직임 속도
+			float speed = 0.01f;
 
-			// x, y는 방향을 나타내므로 각 도형의 정점을 이동
 			for (auto& vertex : shape.vertices) {
-				vertex.x += shape.x * speed; // x 방향 이동
-				vertex.y += shape.y * speed; // y 방향 이동
+				if (shape.x == 0) {
+					vertex.x -= speed;
+				}
+				else if (shape.x == 1) {
+					vertex.x += speed;
+				}
+
+				if (shape.y == 0) {
+					vertex.y -= speed;
+				}
+				else if (shape.y == 1) {
+					vertex.y += speed;
+				}
 			}
 
 			// 경계에 부딪힐 때 방향을 반전
 			for (const auto& vertex : shape.vertices) {
 				if (vertex.x >= 1.0f || vertex.x <= -1.0f) {
-					shape.x = -shape.x; // x 방향 반전
-					break; // 한 정점이 경계에 닿으면 나머지도 같은 방향을 반전해야 하므로 빠져나옵니다.
+					shape.x = shape.x == 0 ? 1 : 0;
 				}
-				if (vertex.y >= 1.0f || vertex.y <= -1.0f) {
-					shape.y = -shape.y; // y 방향 반전
-					break;
+				if (vertex.y >= 1.0f || vertex.y - 0.2 <= -1.0f) {
+					shape.y = shape.y == 0 ? 1 : 0;
 				}
 			}
+			
 			break;
 		}
 		case 2:
