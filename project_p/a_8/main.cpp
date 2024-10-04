@@ -5,6 +5,7 @@
 #include <gl/glm/glm/glm.hpp>
 
 #include <vector>
+#include <random>
 
 #include "filetobuf.h"
 
@@ -35,35 +36,17 @@ struct Shape_gl {
 	ShapeType type;
 	vector<glm::vec3> vertices; // 도형의 정점
 	glm::vec3 color; // 도형의 색상
+	int quadrant = 0;
 };
 
 
-void insert_triangle(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 color, vector<Shape_gl>& shapes) {
+void insert_triangle(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 color, vector<Shape_gl>& shapes, int quadrant) {
 	shapes.push_back(
 		{
 			TRIANGLE,
 		{v1,v2,v3},
-		color
-		}
-	);
-}
-
-void insert_square(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 v4, glm::vec3 v5, glm::vec3 v6, glm::vec3 color, vector<Shape_gl>& shapes) {
-	shapes.push_back(
-		{
-			SQUARE,
-		{v1,v2,v3,v4,v5,v6},
-		color
-		}
-	);
-}
-
-void insert_point(glm::vec3 v1, glm::vec3 color, vector<Shape_gl>& shapes) {
-	shapes.push_back(
-		{
-			POINT_,
-		{v1},
-		color
+		color,
+		quadrant
 		}
 	);
 }
@@ -84,39 +67,38 @@ vector<Shape_gl> systemShapes;
 
 GLuint vao, vbo[2];
 
+random_device rd;
+mt19937 gen(rd());
+uniform_real_distribution<> rand_(0.0f, 1.0f);
+uniform_real_distribution<> size_(0.1f, 0.15f);
 void initShapes() {
 	// 삼각형 추가
 
-	insert_triangle(glm::vec3(-0.7f, -0.5f, 0.0f), glm::vec3(0.7f, -0.5f, 0.0f), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), shapes);
+	/*insert_triangle(glm::vec3(-0.7f, -0.5f, 0.0f), glm::vec3(0.7f, -0.5f, 0.0f), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), shapes);
 	insert_square(glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.5f, -0.5f, 0.0f), glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(-0.5f, 0.5f, 0.0f),
 		glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), shapes);
 	insert_point(glm::vec3(0.0f, 0.9f, 0.4f), glm::vec3(0.0f, 0.0f, 1.0f), shapes);
-	insert_line(glm::vec3(-0.9f, 0.0f, 0.0f), glm::vec3(0.9f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), shapes);
+	insert_line(glm::vec3(-0.9f, 0.0f, 0.0f), glm::vec3(0.9f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), shapes);*/
 
+
+
+}
+
+int findQuadrant(float x, float y) { // 사분면  찾아서 주기
+	if (x < 0 && y > 0)
+		return 1;
+	else if (x > 0 && y > 0)
+		return 2;
+	else if (x < 0 && y < 0)
+		return 3;
+	else if (x > 0 && y < 0)
+		return 4;
+	return 0;
 }
 
 void keyBoard(unsigned char key, int x, int y) {
 	switch (key)
 	{
-	case 'p': // 점
-		break;
-	case 'l': //선
-		break;
-	case 't': //삼각형
-		break;
-	case 'r': //사각형
-		break;
-	case 'w':
-		break;
-	case 'a':
-		break;
-	case 's':
-		break;
-	case 'd':
-		break;
-	case 'c':
-		shapes.clear();
-		break;
 	default:
 		break;
 	}
@@ -124,8 +106,42 @@ void keyBoard(unsigned char key, int x, int y) {
 }
 
 void mouse(int button, int state, int x, int y) {
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 		std::cout << "x = " << x << " y = " << y << std::endl;
+
+		float glX = (x / (float)width) * 2.0f - 1.0f; // x 좌표 변환
+		float glY = 1.0f - (y / (float)height) * 2.0f; // y 좌표 변환
+
+		/*int quadmant = findQuadrant(glX, glY);
+
+		for (int i = 0; i < shapes.size(); ++i) {
+			if (shapes[i].quadrant == quadmant) {
+				shapes.erase(shapes.begin() + i);
+				break;
+			}
+		}*/
+
+		// 랜덤한 크기와 색상 생성
+		float triangleSize = size_(gen); // 랜덤한 삼각형 크기
+		glm::vec3 randomColor(rand_(gen), rand_(gen), rand_(gen)); // 랜덤 색상
+
+		// 삼각형의 세 개의 정점을 정의 (클릭한 위치를 기준으로)
+		glm::vec3 v1(glX, glY, 0.0f); // 클릭한 위치가 첫 번째 정점
+		glm::vec3 v2(glX + triangleSize, glY, 0.0f);
+		glm::vec3 v3(glX + triangleSize / 2.0f, glY + triangleSize, 0.0f);
+
+		// 사분면 찾기
+		int quadrant = findQuadrant(glX, glY);
+
+		// 새로운 삼각형 삽입
+		insert_triangle(v1, v2, v3, randomColor, shapes, quadrant);
+
+
+	}
+	
+	InitBuffer();
+	
 }
 
 int main(int argc, char** argv) {
@@ -164,23 +180,13 @@ int main(int argc, char** argv) {
 
 	return 0;
 }
-
+int currentIndex = 0; // 현재 정점 인덱스
 void drawShapes() {
-	int currentIndex = 0; // 현재 정점 인덱스
 
 	for (const Shape_gl& shape : shapes) {
 		if (shape.type == TRIANGLE) {
 			glDrawArrays(GL_TRIANGLES, currentIndex, 3); // 삼각형은 3개의 정점
 			currentIndex += 3; // 삼각형의 정점 수만큼 인덱스를 증가
-		}
-		else if (shape.type == SQUARE) {
-			glDrawArrays(GL_TRIANGLES, currentIndex, 6); // 사각형은 2개의 삼각형 (6개의 정점)
-			currentIndex += 6; // 사각형의 정점 수만큼 인덱스를 증가
-		}
-		else if (shape.type == POINT_) {
-			glPointSize(10.0f); // 점 크기 설정
-			glDrawArrays(GL_POINTS, currentIndex, 1); // 점은 1개의 정점
-			currentIndex += 1; // 점의 정점 수만큼 인덱스를 증가
 		}
 		else if (shape.type == LINE) {
 			glLineWidth(2.0f); // 선 두께 설정
@@ -191,23 +197,9 @@ void drawShapes() {
 }
 
 void drawSystemShapes() {
-	int currentIndex = 0; // 현재 정점 인덱스
 
 	for (const Shape_gl& systemShape : systemShapes) {
-		if (systemShape.type == TRIANGLE) {
-			glDrawArrays(GL_TRIANGLES, currentIndex, 3); // 삼각형은 3개의 정점
-			currentIndex += 3; // 삼각형의 정점 수만큼 인덱스를 증가
-		}
-		else if (systemShape.type == SQUARE) {
-			glDrawArrays(GL_TRIANGLES, currentIndex, 6); // 사각형은 2개의 삼각형 (6개의 정점)
-			currentIndex += 6; // 사각형의 정점 수만큼 인덱스를 증가
-		}
-		else if (systemShape.type == POINT_) {
-			glPointSize(10.0f); // 점 크기 설정
-			glDrawArrays(GL_POINTS, currentIndex, 1); // 점은 1개의 정점
-			currentIndex += 1; // 점의 정점 수만큼 인덱스를 증가
-		}
-		else if (systemShape.type == LINE) {
+		if (systemShape.type == LINE) {
 			glLineWidth(2.0f); // 선 두께 설정
 			glDrawArrays(GL_LINES, currentIndex, 2); // 선은 2개의 정점
 			currentIndex += 2; // 선의 정점 수만큼 인덱스를 증가
@@ -227,6 +219,8 @@ GLvoid drawScene() {
 
 	drawShapes(); // 도형 그리기
 	drawSystemShapes();
+
+	currentIndex = 0;
 
 	glutSwapBuffers();
 
@@ -304,6 +298,7 @@ void InitBuffer() {
 	vector<glm::vec3> allVertices;
 	vector<glm::vec3> allColors;
 
+	// shapes 벡터에서 정점과 색상 추가
 	for (const Shape_gl& shape : shapes) {
 		// 정점 추가
 		allVertices.insert(allVertices.end(), shape.vertices.begin(), shape.vertices.end());
@@ -314,6 +309,7 @@ void InitBuffer() {
 		}
 	}
 
+	// systemShapes 벡터에서 정점과 색상 추가 (사분면 선)
 	for (const Shape_gl& systemShape : systemShapes) {
 		allVertices.insert(allVertices.end(), systemShape.vertices.begin(), systemShape.vertices.end());
 
