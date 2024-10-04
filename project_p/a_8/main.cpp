@@ -71,18 +71,8 @@ random_device rd;
 mt19937 gen(rd());
 uniform_real_distribution<> rand_(0.0f, 1.0f);
 uniform_real_distribution<> size_(0.1f, 0.15f);
-void initShapes() {
-	// 삼각형 추가
 
-	/*insert_triangle(glm::vec3(-0.7f, -0.5f, 0.0f), glm::vec3(0.7f, -0.5f, 0.0f), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), shapes);
-	insert_square(glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.5f, -0.5f, 0.0f), glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(-0.5f, 0.5f, 0.0f),
-		glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), shapes);
-	insert_point(glm::vec3(0.0f, 0.9f, 0.4f), glm::vec3(0.0f, 0.0f, 1.0f), shapes);
-	insert_line(glm::vec3(-0.9f, 0.0f, 0.0f), glm::vec3(0.9f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), shapes);*/
-
-
-
-}
+int mode = 0; // 0 -> 면, 1 -> 선
 
 int findQuadrant(float x, float y) { // 사분면  찾아서 주기
 	if (x < 0 && y > 0)
@@ -99,10 +89,18 @@ int findQuadrant(float x, float y) { // 사분면  찾아서 주기
 void keyBoard(unsigned char key, int x, int y) {
 	switch (key)
 	{
+	case 'a':
+		mode = 0; // 면으로 그리기
+		std::cout << "Mode: 면" << std::endl;
+		break;
+	case 'b':
+		mode = 1; // 선으로 그리기
+		std::cout << "Mode: 선" << std::endl;
+		break;
 	default:
 		break;
 	}
-	glutPostRedisplay();
+	glutPostRedisplay(); // 화면 갱신
 }
 
 void make_triangle(float glX, float glY) {
@@ -205,17 +203,17 @@ int main(int argc, char** argv) {
 	return 0;
 }
 int currentIndex = 0; // 현재 정점 인덱스
-void drawShapes() {
 
+void drawShapes() {
 	for (const Shape_gl& shape : shapes) {
 		if (shape.type == TRIANGLE) {
-			glDrawArrays(GL_TRIANGLES, currentIndex, 3); // 삼각형은 3개의 정점
+			if (mode == 0) {
+				glDrawArrays(GL_TRIANGLES, currentIndex, 3); // 삼각형을 면으로 그리기
+			}
+			else if (mode == 1) {
+				glDrawArrays(GL_LINE_LOOP, currentIndex, 3); // 삼각형을 선으로 그리기
+			}
 			currentIndex += 3; // 삼각형의 정점 수만큼 인덱스를 증가
-		}
-		else if (shape.type == LINE) {
-			glLineWidth(2.0f); // 선 두께 설정
-			glDrawArrays(GL_LINES, currentIndex, 2); // 선은 2개의 정점
-			currentIndex += 2; // 선의 정점 수만큼 인덱스를 증가
 		}
 	}
 }
