@@ -41,6 +41,9 @@ struct Shape_gl {
 	int x, y = 0;
 	bool status = false;
 	float move_y = 0.0f;
+	float angle = 0.0f;   // 각도
+	float radius = 0.1f;  // 반지름
+	int status_r = 0;
 };
 
 
@@ -121,6 +124,9 @@ void keyBoard(unsigned char key, int x, int y) {
 		break;
 	case '4':
 		modeMove = 4;
+		break;
+	case '5':
+		modeMove = 5;
 		break;
 	default:
 		break;
@@ -285,7 +291,7 @@ void timer(int value) {
 			}
 
 			// y축으로 이동한 거리가 0.15f 이상이면 다시 x축 이동 시작
-			if (shape.move_y >= 0.15f) {
+			if (shape.move_y >= 0.18f) {
 				shape.status = false;  // x축으로 이동 전환
 				shape.move_y = 0.0f;   // y축 이동 거리 초기화
 			}
@@ -299,8 +305,84 @@ void timer(int value) {
 			break;
 		}
 		case 3:
+		{
+			switch (shape.status_r)
+			{
+			case 0:
+				break;
+			case 1:
+				break;
+			case 2:
+				break;
+			case 3:
+				break;
+			default:
+				break;
+			}
 			break;
+		}
 		case 4:
+		{
+			float angleSpeed = 0.05f;  // 각도 변화 속도
+			float distanceIncrement = 0.001f;  // 반지름 증가 속도
+
+			// 0,0을 기준으로 회전하고 반지름을 증가시키는 로직
+			for (auto& vertex : shape.vertices) {
+				// 회전을 위해 중심(0,0)에서의 상대 위치로 변환
+				float relativeX = vertex.x;
+				float relativeY = vertex.y;
+
+				// 현재 좌표의 거리(반지름)를 계산
+				float distance = sqrt(relativeX * relativeX + relativeY * relativeY);
+
+				// 반지름을 점차 증가시키며 스파이럴 형태로 이동
+				distance += distanceIncrement;
+
+				// 회전 변환을 적용
+				float newX = relativeX * cos(angleSpeed) - relativeY * sin(angleSpeed);
+				float newY = relativeX * sin(angleSpeed) + relativeY * cos(angleSpeed);
+
+				// 증가된 반지름을 반영한 새로운 좌표 설정
+				vertex.x = (newX / sqrt(newX * newX + newY * newY)) * distance;
+				vertex.y = (newY / sqrt(newX * newX + newY * newY)) * distance;
+			}
+			break;
+		}
+		case 5:
+		{
+			float angleSpeed = 0.01f; // 각도 변화 속도를 줄임
+			float radiusIncrement = 0.001f; // 반지름 증가 속도를 줄임
+
+			// 사각형의 중심 좌표 계산
+			float centerX = (shape.vertices[0].x + shape.vertices[2].x) / 2.0f;
+			float centerY = (shape.vertices[0].y + shape.vertices[2].y) / 2.0f;
+
+			// 각 정점이 중심을 기준으로 회전하도록 설정
+			for (auto& vertex : shape.vertices) {
+				// 회전을 위해 중심 좌표로부터 상대 위치로 변환
+				float relativeX = vertex.x - centerX;
+				float relativeY = vertex.y - centerY;
+
+				// 회전 변환을 적용 (스파이크 모양을 유지하면서 회전)
+				float newX = relativeX * cos(shape.angle) - relativeY * sin(shape.angle);
+				float newY = relativeX * sin(shape.angle) + relativeY * cos(shape.angle);
+
+				// 다시 중심 좌표로 이동
+				vertex.x = centerX + newX;
+				vertex.y = centerY + newY;
+			}
+
+			// 반지름을 증가시켜 스파이럴 형태로 확장
+			shape.radius += radiusIncrement;
+			shape.angle += angleSpeed;
+
+			// 경계 조건 처리 (화면을 벗어났을 때 초기화)
+			if (shape.vertices[0].x >= 1.0f || shape.vertices[0].x <= -1.0f ||
+				shape.vertices[0].y >= 1.0f || shape.vertices[0].y <= -1.0f) {
+				shape.radius = 0.1f;
+				shape.angle = 0.0f;
+			}
+		}
 			break;
 		default:
 			break;
