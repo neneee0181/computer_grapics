@@ -5,6 +5,7 @@
 #include <gl/glm/glm/glm.hpp>
 
 #include <vector>
+#include <random>
 
 #include "filetobuf.h"
 
@@ -81,29 +82,38 @@ void insert_line(glm::vec3 v1, glm::vec3 v2, glm::vec3 color, vector<Shape_gl>& 
 // 모든 도형을 담는 벡터
 vector<Shape_gl> shapes;
 
+int cnt_shapes = 0;
+
 GLuint vao, vbo[2];
+
+// 스파이럴 관련 변수들
+float angle = 0.0f;
+float radius = 0.01f;  // 초기 반지름
+float centerX, centerY; // 클릭한 좌표를 기준으로 스파이럴 시작
+bool isSpiralActive = false; // 스파이럴 그리기 상태 확인
+glm::vec3 lastPoint; // 마지막 점 저장
+glm::vec3 spiralColor(0.0f, 0.0f, 0.0f); // 스파이럴 색상
+
+int line_mode = 1;
 
 void keyBoard(unsigned char key, int x, int y) {
 	switch (key)
 	{
-	case 'p': // 점
+	case 'p':
+		line_mode = 0;
 		break;
-	case 'l': //선
+	case 'l':
+		line_mode = 1;
 		break;
-	case 't': //삼각형
+	case 1:
 		break;
-	case 'r': //사각형
+	case 2:
 		break;
-	case 'w':
+	case 3:
 		break;
-	case 'a':
+	case 4:
 		break;
-	case 's':
-		break;
-	case 'd':
-		break;
-	case 'c':
-		shapes.clear();
+	case 5:
 		break;
 	default:
 		break;
@@ -112,8 +122,44 @@ void keyBoard(unsigned char key, int x, int y) {
 }
 
 void mouse(int button, int state, int x, int y) {
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 		std::cout << "x = " << x << " y = " << y << std::endl;
+
+		// OpenGL 좌표로 변환
+		centerX = (x / (float)width) * 2.0f - 1.0f;
+		centerY = 1.0f - (y / (float)height) * 2.0f;
+
+		// 스파이럴 초기화
+		angle = 0.0f;
+		radius = 0.01f;
+		lastPoint = glm::vec3(centerX, centerY, 0.0f);
+		isSpiralActive = true; // 타이머로 스파이럴 그리기 활성화
+	}
+}
+
+void timer(int value) {
+	if (isSpiralActive && angle < 10.0f * 3.14159265358979323846f) { // 5바퀴가 될 때까지
+		// 스파이럴의 다음 점 계산
+		angle += 0.2f;  // 각도 증가
+		radius += 0.0005f;  // 반지름 증가
+
+		// 새로운 점 계산
+		float x = centerX + radius * cos(angle);
+		float y = centerY + radius * sin(angle);
+		glm::vec3 newPoint(x, y, 0.0f);
+
+		// 점선 추가
+		insert_line(lastPoint, newPoint, spiralColor, shapes);
+		lastPoint = newPoint; // 마지막 점 업데이트
+
+		// 버퍼 갱신
+		InitBuffer();
+
+		// 화면 갱신
+		glutPostRedisplay();
+	}
+
+	glutTimerFunc(16, timer, 0); // 16ms 후에 다시 타이머 호출 (약 60FPS)
 }
 
 int main(int argc, char** argv) {
@@ -126,7 +172,7 @@ int main(int argc, char** argv) {
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100, 100);
 	glutInitWindowSize(width, height);
-	glutCreateWindow("실습 7번");
+	glutCreateWindow("실습 10번");
 
 	//glew 초기화
 	glewExperimental = GL_TRUE;
@@ -144,6 +190,7 @@ int main(int argc, char** argv) {
 	glutReshapeFunc(Reshape);
 	glutKeyboardFunc(keyBoard);
 	glutMouseFunc(mouse);
+	glutTimerFunc(16, timer, 0);
 	glutMainLoop();
 
 	return 0;
@@ -154,9 +201,20 @@ void drawShapes() {
 
 	for (const Shape_gl& shape : shapes) {
 		if (shape.type == LINE) {
-			glLineWidth(2.0f); // 선 두께 설정
-			glDrawArrays(GL_LINES, currentIndex, 2); // 선은 2개의 정점
-			currentIndex += 2; // 선의 정점 수만큼 인덱스를 증가
+			if (line_mode == 0) {
+				glEnable(GL_LINE_STIPPLE);  // 점선 활성화
+				glLineStipple(2, 0x00F1);   // 점선 패턴 설정 (적당히 긴 점선)
+				glLineWidth(2.0f);          // 선 두께 설정
+				glDrawArrays(GL_LINES, currentIndex, 2); // 선은 2개의 정점
+				currentIndex += 2; // 선의 정점 수만큼 인덱스를 증가
+				glDisable(GL_LINE_STIPPLE);  // 점선 비활성화
+			}
+			else {
+				// 실선 그리기
+				glLineWidth(2.0f);           // 실선의 두께 설정
+				glDrawArrays(GL_LINES, currentIndex, 2);  // GL_LINES로 라인 그리기
+				currentIndex += 2; // 선의 정점 수만큼 인덱스를 증가
+			}
 		}
 	}
 }
