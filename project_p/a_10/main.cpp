@@ -92,8 +92,7 @@ float radius = 0.01f;  // 초기 반지름
 float centerX, centerY; // 클릭한 좌표를 기준으로 스파이럴 시작
 bool isSpiralActive = false; // 스파이럴 그리기 상태 확인
 glm::vec3 lastPoint; // 마지막 점 저장
-glm::vec3 spiralColor(0.0f, 0.0f, 0.0f); // 스파이럴 색상
-
+glm::vec3 spiralColor(1.0f, 1.0f, 1.0f); // 스파이럴 색상
 int line_mode = 1;
 
 void keyBoard(unsigned char key, int x, int y) {
@@ -105,20 +104,96 @@ void keyBoard(unsigned char key, int x, int y) {
 	case 'l':
 		line_mode = 1;
 		break;
-	case 1:
+	case '1':
+		cnt_shapes = 1;
 		break;
-	case 2:
+	case '2':
+		cnt_shapes = 2;
 		break;
-	case 3:
+	case '3':
+		cnt_shapes = 3;
 		break;
-	case 4:
+	case '4':
+		cnt_shapes = 4;
 		break;
-	case 5:
+	case '5':
+		cnt_shapes = 5;
 		break;
 	default:
 		break;
 	}
 	glutPostRedisplay();
+}
+
+random_device rd;
+mt19937 gen(rd());
+uniform_real_distribution<> dd(-1.0f, 1.0f);
+void make_spiral() {
+	centerX = dd(gen);
+	centerY = dd(gen);
+	// 스파이럴 초기화
+	angle = 0.0f;
+	radius = 0.01f;
+	lastPoint = glm::vec3(centerX, centerY, 0.0f);
+	isSpiralActive = true;
+	//glutTimerFunc(16, timer, 0); // 16ms 후에 다시 타이머 호출 (약 60FPS)
+}
+
+
+float PI_ = 3.14159265358979323846f;
+int cnt_re_shapes = 0;
+
+void timer(int value) {
+	if (isSpiralActive && angle < 10.0f * PI_ && value == 0) { // 5바퀴가 될 때까지
+		// 스파이럴의 다음 점 계산
+		angle += 0.2f;  // 각도 증가
+		radius += 0.0005f;  // 반지름 증가
+
+		// 새로운 점 계산
+		float x = centerX + radius * cos(angle);
+		float y = centerY + radius * sin(angle);
+		glm::vec3 newPoint(x, y, 0.0f);
+
+		// 점선 추가
+		insert_line(lastPoint, newPoint, spiralColor, shapes);
+		lastPoint = newPoint; // 마지막 점 업데이트
+
+	}
+	else if (isSpiralActive && angle > 10.0f * PI_ && value == 0) {
+		value = 1;
+		centerX += 0.18;
+		centerY += 0.035;
+	}
+
+	if (value == 1 && radius > 0.005f) { // 반지름이 너무 작아지지 않도록 제한
+		// 스파이럴의 다음 점 계산
+		angle += 0.2f;  // 각도 감소
+		radius -= 0.0005f;  // 반지름 감소
+
+		// 새로운 점 계산
+		float x = centerX - radius * cos(angle);
+		float y = centerY + radius * sin(angle);
+		glm::vec3 newPoint(x, y, 0.0f);
+
+		// 점선 추가
+		insert_line(lastPoint, newPoint, spiralColor, shapes);
+		lastPoint = newPoint; // 마지막 점 업데이트
+	}
+	else if (value == 1 && radius < 0.005f) {
+		isSpiralActive = false;
+		value = 0;
+		cnt_re_shapes++;
+		if (cnt_shapes != cnt_re_shapes) {
+			make_spiral();
+		}
+	}
+
+	// 버퍼 갱신
+	InitBuffer();
+
+	// 화면 갱신
+	glutPostRedisplay();
+	glutTimerFunc(16, timer, value); // 16ms 후에 다시 타이머 호출 (약 60FPS)
 }
 
 void mouse(int button, int state, int x, int y) {
@@ -133,33 +208,9 @@ void mouse(int button, int state, int x, int y) {
 		angle = 0.0f;
 		radius = 0.01f;
 		lastPoint = glm::vec3(centerX, centerY, 0.0f);
-		isSpiralActive = true; // 타이머로 스파이럴 그리기 활성화
+		isSpiralActive = true;
+		//glutTimerFunc(16, timer, 0); // 16ms 후에 다시 타이머 호출 (약 60FPS)
 	}
-}
-
-void timer(int value) {
-	if (isSpiralActive && angle < 10.0f * 3.14159265358979323846f) { // 5바퀴가 될 때까지
-		// 스파이럴의 다음 점 계산
-		angle += 0.2f;  // 각도 증가
-		radius += 0.0005f;  // 반지름 증가
-
-		// 새로운 점 계산
-		float x = centerX + radius * cos(angle);
-		float y = centerY + radius * sin(angle);
-		glm::vec3 newPoint(x, y, 0.0f);
-
-		// 점선 추가
-		insert_line(lastPoint, newPoint, spiralColor, shapes);
-		lastPoint = newPoint; // 마지막 점 업데이트
-
-		// 버퍼 갱신
-		InitBuffer();
-
-		// 화면 갱신
-		glutPostRedisplay();
-	}
-
-	glutTimerFunc(16, timer, 0); // 16ms 후에 다시 타이머 호출 (약 60FPS)
 }
 
 int main(int argc, char** argv) {
@@ -184,6 +235,7 @@ int main(int argc, char** argv) {
 		cout << "GLEW Initialized\n";
 
 	make_shaderProgram();
+
 	InitBuffer();
 
 	glutDisplayFunc(drawScene);
@@ -221,7 +273,12 @@ void drawShapes() {
 
 GLvoid drawScene() {
 
-	glClearColor(1.0, 1.0, 1.0, 1.0f);
+	if (cnt_re_shapes % 2 == 0) {
+		glClearColor(0.0, 0.0, 0.0, 1.0f);
+	}
+	else {
+		glClearColor(1.0, 0.0, 0.0, 1.0f);
+	}
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glUseProgram(shaderProgramID);
