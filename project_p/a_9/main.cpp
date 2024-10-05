@@ -306,18 +306,37 @@ void timer(int value) {
 		}
 		case 3:
 		{
-			switch (shape.status_r)
-			{
-			case 0:
-				break;
-			case 1:
-				break;
-			case 2:
-				break;
-			case 3:
-				break;
-			default:
-				break;
+			static float radius = 1.0f;
+			float speed = 0.01f;
+			for (auto& vertex : shape.vertices) {
+				switch (shape.status_r)
+				{
+				case 0:
+					vertex.x -= speed;
+					if (vertex.x < -radius)
+						shape.status_r = 1;
+					break;
+				case 1:
+					vertex.y -= speed;
+					if (vertex.y < -radius)
+						shape.status_r = 2;
+					break;
+				case 2:
+					vertex.x += speed;
+					if (vertex.x > radius)
+						shape.status_r = 3;
+					break;
+				case 3:
+					vertex.y += speed;
+					if (vertex.y > radius) {
+						shape.status_r = 0;
+						radius -= 0.05;
+						break;
+					}
+					break;
+				default:
+					break;
+				}
 			}
 			break;
 		}
