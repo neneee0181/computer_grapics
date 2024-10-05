@@ -39,6 +39,8 @@ struct Shape_gl {
 	int quadrant = 0;
 	int move = 0; // 0 -> stop
 	int x, y = 0;
+	bool status = false;
+	float move_y = 0.0f;
 };
 
 
@@ -252,18 +254,44 @@ void timer(int value) {
 			float speed = 0.01f;
 
 			for (auto& vertex : shape.vertices) {
-				if (shape.x == 0) {
-					vertex.x -= speed;
+				if (!shape.status) {
+					// status가 false일 때 x축 이동
+					if (shape.x == 0) {
+						vertex.x -= speed;
+					}
+					else if (shape.x == 1) {
+						vertex.x += speed;
+					}
 				}
-				else if (shape.x == 1) {
-					vertex.x += speed;
+				else {
+					// status가 true일 때 y축 이동
+					if (shape.y == 0) {
+						vertex.y -= speed;
+						shape.move_y += speed;
+					}
+					else if (shape.y == 1) {
+						vertex.y += speed;
+						shape.move_y += speed;
+					}
 				}
 			}
 
+			// x축 경계 확인
 			for (auto& vertex : shape.vertices) {
 				if (vertex.x >= 1.0f || vertex.x <= -1.0f) {
 					shape.x = shape.x == 0 ? 1 : 0;
+					shape.status = true;  // x축에서 경계에 도달하면 y축으로 전환
 				}
+			}
+
+			// y축으로 이동한 거리가 0.15f 이상이면 다시 x축 이동 시작
+			if (shape.move_y >= 0.15f) {
+				shape.status = false;  // x축으로 이동 전환
+				shape.move_y = 0.0f;   // y축 이동 거리 초기화
+			}
+
+			// y축 경계 확인
+			for (auto& vertex : shape.vertices) {
 				if (vertex.y >= 1.0f || vertex.y - 0.2 <= -1.0f) {
 					shape.y = shape.y == 0 ? 1 : 0;
 				}
