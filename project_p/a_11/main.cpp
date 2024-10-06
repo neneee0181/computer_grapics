@@ -88,14 +88,16 @@ vector<Shape_gl> line;
 
 GLuint vao, vbo[2];
 
+bool isAnimating_t = false;  // 애니메이션 상태
+bool isAnimating2_t = false;  // 애니메이션 상태
+bool isAnimating_s = false;
+bool isAnimating2_s = false;
+
+float stepSize = 0.01f;    // 한 번의 업데이트에서 이동할 거리
+
 glm::vec3 lineStart(-0.8f, 0.3f, 0.0f);  // 선 시작 좌표
 glm::vec3 lineEnd(-0.5f, 0.8f, 0.0f);    // 선 끝 좌표
 glm::vec3 currentLinePos = lineStart;     // 현재 선의 위치
-
-bool isAnimating = false;  // 애니메이션 상태
-bool isAnimating2 = false;  // 애니메이션 상태
-
-float stepSize = 0.01f;    // 한 번의 업데이트에서 이동할 거리
 
 glm::vec3 triangleEnd(-0.2f, 0.3f, 0.0f);
 glm::vec3 currentTriangle = lineEnd;
@@ -103,7 +105,7 @@ glm::vec3 currentTriangle = lineEnd;
 void updateLineToTriangle(int value) {
 	if (value != 1) 
 		return;
-	if (isAnimating2) {
+	if (isAnimating2_t) {
 		// x좌표는 증가, y좌표는 감소하면서 목표로 이동
 		if (abs(currentTriangle.x - triangleEnd.x) > stepSize) {
 			currentTriangle.x += stepSize;
@@ -114,7 +116,7 @@ void updateLineToTriangle(int value) {
 
 		// 삼각형이 완성되면 애니메이션 종료
 		if (abs(currentTriangle.x - triangleEnd.x) <= stepSize && abs(currentTriangle.y - triangleEnd.y) <= stepSize) {
-			isAnimating2 = false;
+			isAnimating2_t = false;
 		}
 
 		// 도형을 다시 추가
@@ -124,7 +126,7 @@ void updateLineToTriangle(int value) {
 		glutPostRedisplay();  // 화면을 갱신
 
 		// 애니메이션이 끝나지 않았으면 타이머 반복
-		if (isAnimating2) {
+		if (isAnimating2_t) {
 			glutTimerFunc(16, updateLineToTriangle, value);
 		}
 	}
@@ -133,15 +135,15 @@ void updateLineToTriangle(int value) {
 void updateLinePos(int value) {
 	if (value != 0)
 		return;
-	if (isAnimating) {
+	if (isAnimating_t) {
 		// 선이 끝 위치에 도달하지 않았다면 계속 이동
 		if (currentLinePos.x < lineEnd.x && currentLinePos.y < lineEnd.y) {
 			currentLinePos.x += stepSize;
 			currentLinePos.y += stepSize;
 		}
 		else {
-			isAnimating = false; // 선이 목표 위치에 도달하면 애니메이션 종료
-			isAnimating2 = true;
+			isAnimating_t = false; // 선이 목표 위치에 도달하면 애니메이션 종료
+			isAnimating2_t = true;
 			value++;
 			glutTimerFunc(0, updateLineToTriangle, value);
 		}
@@ -155,19 +157,80 @@ void updateLinePos(int value) {
 	}
 }
 
+
+glm::vec3 triangle1(0.2f, 0.3f, 0.0f);
+glm::vec3 triangle2(0.8f, 0.3f, 0.0f);
+glm::vec3 triangle3(0.5f, 0.8f, 0.0f);
+glm::vec3 currentSquare = triangle2;
+
+void updateTriangelToSquare(int value) {
+	if (value != 1)
+		return;
+
+	InitBuffer();
+	glutPostRedisplay();
+	glutTimerFunc(16, updateTriangelToSquare, 0);
+}
+
+void updateMoveToTriangle(int value) {
+	if (value != 0)
+		return;
+
+	if (isAnimating_s) {
+		glm::vec3 translation(stepSize, 0.0f, 0.0f); // x축으로 stepSize만큼 이동
+
+		// 모든 도형 정점에 동일한 translation을 적용하여 이동
+		for (auto& sq : square) {
+			for (auto& vertex : sq.vertices) {
+				vertex += translation; // 각 정점에 이동 변화를 더해줍니다.
+			}
+		}
+
+		// 도형이 목표 위치에 도달하면 애니메이션 종료
+		if (square[0].vertices[0].x >= triangle1.x) {  // 목표 지점에 도달하면 종료
+			isAnimating_s = false;
+		}
+	}
+	else {
+
+	}
+
+	InitBuffer();
+	glutPostRedisplay();
+	glutTimerFunc(16, updateMoveToTriangle, 0);
+}
+
 void keyBoard(unsigned char key, int x, int y) {
 	switch (key)
 	{
 	case 'p': // 점
 		break;
 	case 'l': //선
-		if (!isAnimating) {
-			isAnimating = true;
+		if (!isAnimating_t) {
+			isAnimating_t = true;
 			currentLinePos = lineStart;  // 현재 위치를 다시 시작점으로 설정
 			glutTimerFunc(0, updateLinePos, 0);  // 타이머 시작
 		}
 		break;
 	case 't': //삼각형
+		if (triangle.size() != 0) { // triangle이 있을때
+			if (!isAnimating_s) {
+				insert_triangle(lineStart, lineEnd, triangleEnd, glm::vec3(0.0f, 0.0f, 0.0f), square);
+
+				isAnimating_s = true; 
+				currentSquare = triangle2;
+				glutTimerFunc(0, updateMoveToTriangle, 0);
+			}
+		}
+		else { //없을때
+			if (!isAnimating_s) {
+				insert_triangle(triangle1, triangle2, triangle3, glm::vec3(0.0f, 0.0f, 0.0f), square);
+
+				isAnimating_s = true;
+				currentSquare = triangle2;
+				glutTimerFunc(0, updateTriangelToSquare, 1);
+			}
+		}
 		break;
 	case 'r': //사각형
 		break;
