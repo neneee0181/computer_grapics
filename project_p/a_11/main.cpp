@@ -28,7 +28,8 @@ enum ShapeType {
 	TRIANGLE,
 	SQUARE,
 	POINT_,
-	LINE
+	LINE,
+	PENTA_
 };
 
 struct Shape_gl {
@@ -79,8 +80,11 @@ void insert_line(glm::vec3 v1, glm::vec3 v2, glm::vec3 color, vector<Shape_gl>& 
 }
 
 // 모든 도형을 담는 벡터
-vector<Shape_gl> shapes;
+vector<Shape_gl> triangle;
 vector<Shape_gl> systemShapes;
+vector<Shape_gl> square;
+vector<Shape_gl> penta;
+vector<Shape_gl> line;
 
 GLuint vao, vbo[2];
 
@@ -97,8 +101,8 @@ glm::vec3 triangleEnd(-0.2f, 0.3f, 0.0f);
 glm::vec3 currentTriangle = lineEnd;
 
 void updateLineToTriangle(int value) {
-	if (value != 1) return;
-
+	if (value != 1) 
+		return;
 	if (isAnimating2) {
 		// x좌표는 증가, y좌표는 감소하면서 목표로 이동
 		if (abs(currentTriangle.x - triangleEnd.x) > stepSize) {
@@ -114,8 +118,8 @@ void updateLineToTriangle(int value) {
 		}
 
 		// 도형을 다시 추가
-		shapes.clear();
-		insert_triangle(lineStart, lineEnd, currentTriangle, glm::vec3(0.0f, 0.0f, 0.0f), shapes);
+		triangle.clear();
+		insert_triangle(lineStart, lineEnd, currentTriangle, glm::vec3(0.0f, 0.0f, 0.0f), triangle);
 		InitBuffer();
 		glutPostRedisplay();  // 화면을 갱신
 
@@ -129,7 +133,6 @@ void updateLineToTriangle(int value) {
 void updateLinePos(int value) {
 	if (value != 0)
 		return;
-	cout << value << endl;
 	if (isAnimating) {
 		// 선이 끝 위치에 도달하지 않았다면 계속 이동
 		if (currentLinePos.x < lineEnd.x && currentLinePos.y < lineEnd.y) {
@@ -137,15 +140,14 @@ void updateLinePos(int value) {
 			currentLinePos.y += stepSize;
 		}
 		else {
-			cout << "?" << endl;
 			isAnimating = false; // 선이 목표 위치에 도달하면 애니메이션 종료
 			isAnimating2 = true;
 			value++;
 			glutTimerFunc(0, updateLineToTriangle, value);
 		}
 		// 선을 shapes 벡터에 다시 추가
-		shapes.clear();
-		insert_line(lineStart, currentLinePos, glm::vec3(0.0f, 0.0f, 0.0f), shapes);
+		triangle.clear();
+		insert_line(lineStart, currentLinePos, glm::vec3(0.0f, 0.0f, 0.0f), triangle);
 		InitBuffer();
 		glutPostRedisplay();  // 화면을 갱신
 
@@ -178,7 +180,7 @@ void keyBoard(unsigned char key, int x, int y) {
 	case 'd':
 		break;
 	case 'c':
-		shapes.clear();
+		triangle.clear();
 		break;
 	default:
 		break;
@@ -233,7 +235,7 @@ int currentIndex = 0; // 현재 정점 인덱스
 
 void drawShapes() {
 
-	for (const Shape_gl& shape : shapes) {
+	for (const Shape_gl& shape : triangle) {
 		if (shape.type == TRIANGLE) {
 			glDrawArrays(GL_TRIANGLES, currentIndex, 3); // 삼각형은 3개의 정점
 			currentIndex += 3; // 삼각형의 정점 수만큼 인덱스를 증가
@@ -246,6 +248,40 @@ void drawShapes() {
 			glPointSize(10.0f); // 점 크기 설정
 			glDrawArrays(GL_POINTS, currentIndex, 1); // 점은 1개의 정점
 			currentIndex += 1; // 점의 정점 수만큼 인덱스를 증가
+		}
+		else if (shape.type == LINE) {
+			glLineWidth(2.0f); // 선 두께 설정
+			glDrawArrays(GL_LINES, currentIndex, 2); // 선은 2개의 정점
+			currentIndex += 2; // 선의 정점 수만큼 인덱스를 증가
+		}
+	}
+
+	for (const Shape_gl& shape : square) {
+		if (shape.type == TRIANGLE) {
+			glDrawArrays(GL_TRIANGLES, currentIndex, 3); // 삼각형은 3개의 정점
+			currentIndex += 3; // 삼각형의 정점 수만큼 인덱스를 증가
+		}
+		else if (shape.type == SQUARE) {
+			glDrawArrays(GL_TRIANGLES, currentIndex, 6); // 사각형은 2개의 삼각형 (6개의 정점)
+			currentIndex += 6; // 사각형의 정점 수만큼 인덱스를 증가
+		}
+	}
+
+	for (const Shape_gl& shape : penta) {
+		if (shape.type == SQUARE) {
+			glDrawArrays(GL_TRIANGLES, currentIndex, 6); // 사각형은 2개의 삼각형 (6개의 정점)
+			currentIndex += 6; // 사각형의 정점 수만큼 인덱스를 증가
+		}
+		else if (shape.type == PENTA_) {
+			glDrawArrays(GL_TRIANGLES, currentIndex, 9); // 사각형은 2개의 삼각형 (6개의 정점)
+			currentIndex += 9; // 사각형의 정점 수만큼 인덱스를 증가
+		}
+	}
+
+	for (const Shape_gl& shape : line) {
+		if (shape.type == PENTA_) {
+			glDrawArrays(GL_TRIANGLES, currentIndex, 9); // 사각형은 2개의 삼각형 (6개의 정점)
+			currentIndex += 9; // 사각형의 정점 수만큼 인덱스를 증가
 		}
 		else if (shape.type == LINE) {
 			glLineWidth(2.0f); // 선 두께 설정
@@ -365,7 +401,37 @@ void InitBuffer() {
 	vector<glm::vec3> allVertices;
 	vector<glm::vec3> allColors;
 
-	for (const Shape_gl& shape : shapes) {
+	for (const Shape_gl& shape : triangle) {
+		// 정점 추가
+		allVertices.insert(allVertices.end(), shape.vertices.begin(), shape.vertices.end());
+
+		// 색상 추가 (정점의 수만큼 색상 추가)
+		for (size_t i = 0; i < shape.vertices.size(); ++i) {
+			allColors.push_back(shape.color);
+		}
+	}
+
+	for (const Shape_gl& shape : square) {
+		// 정점 추가
+		allVertices.insert(allVertices.end(), shape.vertices.begin(), shape.vertices.end());
+
+		// 색상 추가 (정점의 수만큼 색상 추가)
+		for (size_t i = 0; i < shape.vertices.size(); ++i) {
+			allColors.push_back(shape.color);
+		}
+	}
+
+	for (const Shape_gl& shape : penta) {
+		// 정점 추가
+		allVertices.insert(allVertices.end(), shape.vertices.begin(), shape.vertices.end());
+
+		// 색상 추가 (정점의 수만큼 색상 추가)
+		for (size_t i = 0; i < shape.vertices.size(); ++i) {
+			allColors.push_back(shape.color);
+		}
+	}
+
+	for (const Shape_gl& shape : line) {
 		// 정점 추가
 		allVertices.insert(allVertices.end(), shape.vertices.begin(), shape.vertices.end());
 
