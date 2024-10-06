@@ -161,15 +161,29 @@ void updateLinePos(int value) {
 glm::vec3 triangle1(0.2f, 0.3f, 0.0f);
 glm::vec3 triangle2(0.8f, 0.3f, 0.0f);
 glm::vec3 triangle3(0.5f, 0.8f, 0.0f);
-glm::vec3 currentSquare = triangle2;
+glm::vec3 squareLastPoint1(0.2f, 0.5f, 0.0f);
+glm::vec3 squareLastPoint2(0.8f, 0.5f, 0.0f);
+glm::vec3 currentSquare1 = triangle3;
+glm::vec3 currentSquare2 = triangle3;
 
 void updateTriangelToSquare(int value) {
 	if (value != 1)
 		return;
 
+	if (isAnimating2_s) {
+		if (currentSquare1.x >= squareLastPoint1.x) {
+			currentSquare1.x -= stepSize;
+		}
+	}
+	else {
+
+	}
+
+	square.clear();
+	insert_triangle(triangle1, triangle2, currentSquare1, glm::vec3(0.0f, 0.0f, 0.0f), square);
 	InitBuffer();
 	glutPostRedisplay();
-	glutTimerFunc(16, updateTriangelToSquare, 0);
+	glutTimerFunc(16, updateTriangelToSquare, 1);
 }
 
 void updateMoveToTriangle(int value) {
@@ -192,7 +206,12 @@ void updateMoveToTriangle(int value) {
 		}
 	}
 	else {
-
+		isAnimating_s = false;
+		cout << "1" << endl;
+		isAnimating2_s = true;
+		square.clear();
+		insert_triangle(triangle1, triangle2, currentSquare1, glm::vec3(0.0f, 0.0f, 0.0f), square);
+		glutTimerFunc(0, updateTriangelToSquare, 1);
 	}
 
 	InitBuffer();
@@ -218,16 +237,15 @@ void keyBoard(unsigned char key, int x, int y) {
 				insert_triangle(lineStart, lineEnd, triangleEnd, glm::vec3(0.0f, 0.0f, 0.0f), square);
 
 				isAnimating_s = true; 
-				currentSquare = triangle2;
 				glutTimerFunc(0, updateMoveToTriangle, 0);
 			}
 		}
 		else { //¾øÀ»¶§
 			if (!isAnimating_s) {
-				insert_triangle(triangle1, triangle2, triangle3, glm::vec3(0.0f, 0.0f, 0.0f), square);
+				square.clear();
+				insert_triangle(triangle1, triangle2, currentSquare1, glm::vec3(0.0f, 0.0f, 0.0f), square);
 
-				isAnimating_s = true;
-				currentSquare = triangle2;
+				isAnimating2_s = true;
 				glutTimerFunc(0, updateTriangelToSquare, 1);
 			}
 		}
