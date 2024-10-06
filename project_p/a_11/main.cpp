@@ -85,13 +85,51 @@ vector<Shape_gl> systemShapes;
 GLuint vao, vbo[2];
 
 glm::vec3 lineStart(-0.8f, 0.3f, 0.0f);  // 선 시작 좌표
-glm::vec3 lineEnd(-0.3f, 0.8f, 0.0f);    // 선 끝 좌표
+glm::vec3 lineEnd(-0.5f, 0.8f, 0.0f);    // 선 끝 좌표
 glm::vec3 currentLinePos = lineStart;     // 현재 선의 위치
 
 bool isAnimating = false;  // 애니메이션 상태
+bool isAnimating2 = false;  // 애니메이션 상태
+
 float stepSize = 0.01f;    // 한 번의 업데이트에서 이동할 거리
 
+glm::vec3 triangleEnd(-0.2f, 0.3f, 0.0f);
+glm::vec3 currentTriangle = lineEnd;
+
+void updateLineToTriangle(int value) {
+	if (value != 1) return;
+
+	if (isAnimating2) {
+		// x좌표는 증가, y좌표는 감소하면서 목표로 이동
+		if (abs(currentTriangle.x - triangleEnd.x) > stepSize) {
+			currentTriangle.x += stepSize;
+		}
+		if (abs(currentTriangle.y - triangleEnd.y) > stepSize) {
+			currentTriangle.y -= stepSize; // y좌표는 감소해야 함
+		}
+
+		// 삼각형이 완성되면 애니메이션 종료
+		if (abs(currentTriangle.x - triangleEnd.x) <= stepSize && abs(currentTriangle.y - triangleEnd.y) <= stepSize) {
+			isAnimating2 = false;
+		}
+
+		// 도형을 다시 추가
+		shapes.clear();
+		insert_triangle(lineStart, lineEnd, currentTriangle, glm::vec3(0.0f, 0.0f, 0.0f), shapes);
+		InitBuffer();
+		glutPostRedisplay();  // 화면을 갱신
+
+		// 애니메이션이 끝나지 않았으면 타이머 반복
+		if (isAnimating2) {
+			glutTimerFunc(16, updateLineToTriangle, value);
+		}
+	}
+}
+
 void updateLinePos(int value) {
+	if (value != 0)
+		return;
+	cout << value << endl;
 	if (isAnimating) {
 		// 선이 끝 위치에 도달하지 않았다면 계속 이동
 		if (currentLinePos.x < lineEnd.x && currentLinePos.y < lineEnd.y) {
@@ -99,7 +137,11 @@ void updateLinePos(int value) {
 			currentLinePos.y += stepSize;
 		}
 		else {
+			cout << "?" << endl;
 			isAnimating = false; // 선이 목표 위치에 도달하면 애니메이션 종료
+			isAnimating2 = true;
+			value++;
+			glutTimerFunc(0, updateLineToTriangle, value);
 		}
 		// 선을 shapes 벡터에 다시 추가
 		shapes.clear();
@@ -107,7 +149,6 @@ void updateLinePos(int value) {
 		InitBuffer();
 		glutPostRedisplay();  // 화면을 갱신
 
-		// 다음 업데이트를 16ms 후에 실행 (약 60 FPS)
 		glutTimerFunc(16, updateLinePos, 0);
 	}
 }
