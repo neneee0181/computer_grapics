@@ -80,19 +80,9 @@ void insert_line(glm::vec3 v1, glm::vec3 v2, glm::vec3 color, vector<Shape_gl>& 
 
 // 모든 도형을 담는 벡터
 vector<Shape_gl> shapes;
+vector<Shape_gl> systemShapes;
 
 GLuint vao, vbo[2];
-
-void initShapes() {
-	// 삼각형 추가
-
-	insert_triangle(glm::vec3(-0.7f, -0.5f, 0.0f), glm::vec3(0.7f, -0.5f, 0.0f), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), shapes);
-	insert_square(glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.5f, -0.5f, 0.0f), glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(-0.5f, 0.5f, 0.0f),
-		glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), shapes);
-	insert_point(glm::vec3(0.0f, 0.9f, 0.4f), glm::vec3(0.0f, 0.0f, 1.0f), shapes);
-	insert_line(glm::vec3(-0.9f, 0.0f, 0.0f), glm::vec3(0.9f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), shapes);
-
-}
 
 void keyBoard(unsigned char key, int x, int y) {
 	switch (key)
@@ -137,7 +127,7 @@ int main(int argc, char** argv) {
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100, 100);
 	glutInitWindowSize(width, height);
-	glutCreateWindow("실습 7번");
+	glutCreateWindow("실습 11번");
 
 	//glew 초기화
 	glewExperimental = GL_TRUE;
@@ -149,7 +139,10 @@ int main(int argc, char** argv) {
 		cout << "GLEW Initialized\n";
 
 	make_shaderProgram();
-	initShapes();
+
+	insert_line(glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), systemShapes);
+	insert_line(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), systemShapes);
+
 	InitBuffer();
 
 	glutDisplayFunc(drawScene);
@@ -161,10 +154,34 @@ int main(int argc, char** argv) {
 	return 0;
 }
 
+int currentIndex = 0; // 현재 정점 인덱스
+
 void drawShapes() {
-	int currentIndex = 0; // 현재 정점 인덱스
 
 	for (const Shape_gl& shape : shapes) {
+		if (shape.type == TRIANGLE) {
+			glDrawArrays(GL_TRIANGLES, currentIndex, 3); // 삼각형은 3개의 정점
+			currentIndex += 3; // 삼각형의 정점 수만큼 인덱스를 증가
+		}
+		else if (shape.type == SQUARE) {
+			glDrawArrays(GL_TRIANGLES, currentIndex, 6); // 사각형은 2개의 삼각형 (6개의 정점)
+			currentIndex += 6; // 사각형의 정점 수만큼 인덱스를 증가
+		}
+		else if (shape.type == POINT_) {
+			glPointSize(10.0f); // 점 크기 설정
+			glDrawArrays(GL_POINTS, currentIndex, 1); // 점은 1개의 정점
+			currentIndex += 1; // 점의 정점 수만큼 인덱스를 증가
+		}
+		else if (shape.type == LINE) {
+			glLineWidth(2.0f); // 선 두께 설정
+			glDrawArrays(GL_LINES, currentIndex, 2); // 선은 2개의 정점
+			currentIndex += 2; // 선의 정점 수만큼 인덱스를 증가
+		}
+	}
+}
+
+void drawSystemShape() {
+	for (const Shape_gl& shape : systemShapes) {
 		if (shape.type == TRIANGLE) {
 			glDrawArrays(GL_TRIANGLES, currentIndex, 3); // 삼각형은 3개의 정점
 			currentIndex += 3; // 삼각형의 정점 수만큼 인덱스를 증가
@@ -196,7 +213,7 @@ GLvoid drawScene() {
 	glBindVertexArray(vao);
 
 	drawShapes(); // 도형 그리기
-
+	drawSystemShape();
 	glutSwapBuffers();
 
 	GLenum err;
@@ -274,6 +291,16 @@ void InitBuffer() {
 	vector<glm::vec3> allColors;
 
 	for (const Shape_gl& shape : shapes) {
+		// 정점 추가
+		allVertices.insert(allVertices.end(), shape.vertices.begin(), shape.vertices.end());
+
+		// 색상 추가 (정점의 수만큼 색상 추가)
+		for (size_t i = 0; i < shape.vertices.size(); ++i) {
+			allColors.push_back(shape.color);
+		}
+	}
+
+	for (const Shape_gl& shape : systemShapes) {
 		// 정점 추가
 		allVertices.insert(allVertices.end(), shape.vertices.begin(), shape.vertices.end());
 
