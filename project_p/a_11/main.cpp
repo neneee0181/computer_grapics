@@ -84,12 +84,45 @@ vector<Shape_gl> systemShapes;
 
 GLuint vao, vbo[2];
 
+glm::vec3 lineStart(-0.8f, 0.3f, 0.0f);  // 선 시작 좌표
+glm::vec3 lineEnd(-0.3f, 0.8f, 0.0f);    // 선 끝 좌표
+glm::vec3 currentLinePos = lineStart;     // 현재 선의 위치
+
+bool isAnimating = false;  // 애니메이션 상태
+float stepSize = 0.01f;    // 한 번의 업데이트에서 이동할 거리
+
+void updateLinePos(int value) {
+	if (isAnimating) {
+		// 선이 끝 위치에 도달하지 않았다면 계속 이동
+		if (currentLinePos.x < lineEnd.x && currentLinePos.y < lineEnd.y) {
+			currentLinePos.x += stepSize;
+			currentLinePos.y += stepSize;
+		}
+		else {
+			isAnimating = false; // 선이 목표 위치에 도달하면 애니메이션 종료
+		}
+		// 선을 shapes 벡터에 다시 추가
+		shapes.clear();
+		insert_line(lineStart, currentLinePos, glm::vec3(0.0f, 0.0f, 0.0f), shapes);
+		InitBuffer();
+		glutPostRedisplay();  // 화면을 갱신
+
+		// 다음 업데이트를 16ms 후에 실행 (약 60 FPS)
+		glutTimerFunc(16, updateLinePos, 0);
+	}
+}
+
 void keyBoard(unsigned char key, int x, int y) {
 	switch (key)
 	{
 	case 'p': // 점
 		break;
 	case 'l': //선
+		if (!isAnimating) {
+			isAnimating = true;
+			currentLinePos = lineStart;  // 현재 위치를 다시 시작점으로 설정
+			glutTimerFunc(0, updateLinePos, 0);  // 타이머 시작
+		}
 		break;
 	case 't': //삼각형
 		break;
@@ -109,6 +142,7 @@ void keyBoard(unsigned char key, int x, int y) {
 	default:
 		break;
 	}
+	InitBuffer();
 	glutPostRedisplay();
 }
 
@@ -211,7 +245,7 @@ GLvoid drawScene() {
 	glUseProgram(shaderProgramID);
 
 	glBindVertexArray(vao);
-
+	currentIndex = 0;  // 매번 그리기 시작할 때 정점 인덱스를 0으로 초기화
 	drawShapes(); // 도형 그리기
 	drawSystemShape();
 	glutSwapBuffers();
