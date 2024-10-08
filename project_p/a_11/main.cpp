@@ -92,6 +92,8 @@ bool isAnimating_t = false;  // 애니메이션 상태
 bool isAnimating2_t = false;  // 애니메이션 상태
 bool isAnimating_s = false;
 bool isAnimating2_s = false;
+bool isAnimating_p = false;
+bool isAnimating2_p = false;
 
 float stepSize = 0.01f;    // 한 번의 업데이트에서 이동할 거리
 
@@ -161,8 +163,8 @@ void updateLinePos(int value) {
 glm::vec3 triangle1(0.2f, 0.3f, 0.0f);
 glm::vec3 triangle2(0.8f, 0.3f, 0.0f);
 glm::vec3 triangle3(0.5f, 0.8f, 0.0f);
-glm::vec3 squareLastPoint1(0.2f, 0.5f, 0.0f);
-glm::vec3 squareLastPoint2(0.8f, 0.5f, 0.0f);
+glm::vec3 squareLastPoint1(0.2f, 0.8f, 0.0f);
+glm::vec3 squareLastPoint2(0.8f, 0.8f, 0.0f);
 glm::vec3 currentSquare1 = triangle3;
 glm::vec3 currentSquare2 = triangle3;
 
@@ -206,8 +208,6 @@ void updateTriangelToSquare(int value) {
 	if (isAnimating2_s) {
 		glutTimerFunc(16, updateTriangelToSquare, 1);
 	}
-
-	cout << "!" << endl;
 }
 
 void updateMoveToTriangle(int value) {
@@ -243,6 +243,73 @@ void updateMoveToTriangle(int value) {
 	glutTimerFunc(16, updateMoveToTriangle, 0);
 }
 
+glm::vec3 squ[4] = {
+	glm::vec3(-0.8f,-0.7f,0.0f),
+	glm::vec3(-0.2f,-0.7f,0.0f),
+	glm::vec3(-0.8f,-0.2f,0.0f),
+	glm::vec3(-0.2f,-0.2f,0.0f)
+};
+
+void updateSquaToPenta(int value) {
+	if (value != 1)
+		return;
+}
+
+void updateMoveToSquare(int value) {
+	if (value != 0)
+		return;
+
+	if (isAnimating_p) {
+		bool reached = true; // 모든 점이 목표에 도달했는지 확인하는 플래그
+		for (int i = 0; i < 4; ++i) {
+			glm::vec3& currentVertex = penta[0].vertices[i]; // 현재 도형의 정점
+			glm::vec3& targetVertex = squ[i]; // 목표 지점
+
+			// x 좌표 이동
+			if (abs(currentVertex.x - targetVertex.x) > stepSize) {
+				if (currentVertex.x < targetVertex.x) {
+					currentVertex.x += stepSize;
+				}
+				else {
+					currentVertex.x -= stepSize;
+				}
+				reached = false;
+			}
+			else {
+				currentVertex.x = targetVertex.x; // 정확히 목표 좌표로 맞춤
+			}
+
+			// y 좌표 이동
+			if (abs(currentVertex.y - targetVertex.y) > stepSize) {
+				if (currentVertex.y < targetVertex.y) {
+					currentVertex.y += stepSize;
+				}
+				else {
+					currentVertex.y -= stepSize;
+				}
+				reached = false;
+			}
+			else {
+				currentVertex.y = targetVertex.y; // 정확히 목표 좌표로 맞춤
+			}
+		}
+
+		// 목표 위치에 도달했을 때 애니메이션 종료
+		if (reached) {
+			isAnimating_p = false; // 애니메이션 종료
+		}
+
+		// 버퍼 초기화 및 화면 갱신
+		InitBuffer();
+		glutPostRedisplay();
+
+		// 애니메이션이 끝나지 않았으면 타이머 반복
+		if (isAnimating_p) {
+			glutTimerFunc(16, updateMoveToSquare, 0);
+		}
+	}
+}
+
 void keyBoard(unsigned char key, int x, int y) {
 	switch (key)
 	{
@@ -275,6 +342,18 @@ void keyBoard(unsigned char key, int x, int y) {
 		}
 		break;
 	case 'r': //사각형
+		if (square.size() != 0) { // 사각형 있을때
+			insert_triangle(triangle1, triangle2, squareLastPoint1, glm::vec3(0.0f, 0.0f, 0.0f), penta);
+			insert_triangle(squareLastPoint1, triangle2, squareLastPoint2, glm::vec3(0.0f, 0.0f, 0.0f), penta);
+			isAnimating_p = true;
+			glutTimerFunc(0, updateMoveToSquare, 0);
+		}
+		else { //업승ㄹ때
+			insert_triangle(squ[0], squ[1], squ[2], glm::vec3(0.0f, 0.0f, 0.0f), penta);
+			insert_triangle(squ[2], squ[1], squ[3], glm::vec3(0.0f, 0.0f, 0.0f), penta);
+			isAnimating2_p = true;
+			glutTimerFunc(0, updateSquaToPenta, 1);
+		}
 		break;
 	case 'w':
 		break;
@@ -373,13 +452,9 @@ void drawShapes() {
 	}
 
 	for (const Shape_gl& shape : penta) {
-		if (shape.type == SQUARE) {
-			glDrawArrays(GL_TRIANGLES, currentIndex, 6); // 사각형은 2개의 삼각형 (6개의 정점)
-			currentIndex += 6; // 사각형의 정점 수만큼 인덱스를 증가
-		}
-		else if (shape.type == PENTA_) {
-			glDrawArrays(GL_TRIANGLES, currentIndex, 9); // 사각형은 2개의 삼각형 (6개의 정점)
-			currentIndex += 9; // 사각형의 정점 수만큼 인덱스를 증가
+		if (shape.type == TRIANGLE) {
+			glDrawArrays(GL_TRIANGLES, currentIndex, 3); // 삼각형은 3개의 정점
+			currentIndex += 3; // 삼각형의 정점 수만큼 인덱스를 증가
 		}
 	}
 
