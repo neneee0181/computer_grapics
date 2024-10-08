@@ -171,19 +171,43 @@ void updateTriangelToSquare(int value) {
 		return;
 
 	if (isAnimating2_s) {
-		if (currentSquare1.x >= squareLastPoint1.x) {
+		// 첫 번째 점을 이동시킴
+		if (abs(currentSquare1.x - squareLastPoint1.x) > stepSize) {
 			currentSquare1.x -= stepSize;
 		}
-	}
-	else {
+		else {
+			currentSquare1.x = squareLastPoint1.x; // 정확히 목표 좌표로 맞춤
+		}
 
+		// 두 번째 점도 같은 방식으로 이동
+		if (abs(currentSquare2.x - squareLastPoint2.x) > stepSize) {
+			currentSquare2.x += stepSize;
+		}
+		else {
+			currentSquare2.x = squareLastPoint2.x; // 정확히 목표 좌표로 맞춤
+		}
+
+		// 두 점이 모두 목표 위치에 도달했는지 확인
+		if (currentSquare1.x == squareLastPoint1.x && currentSquare2.x == squareLastPoint2.x) {
+			isAnimating2_s = false; // 애니메이션 종료
+		}
 	}
 
+	// 도형을 다시 추가
 	square.clear();
 	insert_triangle(triangle1, triangle2, currentSquare1, glm::vec3(0.0f, 0.0f, 0.0f), square);
+	insert_triangle(currentSquare1, triangle2, currentSquare2, glm::vec3(0.0f, 0.0f, 0.0f), square);
+
+	// 버퍼 초기화 및 화면 갱신
 	InitBuffer();
 	glutPostRedisplay();
-	glutTimerFunc(16, updateTriangelToSquare, 1);
+
+	// 애니메이션이 끝나지 않았으면 타이머 반복
+	if (isAnimating2_s) {
+		glutTimerFunc(16, updateTriangelToSquare, 1);
+	}
+
+	cout << "!" << endl;
 }
 
 void updateMoveToTriangle(int value) {
@@ -207,11 +231,11 @@ void updateMoveToTriangle(int value) {
 	}
 	else {
 		isAnimating_s = false;
-		cout << "1" << endl;
 		isAnimating2_s = true;
 		square.clear();
 		insert_triangle(triangle1, triangle2, currentSquare1, glm::vec3(0.0f, 0.0f, 0.0f), square);
 		glutTimerFunc(0, updateTriangelToSquare, 1);
+		return;
 	}
 
 	InitBuffer();
