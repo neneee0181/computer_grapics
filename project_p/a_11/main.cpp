@@ -259,18 +259,67 @@ glm::vec3 penta_r[6] = {
 	glm::vec3(-0.5f,-0.2f,0.0f)
 };
 
+glm::vec3 currentSquare[5] = {
+	glm::vec3(-0.8f, -0.7f, 0.0f),
+	glm::vec3(-0.2f, -0.7f, 0.0f),
+	glm::vec3(-0.8f, -0.2f, 0.0f),
+	glm::vec3(-0.2f, -0.2f, 0.0f),
+	glm::vec3(-0.5f,-0.2f,0.0f)
+};
+
 void updateSquaToPenta(int value) {
 	if (value != 1)
 		return;
 
-	penta.clear();
-	insert_triangle(penta_r[0], penta_r[1], penta_r[2], glm::vec3(0.0f, 0.0f, 0.0f), penta);
-	insert_triangle(penta_r[2], penta_r[1], penta_r[3], glm::vec3(0.0f, 0.0f, 0.0f), penta);
-	insert_triangle(penta_r[2], penta_r[3], penta_r[4], glm::vec3(0.0f, 0.0f, 0.0f), penta);
+	if (isAnimating2_p) {
+		// 각 정점이 오각형 좌표로 이동하도록 설정
+		if (abs(currentSquare[0].x - penta_r[0].x) > stepSize) {
+			currentSquare[0].x += (currentSquare[0].x < penta_r[0].x) ? stepSize : -stepSize;
+		}
+		if (abs(currentSquare[1].x - penta_r[1].x) > stepSize) {
+			currentSquare[1].x += (currentSquare[1].x < penta_r[1].x) ? stepSize : -stepSize;
+		}
+		if (abs(currentSquare[2].x - penta_r[2].x) > stepSize) {
+			currentSquare[2].x += (currentSquare[2].x < penta_r[2].x) ? stepSize : -stepSize;
+		}
+		if (abs(currentSquare[3].x - penta_r[3].x) > stepSize) {
+			currentSquare[3].x += (currentSquare[3].x < penta_r[3].x) ? stepSize : -stepSize;
+		}
+		if (abs(currentSquare[0].y - penta_r[0].y) > stepSize) {
+			currentSquare[0].y += (currentSquare[0].y < penta_r[0].y) ? stepSize : -stepSize;
+		}
+		if (abs(currentSquare[1].y - penta_r[1].y) > stepSize) {
+			currentSquare[1].y += (currentSquare[1].y < penta_r[1].y) ? stepSize : -stepSize;
+		}
+		if (abs(currentSquare[2].y - penta_r[2].y) > stepSize) {
+			currentSquare[2].y += (currentSquare[2].y < penta_r[2].y) ? stepSize : -stepSize;
+		}
+		if (abs(currentSquare[3].y - penta_r[3].y) > stepSize) {
+			currentSquare[3].y += (currentSquare[3].y < penta_r[3].y) ? stepSize : -stepSize;
+		}
 
-	InitBuffer();
-	glutPostRedisplay();
-	glutTimerFunc(0, updateSquaToPenta, 1);
+		// 정점들이 목표 위치에 도달했는지 확인
+		if (abs(currentSquare[0].x - penta_r[0].x) <= stepSize &&
+			abs(currentSquare[1].x - penta_r[1].x) <= stepSize &&
+			abs(currentSquare[2].x - penta_r[2].x) <= stepSize &&
+			abs(currentSquare[3].x - penta_r[3].x) <= stepSize) {
+			isAnimating2_p = false; // 애니메이션 종료
+		}
+
+		// 도형을 다시 추가
+		penta.clear();
+		insert_triangle(currentSquare[0], currentSquare[1], currentSquare[2], glm::vec3(0.0f, 0.0f, 0.0f), penta);
+		insert_triangle(currentSquare[2], currentSquare[1], currentSquare[3], glm::vec3(0.0f, 0.0f, 0.0f), penta);
+		insert_triangle(currentSquare[2], currentSquare[3], currentSquare[4], glm::vec3(0.0f, 0.0f, 0.0f), penta);
+
+		InitBuffer();
+		glutPostRedisplay();
+
+		// 애니메이션이 끝나지 않았으면 타이머 반복
+		if (isAnimating2_p) {
+			glutTimerFunc(16, updateSquaToPenta, 1);
+		}
+	}
 }
 
 void updateMoveToSquare(int value) {
