@@ -2,7 +2,8 @@
 #include <gl/glew.h>
 #include <gl/freeglut.h>
 #include <gl/freeglut_ext.h>
-#include <gl/glm/glm.hpp>
+//#include <gl/glm/glm.hpp>
+#include <gl/glm/glm/glm.hpp>
 
 #include <vector>
 
@@ -250,9 +251,26 @@ glm::vec3 squ[4] = {
 	glm::vec3(-0.2f,-0.2f,0.0f)
 };
 
+glm::vec3 penta_r[6] = {
+	glm::vec3(-0.65f,-0.7f,0.0f),
+	glm::vec3(-0.35f,-0.7f,0.0f),
+	glm::vec3(-0.75f,-0.4f,0.0f),
+	glm::vec3(-0.25f,-0.4f,0.0f),
+	glm::vec3(-0.5f,-0.2f,0.0f)
+};
+
 void updateSquaToPenta(int value) {
 	if (value != 1)
 		return;
+
+	penta.clear();
+	insert_triangle(penta_r[0], penta_r[1], penta_r[2], glm::vec3(0.0f, 0.0f, 0.0f), penta);
+	insert_triangle(penta_r[2], penta_r[1], penta_r[3], glm::vec3(0.0f, 0.0f, 0.0f), penta);
+	insert_triangle(penta_r[2], penta_r[3], penta_r[4], glm::vec3(0.0f, 0.0f, 0.0f), penta);
+
+	InitBuffer();
+	glutPostRedisplay();
+	glutTimerFunc(0, updateSquaToPenta, 1);
 }
 
 void updateMoveToSquare(int value) {
@@ -260,54 +278,34 @@ void updateMoveToSquare(int value) {
 		return;
 
 	if (isAnimating_p) {
-		bool reached = true; // 모든 점이 목표에 도달했는지 확인하는 플래그
-		for (int i = 0; i < 4; ++i) {
-			glm::vec3& currentVertex = penta[0].vertices[i]; // 현재 도형의 정점
-			glm::vec3& targetVertex = squ[i]; // 목표 지점
+		glm::vec3 translation(stepSize, stepSize, 0.0f); // x축으로 stepSize만큼 이동
 
-			// x 좌표 이동
-			if (abs(currentVertex.x - targetVertex.x) > stepSize) {
-				if (currentVertex.x < targetVertex.x) {
-					currentVertex.x += stepSize;
-				}
-				else {
-					currentVertex.x -= stepSize;
-				}
-				reached = false;
-			}
-			else {
-				currentVertex.x = targetVertex.x; // 정확히 목표 좌표로 맞춤
-			}
-
-			// y 좌표 이동
-			if (abs(currentVertex.y - targetVertex.y) > stepSize) {
-				if (currentVertex.y < targetVertex.y) {
-					currentVertex.y += stepSize;
-				}
-				else {
-					currentVertex.y -= stepSize;
-				}
-				reached = false;
-			}
-			else {
-				currentVertex.y = targetVertex.y; // 정확히 목표 좌표로 맞춤
+		// 모든 도형 정점에 동일한 translation을 적용하여 이동
+		for (auto& sq : penta) {
+			for (auto& vertex : sq.vertices) {
+					vertex -= translation; // 각 정점에 이동 변화를 더해줍니다.
 			}
 		}
 
-		// 목표 위치에 도달했을 때 애니메이션 종료
-		if (reached) {
-			isAnimating_p = false; // 애니메이션 종료
+		// 도형이 목표 위치에 도달하면 애니메이션 종료
+		if (penta[0].vertices[0].x <= squ[0].x && penta[0].vertices[0].y <= squ[0].y) {  // 목표 지점에 도달하면 종료
+			isAnimating_p = false;
 		}
 
-		// 버퍼 초기화 및 화면 갱신
-		InitBuffer();
-		glutPostRedisplay();
-
-		// 애니메이션이 끝나지 않았으면 타이머 반복
-		if (isAnimating_p) {
-			glutTimerFunc(16, updateMoveToSquare, 0);
-		}
 	}
+	else {
+		isAnimating_p = false;
+		isAnimating2_p = true;
+		penta.clear();
+		insert_triangle(squ[0], squ[1], squ[2], glm::vec3(0.0f, 0.0f, 0.0f), penta);
+		insert_triangle(squ[2], squ[1], squ[3], glm::vec3(0.0f, 0.0f, 0.0f), penta);
+		glutTimerFunc(0, updateSquaToPenta, 1);
+		return;
+	}
+
+	InitBuffer();
+	glutPostRedisplay();
+	glutTimerFunc(16, updateMoveToSquare, 0);
 }
 
 void keyBoard(unsigned char key, int x, int y) {
@@ -459,11 +457,7 @@ void drawShapes() {
 	}
 
 	for (const Shape_gl& shape : line) {
-		if (shape.type == PENTA_) {
-			glDrawArrays(GL_TRIANGLES, currentIndex, 9); // 사각형은 2개의 삼각형 (6개의 정점)
-			currentIndex += 9; // 사각형의 정점 수만큼 인덱스를 증가
-		}
-		else if (shape.type == LINE) {
+		if (shape.type == LINE) {
 			glLineWidth(2.0f); // 선 두께 설정
 			glDrawArrays(GL_LINES, currentIndex, 2); // 선은 2개의 정점
 			currentIndex += 2; // 선의 정점 수만큼 인덱스를 증가
