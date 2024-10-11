@@ -95,6 +95,7 @@ bool isAnimating_s = false;
 bool isAnimating2_s = false;
 bool isAnimating_p = false;
 bool isAnimating2_p = false;
+bool isAnimating_l = false;
 
 float stepSize = 0.01f;    // 한 번의 업데이트에서 이동할 거리
 
@@ -357,10 +358,34 @@ void updateMoveToSquare(int value) {
 	glutTimerFunc(16, updateMoveToSquare, 0);
 }
 
+void updateMoveToLine(int value) {
+	if (value != 0)
+		return;
+
+	InitBuffer();
+	glutPostRedisplay();
+	glutTimerFunc(16, updateMoveToLine, 0);
+}
+
 void keyBoard(unsigned char key, int x, int y) {
 	switch (key)
 	{
 	case 'p': // 점
+		if (penta.size()!=0) {
+			if (!isAnimating_l) { // 잇
+
+				insert_triangle(currentSquare[0], currentSquare[1], currentSquare[2], glm::vec3(0.0f, 0.0f, 0.0f), line);
+				insert_triangle(currentSquare[2], currentSquare[1], currentSquare[3], glm::vec3(0.0f, 0.0f, 0.0f), line);
+				insert_triangle(currentSquare[2], currentSquare[3], currentSquare[4], glm::vec3(0.0f, 0.0f, 0.0f), line);
+				isAnimating_l = true;
+				glutTimerFunc(0, updateMoveToLine, 0);
+			}
+		}
+		else { // 없
+			if (!isAnimating_l) {
+
+			}
+		}
 		break;
 	case 'l': //선
 		if (!isAnimating_t) {
@@ -510,6 +535,10 @@ void drawShapes() {
 			glLineWidth(2.0f); // 선 두께 설정
 			glDrawArrays(GL_LINES, currentIndex, 2); // 선은 2개의 정점
 			currentIndex += 2; // 선의 정점 수만큼 인덱스를 증가
+		}
+		if (shape.type == TRIANGLE) {
+			glDrawArrays(GL_TRIANGLES, currentIndex, 3); // 삼각형은 3개의 정점
+			currentIndex += 3; // 삼각형의 정점 수만큼 인덱스를 증가
 		}
 	}
 }
