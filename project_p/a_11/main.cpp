@@ -96,6 +96,7 @@ bool isAnimating2_s = false;
 bool isAnimating_p = false;
 bool isAnimating2_p = false;
 bool isAnimating_l = false;
+bool isAnimating2_l = false;
 
 float stepSize = 0.01f;    // 한 번의 업데이트에서 이동할 거리
 
@@ -358,9 +359,129 @@ void updateMoveToSquare(int value) {
 	glutTimerFunc(16, updateMoveToSquare, 0);
 }
 
+glm::vec3 line_r[2] = {
+	glm::vec3(0.2f,-0.8f,0.0f),
+	glm::vec3(0.8f,-0.3f,0.0f)
+};
+
+glm::vec3 current_line[5] = {
+	glm::vec3(0.35f,-0.7f,0.0f),
+	glm::vec3(0.65f,-0.7f,0.0f),
+	glm::vec3(0.25f,-0.4f,0.0f),
+	glm::vec3(0.75f,-0.4f,0.0f),
+	glm::vec3(0.5f,-0.2f,0.0f)
+};
+
+void updatePentaToLine(int value) {
+	if (value != 1)
+		return;
+
+	if (isAnimating2_l) {
+		// 첫 번째 점 이동 (line_r[0]으로 이동)
+		if (abs(current_line[0].x - line_r[0].x) > stepSize) {
+			current_line[0].x += (current_line[0].x < line_r[0].x) ? stepSize : -stepSize;
+		}
+		if (abs(current_line[0].y - line_r[0].y) > stepSize) {
+			current_line[0].y += (current_line[0].y < line_r[0].y) ? stepSize : -stepSize;
+		}
+
+		// 두 번째 점 이동 (line_r[1]으로 이동)
+		if (abs(current_line[1].x - line_r[1].x) > stepSize) {
+			current_line[1].x += (current_line[1].x < line_r[1].x) ? stepSize : -stepSize;
+		}
+		if (abs(current_line[1].y - line_r[1].y) > stepSize) {
+			current_line[1].y += (current_line[1].y < line_r[1].y) ? stepSize : -stepSize;
+		}
+
+		// 세 번째 점 이동 (line_r[0]으로 이동)
+		if (abs(current_line[2].x - line_r[0].x) > stepSize) {
+			current_line[2].x += (current_line[2].x < line_r[0].x) ? stepSize : -stepSize;
+		}
+		if (abs(current_line[2].y - line_r[0].y) > stepSize) {
+			current_line[2].y += (current_line[2].y < line_r[0].y) ? stepSize : -stepSize;
+		}
+
+		// 네 번째 점 이동 (line_r[1]으로 이동)
+		if (abs(current_line[3].x - line_r[1].x) > stepSize) {
+			current_line[3].x += (current_line[3].x < line_r[1].x) ? stepSize : -stepSize;
+		}
+		if (abs(current_line[3].y - line_r[1].y) > stepSize) {
+			current_line[3].y += (current_line[3].y < line_r[1].y) ? stepSize : -stepSize;
+		}
+
+		// 다섯 번째 점 이동 (중앙으로 이동)
+		float midX = (line_r[0].x + line_r[1].x) / 2.0f;
+		float midY = (line_r[0].y + line_r[1].y) / 2.0f;
+		if (abs(current_line[4].x - midX) > stepSize) {
+			current_line[4].x += (current_line[4].x < midX) ? stepSize : -stepSize;
+		}
+		if (abs(current_line[4].y - midY) > stepSize) {
+			current_line[4].y += (current_line[4].y < midY) ? stepSize : -stepSize;
+		}
+
+		// 목표 위치에 도달했는지 확인
+		if (abs(current_line[0].x - line_r[0].x) <= stepSize &&
+			abs(current_line[0].y - line_r[0].y) <= stepSize &&
+			abs(current_line[1].x - line_r[1].x) <= stepSize &&
+			abs(current_line[1].y - line_r[1].y) <= stepSize &&
+			abs(current_line[2].x - line_r[0].x) <= stepSize &&
+			abs(current_line[2].y - line_r[0].y) <= stepSize &&
+			abs(current_line[3].x - line_r[1].x) <= stepSize &&
+			abs(current_line[3].y - line_r[1].y) <= stepSize &&
+			abs(current_line[4].x - midX) <= stepSize &&
+			abs(current_line[4].y - midY) <= stepSize) {
+			isAnimating2_l = false; // 애니메이션 종료
+			// 선을 다시 그리기 위해 벡터를 갱신
+			line.clear();
+			insert_line(line_r[0], line_r[1], glm::vec3(0.0f, 0.0f, 0.0f), line);
+			// 버퍼 초기화 및 화면 갱신
+			InitBuffer();
+			glutPostRedisplay();  // 화면 갱신
+			return;
+		}
+
+		// 현재 도형을 갱신
+		line.clear();
+		insert_triangle(current_line[0], current_line[1], current_line[2], glm::vec3(0.0f, 0.0f, 0.0f), line);
+		insert_triangle(current_line[2], current_line[1], current_line[3], glm::vec3(0.0f, 0.0f, 0.0f), line);
+		insert_triangle(current_line[2], current_line[3], current_line[4], glm::vec3(0.0f, 0.0f, 0.0f), line);
+
+		// 버퍼 초기화 및 화면 갱신
+		InitBuffer();
+		glutPostRedisplay();  // 화면 갱신
+
+		// 애니메이션이 끝나지 않았으면 타이머 반복
+		if (isAnimating2_l) {
+			glutTimerFunc(16, updatePentaToLine, 1);
+		}
+	}
+}
+
+
 void updateMoveToLine(int value) {
 	if (value != 0)
 		return;
+
+	if (isAnimating_l) {
+		glm::vec3 translation(stepSize, 0, 0.0f); // x축으로 stepSize만큼 이동
+
+		// 모든 도형 정점에 동일한 translation을 적용하여 이동
+		for (auto& sq : line) {
+			for (auto& vertex : sq.vertices) {
+				vertex += translation; // 각 정점에 이동 변화를 더해줍니다.
+			}
+		}
+		
+		// 도형이 목표 위치에 도달하면 애니메이션 종료
+		if (line[0].vertices[0].x >= current_line[0].x) {  // 목표 지점에 도달하면 종료
+			isAnimating_l = false;
+		}
+	}
+	else {
+		isAnimating_l = false;
+		isAnimating2_l = true;
+		glutTimerFunc(0, updatePentaToLine, 1);
+	}
 
 	InitBuffer();
 	glutPostRedisplay();
@@ -383,7 +504,11 @@ void keyBoard(unsigned char key, int x, int y) {
 		}
 		else { // 없
 			if (!isAnimating_l) {
-
+				insert_triangle(current_line[0], current_line[1], current_line[2], glm::vec3(0.0f, 0.0f, 0.0f), line);
+				insert_triangle(current_line[2], current_line[1], current_line[3], glm::vec3(0.0f, 0.0f, 0.0f), line);
+				insert_triangle(current_line[2], current_line[3], current_line[4], glm::vec3(0.0f, 0.0f, 0.0f), line);
+				isAnimating2_l = true;
+				glutTimerFunc(0, updatePentaToLine, 1);
 			}
 		}
 		break;
