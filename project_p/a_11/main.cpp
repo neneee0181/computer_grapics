@@ -4,6 +4,7 @@
 #include <gl/freeglut_ext.h>
 //#include <gl/glm/glm.hpp>
 #include <gl/glm/glm/glm.hpp>
+#include <random>  
 
 #include <vector>
 
@@ -25,6 +26,10 @@ GLuint fragmentShader;
 
 GLchar* vertexSource, * fragmentSource;
 
+std::random_device rd;
+std::mt19937 gen(rd());
+std::uniform_real_distribution<> dis(0.0f, 1.0f);
+
 enum ShapeType {
 	TRIANGLE,
 	SQUARE,
@@ -45,7 +50,7 @@ void insert_triangle(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 color, 
 		{
 			TRIANGLE,
 		{v1,v2,v3},
-		color
+		glm::vec3(dis(gen), dis(gen), dis(gen))
 		}
 	);
 }
@@ -55,7 +60,7 @@ void insert_square(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 v4, glm::
 		{
 			SQUARE,
 		{v1,v2,v3,v4,v5,v6},
-		color
+		glm::vec3(dis(gen), dis(gen), dis(gen))
 		}
 	);
 }
@@ -65,7 +70,7 @@ void insert_point(glm::vec3 v1, glm::vec3 color, vector<Shape_gl>& shapes) {
 		{
 			POINT_,
 		{v1},
-		color
+		glm::vec3(dis(gen), dis(gen), dis(gen))
 		}
 	);
 }
@@ -555,6 +560,26 @@ void keyBoard(unsigned char key, int x, int y) {
 	case 'w':
 		break;
 	case 'a':
+		insert_triangle(current_line[0], current_line[1], current_line[2], glm::vec3(0.0f, 0.0f, 0.0f), line);
+		insert_triangle(current_line[2], current_line[1], current_line[3], glm::vec3(0.0f, 0.0f, 0.0f), line);
+		insert_triangle(current_line[2], current_line[3], current_line[4], glm::vec3(0.0f, 0.0f, 0.0f), line);
+		isAnimating2_l = true;
+		glutTimerFunc(0, updatePentaToLine, 1);
+
+		isAnimating_t = true;
+		currentLinePos = lineStart;  // 현재 위치를 다시 시작점으로 설정
+		glutTimerFunc(0, updateLinePos, 0);  // 타이머 시작
+
+		square.clear();
+		insert_triangle(triangle1, triangle2, currentSquare1, glm::vec3(0.0f, 0.0f, 0.0f), square);
+
+		isAnimating2_s = true;
+		glutTimerFunc(0, updateTriangelToSquare, 1);
+
+		insert_triangle(squ[0], squ[1], squ[2], glm::vec3(0.0f, 0.0f, 0.0f), penta);
+		insert_triangle(squ[2], squ[1], squ[3], glm::vec3(0.0f, 0.0f, 0.0f), penta);
+		isAnimating2_p = true;
+		glutTimerFunc(0, updateSquaToPenta, 1);
 		break;
 	case 's':
 		break;
