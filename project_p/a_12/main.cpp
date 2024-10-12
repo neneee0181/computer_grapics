@@ -2,10 +2,11 @@
 #include <gl/glew.h>
 #include <gl/freeglut.h>
 #include <gl/freeglut_ext.h>
-#include <gl/glm/glm.hpp>
+//#include <gl/glm/glm.hpp>
+#include <gl/glm/glm/glm.hpp>
+#include <random>  
 
 #include <vector>
-#include <random>
 
 #include "filetobuf.h"
 
@@ -25,11 +26,15 @@ GLuint fragmentShader;
 
 GLchar* vertexSource, * fragmentSource;
 
+std::random_device rd;
+std::mt19937 gen(rd());
+std::uniform_real_distribution<> dis(0.0f, 1.0f);
+
 enum ShapeType {
 	TRIANGLE,
 	SQUARE,
 	POINT_,
-	LINE
+	LINE,
 };
 
 struct Shape_gl {
@@ -44,7 +49,7 @@ void insert_triangle(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 color, 
 		{
 			TRIANGLE,
 		{v1,v2,v3},
-		color
+		glm::vec3(dis(gen), dis(gen), dis(gen))
 		}
 	);
 }
@@ -54,7 +59,7 @@ void insert_square(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 v4, glm::
 		{
 			SQUARE,
 		{v1,v2,v3,v4,v5,v6},
-		color
+		glm::vec3(dis(gen), dis(gen), dis(gen))
 		}
 	);
 }
@@ -64,7 +69,7 @@ void insert_point(glm::vec3 v1, glm::vec3 color, vector<Shape_gl>& shapes) {
 		{
 			POINT_,
 		{v1},
-		color
+		glm::vec3(dis(gen), dis(gen), dis(gen))
 		}
 	);
 }
@@ -84,70 +89,11 @@ vector<Shape_gl> shapes;
 
 GLuint vao, vbo[2];
 
-ShapeType statusType = ShapeType::TRIANGLE;
-int selectStatus = 0;
+float stepSize = 0.01f;    // 한 번의 업데이트에서 이동할 거리
 
-void initShapes() {
-	// 삼각형 추가
-
-	//insert_triangle(glm::vec3(-0.7f, -0.5f, 0.0f), glm::vec3(0.7f, -0.5f, 0.0f), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), shapes);
-	insert_square(glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.5f, -0.5f, 0.0f), glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(-0.5f, 0.5f, 0.0f),
-		glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), shapes);
-	insert_point(glm::vec3(0.0f, 0.9f, 0.4f), glm::vec3(0.0f, 0.0f, 1.0f), shapes);
-	insert_line(glm::vec3(-0.9f, 0.0f, 0.0f), glm::vec3(0.9f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), shapes);
-
-}
-
-random_device rd;
-mt19937 gen(rd());
-uniform_real_distribution<> rand_color(0.0f, 1.0f);
 void keyBoard(unsigned char key, int x, int y) {
-
-	uniform_int_distribution<> rand_select(0, shapes.size() > 0 ? shapes.size() - 1 : 0);
-	const float moveDistance = 0.05f;
-	cout << selectStatus << endl;
 	switch (key)
 	{
-	case 'p': // 점
-		statusType = ShapeType::POINT_;
-		selectStatus = rand_select(gen);
-		break;
-	case 'l': //선
-		statusType = ShapeType::LINE;
-		selectStatus = rand_select(gen);
-		break;
-	case 't': //삼각형
-		statusType = ShapeType::TRIANGLE;
-		selectStatus = rand_select(gen);
-		break;
-	case 'r': //사각형
-		statusType = ShapeType::SQUARE;
-		selectStatus = rand_select(gen);
-		break;
-	case 'w': // 위로 이동
-		for (auto& vertex : shapes[selectStatus].vertices) {
-			vertex.y += moveDistance;
-		}
-		cout << "w" << endl;
-		break;
-	case 's': // 아래로 이동
-		for (auto& vertex : shapes[selectStatus].vertices) {
-			vertex.y -= moveDistance;
-		}
-		cout << "s" << endl;
-		break;
-	case 'a': // 왼쪽으로 이동
-		for (auto& vertex : shapes[selectStatus].vertices) {
-			vertex.x -= moveDistance;
-		}
-		cout << "a" << endl;
-		break;
-	case 'd': // 오른쪽으로 이동
-		for (auto& vertex : shapes[selectStatus].vertices) {
-			vertex.x += moveDistance;
-		}
-		cout << "d" << endl;
-		break;
 	case 'c':
 		shapes.clear();
 		break;
@@ -159,66 +105,8 @@ void keyBoard(unsigned char key, int x, int y) {
 }
 
 void mouse(int button, int state, int x, int y) {
-
-	static glm::vec3 lineStart; // 선의 시작점을 저장
-	static bool lineStarted = false; // 선이 시작되었는지 여부
-
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-		//std::cout << "x = " << x << " y = " << y << std::endl;
-
-		float glX = (x / (float)width) * 2.0f - 1.0f; // x 좌표 변환
-		float glY = 1.0f - (y / (float)height) * 2.0f; // y 좌표 변환
-
-		// 변환된 좌표를 콘솔에 출력
-		std::cout << "x = " << glX << ", y = " << glY << std::endl;
-
-		if (shapes.size() > 10)
-			return;
-
-		switch (statusType)
-		{
-		case TRIANGLE:
-			insert_triangle(
-				glm::vec3(glX - 0.1f, glY - 0.1f, 0.0f),
-				glm::vec3(glX + 0.1f, glY - 0.1f, 0.0f),
-				glm::vec3(glX, glY + 0.1f, 0.0f), 
-				glm::vec3(rand_color(gen), rand_color(gen), rand_color(gen)),
-				shapes
-			);
-			break;
-		case SQUARE:
-			// 사각형 정점 추가 (0.1 크기로)
-			insert_square(
-				glm::vec3(glX - 0.1f, glY - 0.1f, 0.0f), // 왼쪽 아래
-				glm::vec3(glX + 0.1f, glY - 0.1f, 0.0f), // 오른쪽 아래
-				glm::vec3(glX + 0.1f, glY + 0.1f, 0.0f), // 오른쪽 위
-				glm::vec3(glX - 0.1f, glY + 0.1f, 0.0f), // 왼쪽 위
-				glm::vec3(glX - 0.1f, glY - 0.1f, 0.0f), // 왼쪽 아래 (중복)
-				glm::vec3(glX + 0.1f, glY + 0.1f, 0.0f), // 오른쪽 위 (중복)
-				glm::vec3(rand_color(gen), rand_color(gen), rand_color(gen)), // 색상
-				shapes
-			);
-			break;
-		case POINT_:
-			insert_point(glm::vec3(glX, glY, 0.0f), glm::vec3(rand_color(gen), rand_color(gen), rand_color(gen)), shapes);
-			break;
-		case LINE:
-			if (!lineStarted) {
-				lineStart = glm::vec3(glX, glY, 0.0f); // 선의 시작점 설정
-				lineStarted = true; // 선이 시작됨
-			}
-			else {
-				// 선의 끝점을 추가하고 선을 저장
-				insert_line(lineStart, glm::vec3(glX, glY, 0.0f), glm::vec3(rand_color(gen), rand_color(gen), rand_color(gen)), shapes);
-				lineStarted = false; // 선 시작점 초기화
-			}
-			break;
-		default:
-			break;
-		}
-	}
-	InitBuffer();
-	glutPostRedisplay();
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+		std::cout << "x = " << x << " y = " << y << std::endl;
 }
 
 int main(int argc, char** argv) {
@@ -243,7 +131,7 @@ int main(int argc, char** argv) {
 		cout << "GLEW Initialized\n";
 
 	make_shaderProgram();
-	//initShapes();
+
 	InitBuffer();
 
 	glutDisplayFunc(drawScene);
@@ -255,8 +143,9 @@ int main(int argc, char** argv) {
 	return 0;
 }
 
+int currentIndex = 0; // 현재 정점 인덱스
+
 void drawShapes() {
-	int currentIndex = 0; // 현재 정점 인덱스
 
 	for (const Shape_gl& shape : shapes) {
 		if (shape.type == TRIANGLE) {
@@ -288,9 +177,8 @@ GLvoid drawScene() {
 	glUseProgram(shaderProgramID);
 
 	glBindVertexArray(vao);
-
+	currentIndex = 0;  // 매번 그리기 시작할 때 정점 인덱스를 0으로 초기화
 	drawShapes(); // 도형 그리기
-
 	glutSwapBuffers();
 
 	GLenum err;
@@ -366,12 +254,6 @@ void InitBuffer() {
 	// 모든 도형의 정점을 한 배열에 담기
 	vector<glm::vec3> allVertices;
 	vector<glm::vec3> allColors;
-
-	// shapes 벡터가 비어 있는지 확인
-	if (shapes.empty()) {
-		cout << "No shapes to initialize buffers." << endl;
-		return; // shapes가 비어있으면 초기화 중단
-	}
 
 	for (const Shape_gl& shape : shapes) {
 		// 정점 추가
