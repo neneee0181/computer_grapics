@@ -4,11 +4,13 @@
 #include <gl/freeglut_ext.h>
 //#include <gl/glm/glm.hpp>
 #include <gl/glm/glm/glm.hpp>
-#include <random>  
+#include <random>
 
 #include <vector>
 
 #include "filetobuf.h"
+
+#define M_PI 3.14159265358979323846
 
 using namespace std;
 
@@ -28,7 +30,7 @@ GLchar* vertexSource, * fragmentSource;
 
 std::random_device rd;
 std::mt19937 gen(rd());
-std::uniform_real_distribution<> dis(0.0f, 1.0f);
+std::uniform_real_distribution<> dis(-1.0f, 1.0f);
 
 enum ShapeType {
 	TRIANGLE,
@@ -109,6 +111,89 @@ void mouse(int button, int state, int x, int y) {
 		std::cout << "x = " << x << " y = " << y << std::endl;
 }
 
+void makeShape3() {
+	float x = 0.0f, y = 0.0f;
+
+	// 기존 선분 생성 코드
+	for (int i = 0; i < 3; ++i) { // 선분 생성
+		x = dis(gen);
+		y = dis(gen);
+		float x2 = dis(gen), y2 = dis(gen);
+		insert_line(glm::vec3(x, y, 0.0f), glm::vec3(x2, y2, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), shapes);
+	}
+
+	// 삼각형 생성 코드
+	std::uniform_real_distribution<> size_dis(0.05f, 0.1f);  // 삼각형과 사각형, 오각형 크기를 0.05 ~ 0.1 사이에서 랜덤하게 생성
+
+	for (int i = 0; i < 3; ++i) { // 삼각형을 3개 생성
+		// 삼각형의 한 정점의 기준 좌표를 랜덤하게 설정
+		glm::vec3 v1(dis(gen), dis(gen), 0.0f);
+
+		// 랜덤한 크기의 삼각형을 위한 크기 설정
+		float size = size_dis(gen);  // 삼각형의 크기를 결정하는 랜덤 길이
+
+		// 첫 번째 정점으로부터 일정 거리만큼 떨어진 나머지 두 정점 설정
+		glm::vec3 v2(v1.x + size, v1.y, 0.0f);               // x 방향으로 일정 거리
+		glm::vec3 v3(v1.x + size / 2.0f, v1.y + size, 0.0f); // 대각선 방향으로 일정 거리
+
+		// 랜덤한 색상
+		glm::vec3 color(dis(gen), dis(gen), dis(gen));
+
+		// 삼각형 추가
+		insert_triangle(v1, v2, v3, color, shapes);
+	}
+
+	// 사각형 생성 코드
+	for (int i = 0; i < 3; ++i) { // 사각형을 3개 생성
+		// 사각형의 왼쪽 아래 정점의 기준 좌표를 랜덤하게 설정
+		glm::vec3 v1(dis(gen), dis(gen), 0.0f);
+
+		// 랜덤한 크기의 사각형을 위한 크기 설정
+		float size = size_dis(gen);  // 사각형의 크기를 결정하는 랜덤 길이
+
+		// 사각형의 나머지 정점 설정
+		glm::vec3 v2(v1.x + size, v1.y, 0.0f);               // 오른쪽 아래
+		glm::vec3 v3(v1.x, v1.y + size, 0.0f);               // 왼쪽 위
+		glm::vec3 v4(v1.x + size, v1.y + size, 0.0f);        // 오른쪽 위
+
+		// 사각형을 두 개의 삼각형으로 나누기 위한 정점 추가
+		// v1, v2, v3로 첫 번째 삼각형
+		// v2, v3, v4로 두 번째 삼각형
+		glm::vec3 color(dis(gen), dis(gen), dis(gen)); // 랜덤한 색상
+
+		// 사각형 추가 (2개의 삼각형으로 구성)
+		insert_square(v1, v2, v3, v2, v3, v4, color, shapes);
+	}
+
+	// 오각형 생성 코드
+	for (int i = 0; i < 3; ++i) { // 오각형을 3개 생성
+		// 오각형의 중심 좌표 설정
+		glm::vec3 center(dis(gen), dis(gen), 0.0f);
+
+		// 랜덤한 크기의 오각형을 위한 크기 설정
+		float radius = size_dis(gen);  // 오각형의 반지름 크기
+
+		// 오각형의 5개의 정점 생성 (각도 계산)
+		std::vector<glm::vec3> pentagonVertices;
+		for (int j = 0; j < 5; ++j) {
+			float angle = j * (2.0f * M_PI / 5);  // 360도를 5등분
+			float x = center.x + radius * cos(angle);
+			float y = center.y + radius * sin(angle);
+			pentagonVertices.push_back(glm::vec3(x, y, 0.0f));
+		}
+
+		// 랜덤한 색상
+		glm::vec3 color(dis(gen), dis(gen), dis(gen));
+
+		// 오각형을 삼각형으로 나누기 (중심점과 인접한 두 정점으로 삼각형을 만듦)
+		for (int j = 0; j < 5; ++j) {
+			glm::vec3 v1 = pentagonVertices[j];
+			glm::vec3 v2 = pentagonVertices[(j + 1) % 5];  // 다음 정점 (인덱스 순환)
+			insert_triangle(center, v1, v2, color, shapes);
+		}
+	}
+}
+
 int main(int argc, char** argv) {
 
 	width = 800;
@@ -131,7 +216,7 @@ int main(int argc, char** argv) {
 		cout << "GLEW Initialized\n";
 
 	make_shaderProgram();
-
+	makeShape3();
 	InitBuffer();
 
 	glutDisplayFunc(drawScene);
