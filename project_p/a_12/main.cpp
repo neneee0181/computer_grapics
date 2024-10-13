@@ -43,6 +43,11 @@ struct Shape_gl {
     ShapeType type;
     vector<glm::vec3> vertices; // 도형의 정점
     glm::vec3 color; // 도형의 색상
+    int vertex = 0;
+    // == 연산자 오버로딩
+    bool operator==(const Shape_gl& other) const {
+        return (type == other.type && vertices == other.vertices && color == other.color);
+    }
 };
 
 void insert_triangle(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 color, vector<Shape_gl>& shapes) {
@@ -50,7 +55,8 @@ void insert_triangle(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 color, 
         {
             TRIANGLE,
         {v1,v2,v3},
-        glm::vec3(dis(gen), dis(gen), dis(gen))
+        glm::vec3(dis(gen), dis(gen), dis(gen)),
+        3
         }
     );
 }
@@ -60,7 +66,19 @@ void insert_square(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 v4, glm::
         {
             SQUARE,
         {v1,v2,v3,v4,v5,v6},
-        glm::vec3(dis(gen), dis(gen), dis(gen))
+        glm::vec3(dis(gen), dis(gen), dis(gen)),
+        4
+        }
+    );
+}
+
+void insert_point2(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 v4, glm::vec3 v5, glm::vec3 v6, glm::vec3 color, vector<Shape_gl>& shapes) {
+    shapes.push_back(
+        {
+            POINT_,
+        {v1,v2,v3,v4,v5,v6},
+        glm::vec3(dis(gen), dis(gen), dis(gen)),
+        1
         }
     );
 }
@@ -80,7 +98,8 @@ void insert_line(glm::vec3 v1, glm::vec3 v2, glm::vec3 color, vector<Shape_gl>& 
         {
             LINE,
         {v1,v2},
-        color
+        color,
+        2
         }
     );
 }
@@ -127,6 +146,67 @@ void mouse(int button, int state, int x, int y) {
         }
     }
     else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
+        
+        if (selectedShape != nullptr) {
+            // -> select된 도형과 현재 마우스 좌표에 있는 도형을 비교.
+            for (Shape_gl& shape : shapes) {
+                for (glm::vec3& vertex : shape.vertices) {
+                        if (abs(vertex.x - normalizedX) < 0.05f && abs(vertex.y - normalizedY) < 0.05f) {
+                            
+                            if (!(*selectedShape == shape)) {
+                                int num = selectedShape->vertex + shape.vertex;
+                                switch (num)
+                                {
+                                case 1:
+                                    break;
+                                case 2:
+                                    break;
+                                case 3:
+                                    break;
+                                case 4:
+                                {
+                                    // 선택된 도형과 충돌한 경우 랜덤한 크기의 사각형 생성
+                                    std::uniform_real_distribution<> size_dis(0.05f, 0.1f); // 0.05 ~ 0.1 크기의 사각형 생성
+                                    float size = size_dis(gen);
+
+                                    glm::vec3 center = (vertex + selectedShape->vertices[0]) / 2.0f; // 두 도형의 중간 좌표에 사각형 생성
+                                    glm::vec3 v1(center.x - size / 2.0f, center.y - size / 2.0f, 0.0f);
+                                    glm::vec3 v2(center.x + size / 2.0f, center.y - size / 2.0f, 0.0f);
+                                    glm::vec3 v3(center.x - size / 2.0f, center.y + size / 2.0f, 0.0f);
+                                    glm::vec3 v4(center.x + size / 2.0f, center.y + size / 2.0f, 0.0f);
+
+                                    // 새 사각형 추가: v1, v2, v3, v4로 두 개의 삼각형을 만듭니다.
+                                    glm::vec3 color(dis(gen), dis(gen), dis(gen)); // 랜덤 색상
+                                    insert_square(v1, v2, v3, v2, v3, v4, color, shapes); // v2, v3를 두 번 넣는 문제 해결
+
+                                    // 기존 도형들 제거
+                                    shapes.erase(std::remove(shapes.begin(), shapes.end(), *selectedShape), shapes.end());
+                                    shapes.erase(std::remove(shapes.begin(), shapes.end(), shape), shapes.end());
+
+                                    break;
+                                }
+
+                                    break;
+                                case 5:
+                                    break;
+                                case 6:
+                                    break;
+                                default:
+                                    break;
+                                }
+                            }
+
+                            InitBuffer();  // 버퍼 업데이트 (도형 변경 반영)
+                            glutPostRedisplay();  // 화면 다시 그리기 요청
+                            //selectedShape = &shape;
+                            isDragging = true;
+                            lastMousePosition = glm::vec2(normalizedX, normalizedY);
+                            break;
+                        }
+                }
+            }
+        }
+
         // 마우스 버튼을 놓으면 드래그 중지
         isDragging = false;
         selectedShape = nullptr;
@@ -200,7 +280,7 @@ void makeShape3() {
         }
         glm::vec3 color(dis(gen), dis(gen), dis(gen));
         shapes.push_back({
-            PENTA, pentagonVertices, color  // PENTA 타입으로 추가
+            PENTA, pentagonVertices, color, 5  // PENTA 타입으로 추가
             });
     }
 
@@ -214,7 +294,7 @@ void makeShape3() {
         glm::vec3 color(dis(gen), dis(gen), dis(gen)); // 랜덤한 색상
 
         // 점처럼 보이게 작은 사각형으로 처리
-        insert_square(v1, v2, v3, v2, v3, v4, color, shapes);
+        insert_point2(v1, v2, v3, v2, v3, v4, color, shapes);
     }
 }
 
@@ -270,9 +350,8 @@ void drawShapes() {
             currentIndex += 5;
         }
         else if (shape.type == POINT_) {
-            glPointSize(10.0f);
-            glDrawArrays(GL_POINTS, currentIndex, 1);
-            currentIndex += 1;
+            glDrawArrays(GL_TRIANGLES, currentIndex, 6); // 사각형은 2개의 삼각형 (6개의 정점)
+            currentIndex += 6;
         }
         else if (shape.type == LINE) {
             glLineWidth(2.0f);
@@ -361,7 +440,7 @@ void InitBuffer() {
     vector<glm::vec3> allVertices;
     vector<glm::vec3> allColors;
 
-    for (const Shape_gl& shape : shapes) {
+    for (const Shape_gl& shape : shapes) { 
         allVertices.insert(allVertices.end(), shape.vertices.begin(), shape.vertices.end());
 
         for (size_t i = 0; i < shape.vertices.size(); ++i) {
