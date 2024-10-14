@@ -1,18 +1,16 @@
-﻿  main.cpp
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(166,44): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(193,44): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(223,44): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(245,44): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(268,46): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(273,49): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(296,46): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(301,49): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(364,16): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(365,16): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(366,18): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(366,33): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(375,20): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(385,20): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(396,22): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(399,25): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  a_12.vcxproj -> C:\Users\neneee\computer_grapics-main\project_p\x64\Debug\a_12.exe
+﻿  filetobuf.cpp
+  main.cpp
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(175,40): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(201,40): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(232,40): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(254,40): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(328,16): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(329,16): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(330,18): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(330,33): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(339,20): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(349,20): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(360,22): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(363,25): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  코드를 생성하고 있습니다...
+  a_12.vcxproj -> C:\Mac\Home\Documents\computer_grapics\project_p\x64\Debug\a_12.exe
