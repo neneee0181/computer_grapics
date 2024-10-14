@@ -145,10 +145,9 @@ void mouse(int button, int state, int x, int y) {
         }
     }
     else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
-       
+        vector<Shape_gl*> shapesToDelete;
 
         if (selectedShape != nullptr) {
-            vector<Shape_gl*> shapesToDelete;
 
             // -> 선택된 도형과 현재 마우스 좌표에 있는 다른 도형을 비교.
             for (Shape_gl& shape : shapes) {
@@ -184,10 +183,6 @@ void mouse(int button, int state, int x, int y) {
                             // 점처럼 보이게 작은 사각형으로 처리
                             insert_point2(v1, v2, v3, v2, v3, v4, color, shapes);
 
-                            // 삭제할 도형 추가
-                            shapesToDelete.push_back(&shape);
-                            shapesToDelete.push_back(selectedShape);
-
                             break;
                         }
                         case 2:
@@ -211,10 +206,6 @@ void mouse(int button, int state, int x, int y) {
                             // 새로운 랜덤 선 추가
                             glm::vec3 color(dis(gen), dis(gen), dis(gen)); // 랜덤 색상
                             insert_line(v1, v2, color, shapes);
-
-                            // 삭제할 도형 추가
-                            shapesToDelete.push_back(&shape);
-                            shapesToDelete.push_back(selectedShape);
 
                             break;
                         }
@@ -241,10 +232,6 @@ void mouse(int button, int state, int x, int y) {
                             glm::vec3 color(dis(gen), dis(gen), dis(gen)); // 랜덤 색상
                             insert_triangle(randV1, randV2, randV3, color, shapes);
 
-                            // 삭제할 도형 추가
-                            shapesToDelete.push_back(&shape);
-                            shapesToDelete.push_back(selectedShape);
-
                             break;
                         }
                         case 4:
@@ -263,38 +250,34 @@ void mouse(int button, int state, int x, int y) {
                             glm::vec3 color(dis(gen), dis(gen), dis(gen)); // 랜덤 색상
                             insert_square(v1, v2, v3, v2, v3, v4, color, shapes); // v2, v3를 두 번 넣는 문제 해결
 
-                            // 삭제할 도형 추가
-                            shapesToDelete.push_back(&shape);
-                            shapesToDelete.push_back(selectedShape);
-
                             break;
                         }
                         default:
                             break;
                         }
-                        InitBuffer();  // 버퍼 업데이트 (도형 이동 반영)
-                        glutPostRedisplay();  // 화면 다시 그리기 요청
-                        selectedShape = nullptr;
+
+                        // 삭제할 도형 추가
+                        shapesToDelete.push_back(&shape);
+                        shapesToDelete.push_back(selectedShape);
+
+                        //selectedShape = nullptr;
                         isDragging = false;
                         break;  // 도형의 정점 중 하나라도 조건을 만족하면 해당 도형을 찾았으므로 break
                     }
                 }
-            }
 
-            selectedShape = nullptr;
+            }
 
             // 도형 삭제를 반복이 끝난 후에 실행
             for (Shape_gl* shapeToDelete : shapesToDelete) {
-                shapes.erase(std::remove_if(shapes.begin(), shapes.end(),
-                    [shapeToDelete](const Shape_gl& shape) { return &shape == shapeToDelete; }),
-                    shapes.end());
+                shapes.erase(std::remove(shapes.begin(), shapes.end(), *shapeToDelete), shapes.end());
             }
+
+            shapesToDelete.clear();
             InitBuffer();  // 버퍼 업데이트 (도형 이동 반영)
             glutPostRedisplay();  // 화면 다시 그리기 요청
-
         }
-       
-        // 마우스 버튼을 놓으면 드래그 중지
+
         isDragging = false;
         selectedShape = nullptr;
     }
@@ -535,7 +518,7 @@ void InitBuffer() {
         allVertices.insert(allVertices.end(), shape.vertices.begin(), shape.vertices.end());
 
         for (size_t i = 0; i < shape.vertices.size(); ++i) {
-            allColors.push_back(shape.color);
+            allColors.push_back(shape.color); 
         }
     }
 
