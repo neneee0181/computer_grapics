@@ -1,18 +1,18 @@
 ﻿  main.cpp
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(177,40): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(202,40): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(232,40): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(253,40): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(275,42): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(280,45): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(301,42): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(306,45): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(373,16): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(374,16): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(375,18): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(375,33): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(384,20): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(394,20): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(405,22): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(408,25): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(293,40): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(318,40): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(348,40): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(369,40): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(391,42): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(396,45): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(417,42): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(422,45): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(489,16): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(490,16): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(491,18): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(491,33): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(500,20): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(510,20): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(521,22): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_12\main.cpp(524,25): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   a_12.vcxproj -> C:\Users\neneee\computer_grapics-main\project_p\x64\Debug\a_12.exe

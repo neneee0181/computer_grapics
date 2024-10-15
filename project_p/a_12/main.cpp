@@ -28,6 +28,7 @@ GLchar* vertexSource, * fragmentSource;
 std::random_device rd;
 std::mt19937 gen(rd());
 std::uniform_real_distribution<> dis(-1.0f, 1.0f);
+uniform_int_distribution<> dis_12(1, 2);
 
 enum ShapeType {
     TRIANGLE,
@@ -43,41 +44,55 @@ struct Shape_gl {
     vector<glm::vec3> vertices; // 도형의 정점
     glm::vec3 color; // 도형의 색상
     int vertex = 0;
+    int modeMove = 0;
+    int quadrant = 0;
+    int move = 0; // 0 -> stop
+    int x, y = 0;
+    bool status = false;
+    float move_y = 0.0f;
+    float angle = 0.0f;   // 각도
+    float radius = 0.1f;  // 반지름
+    int status_r = 0;
+    
+
     // == 연산자 오버로딩
     bool operator==(const Shape_gl& other) const {
         return (type == other.type && vertices == other.vertices && color == other.color);
     }
 };
 
-void insert_triangle(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 color, vector<Shape_gl>& shapes) {
+void insert_triangle(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 color, vector<Shape_gl>& shapes, int move) {
     shapes.push_back(
         {
             TRIANGLE,
         {v1,v2,v3},
         glm::vec3(dis(gen), dis(gen), dis(gen)),
-        3
+        3,
+        move
         }
     );
 }
 
-void insert_square(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 v4, glm::vec3 v5, glm::vec3 v6, glm::vec3 color, vector<Shape_gl>& shapes) {
+void insert_square(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 v4, glm::vec3 v5, glm::vec3 v6, glm::vec3 color, vector<Shape_gl>& shapes, int move) {
     shapes.push_back(
         {
             SQUARE,
         {v1,v2,v3,v4,v5,v6},
         glm::vec3(dis(gen), dis(gen), dis(gen)),
-        4
+        4,
+        move
         }
     );
 }
 
-void insert_point2(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 v4, glm::vec3 v5, glm::vec3 v6, glm::vec3 color, vector<Shape_gl>& shapes) {
+void insert_point2(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 v4, glm::vec3 v5, glm::vec3 v6, glm::vec3 color, vector<Shape_gl>& shapes, int move) {
     shapes.push_back(
         {
             POINT_,
         {v1,v2,v3,v4,v5,v6},
         glm::vec3(dis(gen), dis(gen), dis(gen)),
-        1
+        1,
+        move
         }
     );
 }
@@ -92,13 +107,14 @@ void insert_point(glm::vec3 v1, glm::vec3 color, vector<Shape_gl>& shapes) {
     );
 }
 
-void insert_line(glm::vec3 v1, glm::vec3 v2, glm::vec3 color, vector<Shape_gl>& shapes) {
+void insert_line(glm::vec3 v1, glm::vec3 v2, glm::vec3 color, vector<Shape_gl>& shapes,int move) {
     shapes.push_back(
         {
             LINE,
         {v1,v2},
         color,
-        2
+        2,
+        move
         }
     );
 }
@@ -113,6 +129,105 @@ float stepSize = 0.01f;    // 한 번의 업데이트에서 이동할 거리
 bool isDragging = false;
 Shape_gl* selectedShape = nullptr;
 glm::vec2 lastMousePosition;
+
+
+void timer(int value) {
+    for (auto& shape : shapes) {
+
+        switch (shape.modeMove)
+        {
+        case 1:
+        {
+            float speed = 0.01f;
+
+            for (auto& vertex : shape.vertices) {
+                if (shape.x == 0) {
+                    vertex.x -= speed;
+                }
+                else if (shape.x == 1) {
+                    vertex.x += speed;
+                }
+
+                if (shape.y == 0) {
+                    vertex.y -= speed;
+                }
+                else if (shape.y == 1) {
+                    vertex.y += speed;
+                }
+            }
+            // 경계에 부딪힐 때 방향을 반전
+            for (const auto& vertex : shape.vertices) {
+                if (vertex.x >= 1.0f || vertex.x <= -1.0f) {
+                    shape.x = shape.x == 0 ? 1 : 0;
+                }
+                if (vertex.y >= 0.9f || vertex.y <= -0.9f) {
+                    shape.y = shape.y == 0 ? 1 : 0;
+                }
+            }
+            break;
+        }
+        case 2:
+        {
+            float speed = 0.01f;
+
+            // 도형의 정점들에 대해 이동 처리
+            if (!shape.status) {
+                // status가 false일 때는 x축 이동
+                for (auto& vertex : shape.vertices) {
+                    if (shape.x == 0) {
+                        vertex.x -= speed;
+                    }
+                    else if (shape.x == 1) {
+                        vertex.x += speed;
+                    }
+                }
+
+                // x축 경계에 도달했는지 확인
+                for (auto& vertex : shape.vertices) {
+                    if (vertex.x >= 1.0f || vertex.x <= -1.0f) {
+                        shape.x = shape.x == 0 ? 1 : 0; // x축 이동 방향 반전
+                        shape.status = true;  // y축 이동을 시작하도록 전환
+                    }
+                }
+            }
+            else {
+                // status가 true일 때는 y축으로만 이동
+                for (auto& vertex : shape.vertices) {
+                    if (shape.y == 0) {
+                        vertex.y -= speed;
+                        shape.move_y += speed;
+                    }
+                    else if (shape.y == 1) {
+                        vertex.y += speed;
+                        shape.move_y += speed;
+                    }
+                }
+
+                // y축으로 이동한 거리가 0.18f 이상이면 다시 x축 이동 시작
+                if (shape.move_y >= 0.18f) {
+                    shape.status = false;  // 다시 x축 이동으로 전환
+                    shape.move_y = 0.0f;   // y축 이동 거리 초기화
+                }
+
+                // y축 경계도 확인
+                for (auto& vertex : shape.vertices) {
+                    if (vertex.y >= 1.0f || vertex.y <= -1.0f) {
+                        shape.y = shape.y == 0 ? 1 : 0;
+                    }
+                }
+            }
+
+            break;
+        }
+
+        default:
+            break;
+        }
+    }
+    InitBuffer(); // 이동 후 버퍼 갱신
+    glutPostRedisplay(); // 화면 갱신
+    glutTimerFunc(16, timer, 0);
+}
 
 void keyBoard(unsigned char key, int x, int y) {
     switch (key)
@@ -137,6 +252,7 @@ void mouse(int button, int state, int x, int y) {
             for (glm::vec3& vertex : shape.vertices) {
                 if (abs(vertex.x - normalizedX) < 0.05f && abs(vertex.y - normalizedY) < 0.05f) {
                     selectedShape = &shape;
+                    selectedShape->modeMove = 0;
                     isDragging = true;
                     lastMousePosition = glm::vec2(normalizedX, normalizedY);
                     break;
@@ -184,7 +300,7 @@ void mouse(int button, int state, int x, int y) {
                             glm::vec3 color(dis(gen), dis(gen), dis(gen));  // 랜덤한 색상
 
                             // 점처럼 보이게 작은 사각형으로 처리
-                            insert_point2(v1, v2, v3, v2, v3, v4, color, shapes);
+                            insert_point2(v1, v2, v3, v2, v3, v4, color, shapes, dis_12(gen));
                             // 삭제할 도형 배열에 넣기
                             deleteShapes.push_back(shape);
                             deleteShapes.push_back(*selectedShape);
@@ -211,7 +327,7 @@ void mouse(int button, int state, int x, int y) {
 
                             // 새로운 랜덤 선 추가
                             glm::vec3 color(dis(gen), dis(gen), dis(gen)); // 랜덤 색상
-                            insert_line(v1, v2, color, shapes);
+                            insert_line(v1, v2, color, shapes, dis_12(gen));
                             // 삭제할 도형 배열에 넣기
                             deleteShapes.push_back(shape);
                             deleteShapes.push_back(*selectedShape);
@@ -239,7 +355,7 @@ void mouse(int button, int state, int x, int y) {
 
                             // 새로운 랜덤 삼각형 추가
                             glm::vec3 color(dis(gen), dis(gen), dis(gen)); // 랜덤 색상
-                            insert_triangle(randV1, randV2, randV3, color, shapes);
+                            insert_triangle(randV1, randV2, randV3, color, shapes, dis_12(gen));
                             // 삭제할 도형 배열에 넣기
                             deleteShapes.push_back(shape);
                             deleteShapes.push_back(*selectedShape);
@@ -260,7 +376,7 @@ void mouse(int button, int state, int x, int y) {
 
                             // 새 사각형 추가: v1, v2, v3, v4로 두 개의 삼각형을 만듭니다.
                             glm::vec3 color(dis(gen), dis(gen), dis(gen)); // 랜덤 색상
-                            insert_square(v1, v2, v3, v2, v3, v4, color, shapes); // v2, v3를 두 번 넣는 문제 해결
+                            insert_square(v1, v2, v3, v2, v3, v4, color, shapes, dis_12(gen)); // v2, v3를 두 번 넣는 문제 해결
                             // 삭제할 도형 배열에 넣기
                             deleteShapes.push_back(shape);
                             deleteShapes.push_back(*selectedShape);
@@ -286,7 +402,7 @@ void mouse(int button, int state, int x, int y) {
                             // 새로운 랜덤 오각형 추가
                             glm::vec3 color(dis(gen), dis(gen), dis(gen)); // 랜덤 색상
                             shapes.push_back({
-                                PENTA, pentagonVertices, color, 5  // PENTA 타입으로 추가
+                                PENTA, pentagonVertices, color, 5, 1  // PENTA 타입으로 추가
                                 });
 
                             deleteShapes.push_back(shape);
@@ -312,7 +428,7 @@ void mouse(int button, int state, int x, int y) {
                             // 새로운 랜덤 육각형 추가
                             glm::vec3 color(dis(gen), dis(gen), dis(gen)); // 랜덤 색상
                             shapes.push_back({
-                                HEXA, hexagonVertices, color, 6  // 육각형 생성
+                                HEXA, hexagonVertices, color, 6, 2  // 육각형 생성
                                 });
 
                             deleteShapes.push_back(shape);
@@ -373,7 +489,7 @@ void makeShape3() {
         x = dis(gen);
         y = dis(gen);
         float x2 = dis(gen), y2 = dis(gen);
-        insert_line(glm::vec3(x, y, 0.0f), glm::vec3(x2, y2, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), shapes);
+        insert_line(glm::vec3(x, y, 0.0f), glm::vec3(x2, y2, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), shapes, 0);
     }
 
     // 삼각형 생성 코드
@@ -385,7 +501,7 @@ void makeShape3() {
         glm::vec3 v2(v1.x + size, v1.y, 0.0f);
         glm::vec3 v3(v1.x + size / 2.0f, v1.y + size, 0.0f);
         glm::vec3 color(dis(gen), dis(gen), dis(gen));
-        insert_triangle(v1, v2, v3, color, shapes);
+        insert_triangle(v1, v2, v3, color, shapes, 0);
     }
 
     // 사각형 생성 코드
@@ -396,7 +512,7 @@ void makeShape3() {
         glm::vec3 v3(v1.x, v1.y + size, 0.0f);
         glm::vec3 v4(v1.x + size, v1.y + size, 0.0f);
         glm::vec3 color(dis(gen), dis(gen), dis(gen));
-        insert_square(v1, v2, v3, v2, v3, v4, color, shapes);
+        insert_square(v1, v2, v3, v2, v3, v4, color, shapes, 0);
     }
 
     // 오각형 생성 코드
@@ -426,7 +542,7 @@ void makeShape3() {
         glm::vec3 color(dis(gen), dis(gen), dis(gen)); // 랜덤한 색상
 
         // 점처럼 보이게 작은 사각형으로 처리
-        insert_point2(v1, v2, v3, v2, v3, v4, color, shapes);
+        insert_point2(v1, v2, v3, v2, v3, v4, color, shapes, 0);
     }
 }
 
@@ -460,6 +576,7 @@ int main(int argc, char** argv) {
     glutKeyboardFunc(keyBoard);
     glutMouseFunc(mouse);
     glutMotionFunc(motion);  // 마우스 이동 함수 등록
+    glutTimerFunc(16, timer, 0);
     glutMainLoop();
 
     return 0;
