@@ -166,14 +166,14 @@ void mouse(int button, int state, int x, int y) {
                         int num = selectedShape->vertex + shape.vertex;
 
                         if (num >= 7) {
-                            num = num % 6;
+                            num = num % 6 == 0? 1 : 1;
                         }
                         switch (num)
                         {
                         case 1:
                         {
                             // 점을 생성
-                            std::uniform_real_distribution<> size_dis(0.01f, 0.05f);  // 점의 크기를 0.01 ~ 0.05 사이로 랜덤하게 설정
+                            std::uniform_real_distribution<> size_dis(0.01f, 0.01f);  // 점의 크기를 0.01 ~ 0.05 사이로 랜덤하게 설정
                             float size = size_dis(gen);
 
                             glm::vec3 center = (vertex + selectedShape->vertices[0]) / 2.0f; // 두 도형의 중간 좌표에 점 생성
