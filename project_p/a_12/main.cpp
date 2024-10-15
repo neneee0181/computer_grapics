@@ -164,6 +164,10 @@ void mouse(int button, int state, int x, int y) {
                         cout << "도형 발견: " << shape.type << endl;
 
                         int num = selectedShape->vertex + shape.vertex;
+
+                        if (num >= 7) {
+                            num = num % 6;
+                        }
                         switch (num)
                         {
                         case 1:
@@ -262,6 +266,58 @@ void mouse(int button, int state, int x, int y) {
                             deleteShapes.push_back(*selectedShape);
 
                             break;
+                        }
+                        case 5:
+                        {
+                            // 랜덤한 오각형을 생성
+                            glm::vec3 center = (vertex + selectedShape->vertices[0]) / 2.0f; // 두 도형의 중간 좌표에 오각형 생성
+                            std::uniform_real_distribution<> size_dis(0.05f, 0.1f); // 0.05 ~ 0.1 크기의 오각형 생성
+                            float radius = size_dis(gen);
+
+                            // 오각형의 5개 정점 생성
+                            std::vector<glm::vec3> pentagonVertices;
+                            for (int i = 0; i < 5; ++i) {
+                                float angle = i * (2.0f * M_PI / 5);  // 360도를 5등분
+                                float x = center.x + radius * cos(angle);
+                                float y = center.y + radius * sin(angle);
+                                pentagonVertices.push_back(glm::vec3(x, y, 0.0f));
+                            }
+
+                            // 새로운 랜덤 오각형 추가
+                            glm::vec3 color(dis(gen), dis(gen), dis(gen)); // 랜덤 색상
+                            shapes.push_back({
+                                PENTA, pentagonVertices, color, 5  // PENTA 타입으로 추가
+                                });
+
+                            deleteShapes.push_back(shape);
+                            deleteShapes.push_back(*selectedShape);
+                            break;
+                        }
+                        case 6:
+                        { 
+                            // 랜덤한 육각형을 생성
+                            glm::vec3 center = (vertex + selectedShape->vertices[0]) / 2.0f; // 두 도형의 중간 좌표에 육각형 생성
+                            std::uniform_real_distribution<> size_dis(0.05f, 0.1f); // 0.05 ~ 0.1 크기의 육각형 생성
+                            float radius = size_dis(gen);
+
+                            // 육각형의 6개 정점 생성
+                            std::vector<glm::vec3> hexagonVertices;
+                            for (int i = 0; i < 6; ++i) {
+                                float angle = i * (2.0f * M_PI / 6);  // 360도를 6등분
+                                float x = center.x + radius * cos(angle);
+                                float y = center.y + radius * sin(angle);
+                                hexagonVertices.push_back(glm::vec3(x, y, 0.0f));
+                            }
+
+                            // 새로운 랜덤 육각형 추가
+                            glm::vec3 color(dis(gen), dis(gen), dis(gen)); // 랜덤 색상
+                            shapes.push_back({
+                                HEXA, hexagonVertices, color, 6  // 육각형 생성
+                                });
+
+                            deleteShapes.push_back(shape);
+                            deleteShapes.push_back(*selectedShape);
+                            break; 
                         }
                         default:
                             break;

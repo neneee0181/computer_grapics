@@ -1,16 +1,20 @@
 ﻿  filetobuf.cpp
   main.cpp
-C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(173,40): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(198,40): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(228,40): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(249,40): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(317,16): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(318,16): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(319,18): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(319,33): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(328,20): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(338,20): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(349,22): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(352,25): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(177,40): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(202,40): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(232,40): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(253,40): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(275,42): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(280,45): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(301,42): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(306,45): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(373,16): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(374,16): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(375,18): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(375,33): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(384,20): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(394,20): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(405,22): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Mac\Home\Documents\computer_grapics\project_p\a_12\main.cpp(408,25): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   코드를 생성하고 있습니다...
   a_12.vcxproj -> C:\Mac\Home\Documents\computer_grapics\project_p\x64\Debug\a_12.exe
