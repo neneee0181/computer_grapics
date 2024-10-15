@@ -145,24 +145,23 @@ void mouse(int button, int state, int x, int y) {
         }
     }
     else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
-        vector<Shape_gl*> shapesToDelete;
 
         if (selectedShape != nullptr) {
+            std::vector<Shape_gl> deleteShapes;  // 삭제할 도형을 저장하는 배열
 
-            // -> 선택된 도형과 현재 마우스 좌표에 있는 다른 도형을 비교.
+            // 선택된 도형과 현재 마우스 좌표에 있는 다른 도형을 비교.
             for (Shape_gl& shape : shapes) {
-                if (&shape == selectedShape) {
-                    // 선택된 도형은 비교에서 제외
-                    continue;
-                }
 
                 for (glm::vec3& vertex : shape.vertices) {
                     if (abs(vertex.x - normalizedX) < 0.05f && abs(vertex.y - normalizedY) < 0.05f) {
-                        cout << "도형 발견: " << shape.type << endl;
 
-                        if (selectedShape == nullptr) {
-                            return;
+                        if (&shape == selectedShape) {
+                            continue;
                         }
+                        if (selectedShape == nullptr) {
+                            continue;
+                        }
+                        cout << "도형 발견: " << shape.type << endl;
 
                         int num = selectedShape->vertex + shape.vertex;
                         switch (num)
@@ -182,6 +181,9 @@ void mouse(int button, int state, int x, int y) {
 
                             // 점처럼 보이게 작은 사각형으로 처리
                             insert_point2(v1, v2, v3, v2, v3, v4, color, shapes);
+                            // 삭제할 도형 배열에 넣기
+                            deleteShapes.push_back(shape);
+                            deleteShapes.push_back(*selectedShape);
 
                             break;
                         }
@@ -206,6 +208,9 @@ void mouse(int button, int state, int x, int y) {
                             // 새로운 랜덤 선 추가
                             glm::vec3 color(dis(gen), dis(gen), dis(gen)); // 랜덤 색상
                             insert_line(v1, v2, color, shapes);
+                            // 삭제할 도형 배열에 넣기
+                            deleteShapes.push_back(shape);
+                            deleteShapes.push_back(*selectedShape);
 
                             break;
                         }
@@ -231,6 +236,9 @@ void mouse(int button, int state, int x, int y) {
                             // 새로운 랜덤 삼각형 추가
                             glm::vec3 color(dis(gen), dis(gen), dis(gen)); // 랜덤 색상
                             insert_triangle(randV1, randV2, randV3, color, shapes);
+                            // 삭제할 도형 배열에 넣기
+                            deleteShapes.push_back(shape);
+                            deleteShapes.push_back(*selectedShape);
 
                             break;
                         }
@@ -249,6 +257,9 @@ void mouse(int button, int state, int x, int y) {
                             // 새 사각형 추가: v1, v2, v3, v4로 두 개의 삼각형을 만듭니다.
                             glm::vec3 color(dis(gen), dis(gen), dis(gen)); // 랜덤 색상
                             insert_square(v1, v2, v3, v2, v3, v4, color, shapes); // v2, v3를 두 번 넣는 문제 해결
+                            // 삭제할 도형 배열에 넣기
+                            deleteShapes.push_back(shape);
+                            deleteShapes.push_back(*selectedShape);
 
                             break;
                         }
@@ -256,11 +267,7 @@ void mouse(int button, int state, int x, int y) {
                             break;
                         }
 
-                        // 삭제할 도형 추가
-                        shapesToDelete.push_back(&shape);
-                        shapesToDelete.push_back(selectedShape);
-
-                        //selectedShape = nullptr;
+                        selectedShape = nullptr;
                         isDragging = false;
                         break;  // 도형의 정점 중 하나라도 조건을 만족하면 해당 도형을 찾았으므로 break
                     }
@@ -268,12 +275,11 @@ void mouse(int button, int state, int x, int y) {
 
             }
 
-            // 도형 삭제를 반복이 끝난 후에 실행
-            for (Shape_gl* shapeToDelete : shapesToDelete) {
-                shapes.erase(std::remove(shapes.begin(), shapes.end(), *shapeToDelete), shapes.end());
+            // deleteShapes 배열에 있는 도형들을 shapes에서 삭제
+            for (const auto& deleteShape : deleteShapes) {
+                shapes.erase(std::remove(shapes.begin(), shapes.end(), deleteShape), shapes.end());
             }
 
-            shapesToDelete.clear();
             InitBuffer();  // 버퍼 업데이트 (도형 이동 반영)
             glutPostRedisplay();  // 화면 다시 그리기 요청
         }

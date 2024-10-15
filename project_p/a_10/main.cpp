@@ -209,7 +209,6 @@ void mouse(int button, int state, int x, int y) {
 		radius = 0.01f;
 		lastPoint = glm::vec3(centerX, centerY, 0.0f);
 		isSpiralActive = true;
-		//glutTimerFunc(16, timer, 0); // 16ms 후에 다시 타이머 호출 (약 60FPS)
 	}
 }
 
@@ -255,7 +254,7 @@ void drawShapes() {
 		if (shape.type == LINE) {
 			if (line_mode == 0) {
 				glEnable(GL_LINE_STIPPLE);  // 점선 활성화
-				glLineStipple(2, 0x00F1);   // 점선 패턴 설정 (적당히 긴 점선)
+				glLineStipple(1, 0x0F0F);  // 짧은 점선 패턴
 				glLineWidth(2.0f);          // 선 두께 설정
 				glDrawArrays(GL_LINES, currentIndex, 2); // 선은 2개의 정점
 				currentIndex += 2; // 선의 정점 수만큼 인덱스를 증가
