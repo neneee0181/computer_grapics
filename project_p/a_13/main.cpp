@@ -29,21 +29,22 @@ GLchar* vertexSource, * fragmentSource;  // 쉐이더 소스 코드를 저장할 변수들
 
 GLuint vao, vbo[3];  // VAO와 VBO ID를 저장할 변수들
 
-// 삼각형의 좌표를 정의한 배열
-const GLfloat triShape[3][3] = {
-	{-0.5,-0.5,0.0},{0.5,-0.5,0.0},{0.0,0.5,0.0}
+const GLfloat colors[12][3] = {
+	{1.0, 0.0, 0.0},   // 빨강
+	{0.0, 1.0, 0.0},   // 초록
+	{0.0, 0.0, 1.0},   // 파랑
+	{1.0, 1.0, 0.0},   // 노랑
+	{1.0, 0.0, 1.0},   // 마젠타
+	{0.0, 1.0, 1.0},   // 시안
+	{0.5, 0.5, 0.5},   // 회색
+	{1.0, 0.5, 0.0},   // 주황
+	{0.0, 0.5, 0.5},   // 청록
+	{0.5, 0.0, 0.5},   // 보라
+	{0.5, 1.0, 0.5},   // 연두
+	{1.0, 0.5, 0.5}    // 핑크
 };
-
-// 삼각형의 각 점에 해당하는 색상 배열
-const GLfloat colors[3][3] = {
-	{1.0,0.0,0.0}, {0.0,1.0,0.0},{0.0,0.0,1.0}
-};
-
 Model modelSqu;
-
-const GLfloat modelSquColors[4][3] = {
-	{1.0,0.0,0.0}, {1.0,1.0, 0.0}, {0.0,1.0,0.0}, {0.0,0.0,0.0}
-};
+std::vector<unsigned int> indices;  // 전역 인덱스 배열
 
 // 키보드 입력을 처리하는 함수
 void keyBoard(unsigned char key, int x, int y) {
@@ -85,7 +86,7 @@ int main(int argc, char** argv) {
 
 	make_shaderProgram();  // 쉐이더 프로그램 생성
 
-	read_obj_file("box.obj", modelSqu); //obj 파일 가져오기
+	read_obj_file("cube.obj", modelSqu); //obj 파일 가져오기
 
 	try {
 		std::cout << "OBJ 파일 로딩 성공!" << std::endl;
@@ -112,6 +113,7 @@ int main(int argc, char** argv) {
 
 // 화면을 그리는 함수
 GLvoid drawScene() {
+	glEnable(GL_DEPTH_TEST);  // 깊이 테스트 활성화
 
 	glClearColor(1.0, 1.0, 1.0, 1.0f);  // 화면을 흰색으로 초기화
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  // 컬러 버퍼와 깊이 버퍼 초기화
@@ -121,7 +123,10 @@ GLvoid drawScene() {
 	glBindVertexArray(vao);  // VAO 바인딩
 
 	// 인덱스 버퍼를 사용해 면 그리기
-	glDrawElements(GL_QUADS, modelSqu.faces.size() * 4, GL_UNSIGNED_INT, 0);
+	//glDrawElements(GL_TRIANGLES, modelSqu.faces.size() * 3, GL_UNSIGNED_INT, 0);
+
+	//glDrawArrays(GL_TRIANGLES, 0, 3);
+	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);  // 인덱스를 사용하여 삼각형을 그립니다.
 
 	glBindVertexArray(0);  // VAO 바인딩 해제
 
@@ -201,27 +206,57 @@ void InitBuffer() {
 
 	glGenBuffers(3, vbo);  // VBO 생성 (2개)
 
-	 // 1. 정점 데이터 전송
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-	glBufferData(GL_ARRAY_BUFFER, modelSqu.vertices.size() * sizeof(Vertex), &modelSqu.vertices[0], GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);  // 정점 속성 포인터 설정
-	glEnableVertexAttribArray(0);  // 정점 속성 활성화
+	glBufferData(GL_ARRAY_BUFFER, modelSqu.vertices.size() * sizeof(GLfloat), modelSqu.vertices.data(), GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+	glBufferData(GL_ARRAY_BUFFER, 36 * sizeof(GLfloat), colors, GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	// // 1. 정점 데이터 전송
+	//glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
+	//glBufferData(GL_ARRAY_BUFFER, 3 * sizeof(triShape), triShape, GL_STATIC_DRAW);
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);  // 정점 속성 포인터 설정
+	//glEnableVertexAttribArray(0);  // 정점 속성 활성화
+
+	//// 컬러 내가넣은거
+	//glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
+	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);  // 색상 속성 포인터 설정
+	//glEnableVertexAttribArray(1);  // 색상 속성 활성화
 
 	// 2. 텍스처 좌표 데이터 전송 (텍스처 좌표가 있을 때만)
-	if (!modelSqu.texCoords.empty()) {
-
-		glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);  // 두 번째 VBO 바인딩 (색상 데이터 저장)
-		glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(GLfloat), modelSquColors, GL_STATIC_DRAW);  // 색상 데이터를 VBO에 복사
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);  // 색상 속성 포인터 설정
-		glEnableVertexAttribArray(1);  // 속성 배열 활성화
-	}
+	//if (!modelSqu.texCoords.empty()) {
+	//	glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);  // 두 번째 VBO 바인딩 (색상 데이터 저장)
+	//	glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(GLfloat), modelSquColors, GL_STATIC_DRAW);  // 색상 데이터를 VBO에 복사
+	//	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);  // 색상 속성 포인터 설정
+	//	glEnableVertexAttribArray(1);  // 속성 배열 활성화
+	//}
 
 	// 3. 법선 벡터 데이터 전송 (법선 벡터가 있을 때만)
-	if (!modelSqu.normals.empty()) {
-		glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
-		glBufferData(GL_ARRAY_BUFFER, modelSqu.normals.size() * sizeof(Normal), &modelSqu.normals[0], GL_STATIC_DRAW);
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);  // 법선 속성 포인터 설정
-		glEnableVertexAttribArray(2);  // 법선 속성 활성화
+	//if (!modelSqu.normals.empty()) {
+	//	glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
+	//	glBufferData(GL_ARRAY_BUFFER, modelSqu.normals.size() * sizeof(Normal), &modelSqu.normals[0], GL_STATIC_DRAW);
+	//	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);  // 법선 속성 포인터 설정
+	//	glEnableVertexAttribArray(2);  // 법선 속성 활성화
+	//}
+
+	// 4. 인덱스 버퍼(EBO) 생성 및 인덱스 데이터 전송
+	GLuint ebo;  // 인덱스 버퍼를 위한 ID
+	glGenBuffers(1, &ebo);  // EBO 생성
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+
+	// InitBuffer 함수에서 인덱스 데이터 전송 부분
+	for (const auto& face : modelSqu.faces) {
+		indices.push_back(face.v1 - 1);  // OBJ 파일은 1부터 시작하므로 0부터 시작하도록 맞춤
+		indices.push_back(face.v2 - 1);
+		indices.push_back(face.v3 - 1);
 	}
+
+	// EBO에 인덱스 데이터를 전송하는 부분은 그대로 유지
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
 }
