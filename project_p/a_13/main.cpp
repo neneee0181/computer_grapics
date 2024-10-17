@@ -202,6 +202,26 @@ GLvoid drawScene() {
 
     glUseProgram(shaderProgramID);  // 쉐이더 프로그램 사용
 
+    // 카메라 설정 (뷰 변환)
+    glm::mat4 view = glm::lookAt(
+        glm::vec3(2.0f, 2.0f, 2.0f),  // 카메라 위치
+        glm::vec3(0.0f, 0.0f, 0.0f),  // 카메라가 바라보는 지점
+        glm::vec3(0.0f, 1.0f, 0.0f)   // 월드 업 벡터
+    );
+
+    // 원근 투영 설정 (투영 변환)
+    glm::mat4 projection = glm::perspective(
+        glm::radians(45.0f),  // 시야각(FOV)
+        (float)width / (float)height,  // 화면 비율 (종횡비)
+        0.1f, 100.0f  // 근거리 및 원거리 클립 평면
+    );
+
+    // 쉐이더에 투영 및 뷰 변환 전달
+    GLint viewLoc = glGetUniformLocation(shaderProgramID, "view");
+    GLint projectionLoc = glGetUniformLocation(shaderProgramID, "projection");
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
     GLint isLineLoc = glGetUniformLocation(shaderProgramID, "isLine");
 
     // 각 모델을 그리기
@@ -210,8 +230,8 @@ GLvoid drawScene() {
         glEnable(GL_DEPTH_TEST);
          
         glm::mat4 modelMatrix = glm::mat4(1.0f);
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(-20.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        /*modelMatrix = glm::rotate(modelMatrix, glm::radians(-20.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f));*/
 
         GLint modelLoc = glGetUniformLocation(shaderProgramID, "modelV");
 
@@ -314,10 +334,6 @@ GLvoid drawScene() {
             //    glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
             //}
         }
-
-        
-
-       
 
         glDisable(GL_DEPTH_TEST);
         glBindVertexArray(0);
