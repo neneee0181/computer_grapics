@@ -1,8 +1,1 @@
-﻿  filetobuf.cpp
-  main.cpp
-C:\Mac\Home\Documents\computer_grapics\project_p\a_10\main.cpp(132,14): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Mac\Home\Documents\computer_grapics\project_p\a_10\main.cpp(133,14): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Mac\Home\Documents\computer_grapics\project_p\a_10\main.cpp(164,14): warning C4305: '+=': 'double'에서 'float'(으)로 잘립니다.
-C:\Mac\Home\Documents\computer_grapics\project_p\a_10\main.cpp(165,14): warning C4305: '+=': 'double'에서 'float'(으)로 잘립니다.
-  코드를 생성하고 있습니다...
-  a_10.vcxproj -> C:\Mac\Home\Documents\computer_grapics\project_p\x64\Debug\a_10.exe
+﻿

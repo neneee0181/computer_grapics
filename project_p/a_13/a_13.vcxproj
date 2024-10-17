@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{323c3339-08e0-468c-bacf-5937d160315f}</ProjectGuid>
+    <ProjectGuid>{8d359c12-7832-4112-8602-b01c9fdfc09a}</ProjectGuid>
     <RootNamespace>a_13</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -138,6 +138,7 @@
   <ItemGroup>
     <ClInclude Include="filetobuf.h" />
     <ClInclude Include="ReadObj.h" />
+    <ClInclude Include="ReadObj2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

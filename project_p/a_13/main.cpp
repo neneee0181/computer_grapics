@@ -30,233 +30,213 @@ GLchar* vertexSource, * fragmentSource;  // 쉐이더 소스 코드를 저장할 변수들
 GLuint vao, vbo[3];  // VAO와 VBO ID를 저장할 변수들
 
 const GLfloat colors[12][3] = {
-	{1.0, 0.0, 0.0},   // 빨강
-	{0.0, 1.0, 0.0},   // 초록
-	{0.0, 0.0, 1.0},   // 파랑
-	{1.0, 1.0, 0.0},   // 노랑
-	{1.0, 0.0, 1.0},   // 마젠타
-	{0.0, 1.0, 1.0},   // 시안
-	{0.5, 0.5, 0.5},   // 회색
-	{1.0, 0.5, 0.0},   // 주황
-	{0.0, 0.5, 0.5},   // 청록
-	{0.5, 0.0, 0.5},   // 보라
-	{0.5, 1.0, 0.5},   // 연두
-	{1.0, 0.5, 0.5}    // 핑크
+    {1.0, 0.0, 0.0},   // 빨강
+    {0.0, 1.0, 0.0},   // 초록
+    {0.0, 0.0, 1.0},   // 파랑
+    {1.0, 1.0, 0.0},   // 노랑
+    {1.0, 0.0, 1.0},   // 마젠타
+    {0.0, 1.0, 1.0},   // 시안
+    {0.5, 0.5, 0.5},   // 회색
+    {1.0, 0.5, 0.0},   // 주황
+    {0.0, 0.5, 0.5},   // 청록
+    {0.5, 0.0, 0.5},   // 보라
+    {0.5, 1.0, 0.5},   // 연두
+    {1.0, 0.5, 0.5}    // 핑크
 };
+
 Model modelSqu;
-std::vector<unsigned int> indices;  // 전역 인덱스 배열
 
 // 키보드 입력을 처리하는 함수
 void keyBoard(unsigned char key, int x, int y) {
-	switch (key)
-	{
-	default:
-		break;
-	}
-	glutPostRedisplay();  // 키보드 입력 후 화면을 다시 그리도록 요청
+    switch (key)
+    {
+    default:
+        break;
+    }
+    glutPostRedisplay();  // 키보드 입력 후 화면을 다시 그리도록 요청
 }
 
 // 마우스 입력을 처리하는 함수
 void mouse(int button, int state, int x, int y) {
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
-		std::cout << "x = " << x << " y = " << y << std::endl;  // 마우스 클릭 좌표 출력
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+        std::cout << "x = " << x << " y = " << y << std::endl;  // 마우스 클릭 좌표 출력
 }
 
 // 메인 함수
 int main(int argc, char** argv) {
 
-	width = 800;  // 창의 기본 너비 설정
-	height = 600;  // 창의 기본 높이 설정
+    width = 800;  // 창의 기본 너비 설정
+    height = 600;  // 창의 기본 높이 설정
 
-	// 윈도우 생성
-	glutInit(&argc, argv);  // GLUT 초기화
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);  // 화면 모드 설정 (더블 버퍼링, RGBA 컬러 모드)
-	glutInitWindowPosition(100, 100);  // 창의 시작 위치 설정
-	glutInitWindowSize(width, height);  // 창의 크기 설정
-	glutCreateWindow("실습 13번");  // 창 생성 및 제목 설정
+    // 윈도우 생성
+    glutInit(&argc, argv);  // GLUT 초기화
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);  // 화면 모드 설정 (더블 버퍼링, RGBA 컬러 모드)
+    glutInitWindowPosition(100, 100);  // 창의 시작 위치 설정
+    glutInitWindowSize(width, height);  // 창의 크기 설정
+    glutCreateWindow("실습 13번");  // 창 생성 및 제목 설정
 
-	// GLEW 초기화
-	glewExperimental = GL_TRUE;  // GLEW 실험적 기능 활성화
-	if (glewInit() != GLEW_OK) {  // GLEW 초기화 및 오류 체크
-		cerr << "Unable to initialize GLEW" << endl;  // GLEW 초기화 실패 시 오류 메시지 출력
-		exit(EXIT_FAILURE);  // 프로그램 종료
-	}
-	else
-		cout << "GLEW Initialized\n";  // 초기화 성공 시 메시지 출력
+    // GLEW 초기화
+    glewExperimental = GL_TRUE;  // GLEW 실험적 기능 활성화
+    if (glewInit() != GLEW_OK) {  // GLEW 초기화 및 오류 체크
+        cerr << "Unable to initialize GLEW" << endl;  // GLEW 초기화 실패 시 오류 메시지 출력
+        exit(EXIT_FAILURE);  // 프로그램 종료
+    }
+    else
+        cout << "GLEW Initialized\n";  // 초기화 성공 시 메시지 출력
 
-	make_shaderProgram();  // 쉐이더 프로그램 생성
+    make_shaderProgram();  // 쉐이더 프로그램 생성
+        
+    read_obj_file("cube.obj", modelSqu); //obj 파일 가져오기
 
-	read_obj_file("cube.obj", modelSqu); //obj 파일 가져오기
+    try {
+        std::cout << "OBJ 파일 로딩 성공!" << std::endl;
+        std::cout << "정점 개수: " << modelSqu.vertices.size() << std::endl;
+        for (size_t i = 0; i < modelSqu.vertices.size(); ++i) {
+            std::cout << "v[" << i << "] = ("
+                << modelSqu.vertices[i].x << ", "
+                << modelSqu.vertices[i].y << ", "
+                << modelSqu.vertices[i].z << ")" << std::endl;
+        }
+        std::cout << "텍스처 좌표 개수: " << modelSqu.texCoords.size() << std::endl;
+        std::cout << "법선 벡터 개수: " << modelSqu.normals.size() << std::endl;
+        std::cout << "면 개수: " << modelSqu.faces.size() << std::endl;
+        for (size_t i = 0; i < modelSqu.faces.size(); ++i) {
+            const Face& face = modelSqu.faces[i];
+            std::cout << "Face[" << i << "] = ("
+                << face.v1 << ", " << face.v2 << ", " << face.v3 << ")"
+                << std::endl;
+        }
+    }
+    catch (const std::exception& e) {
+        std::cerr << e.what() << std::endl;  // 오류 메시지 출력
+    }
 
-	try {
-		std::cout << "OBJ 파일 로딩 성공!" << std::endl;
-		std::cout << "정점 개수: " << modelSqu.vertices.size() << std::endl;
-		std::cout << "텍스처 좌표 개수: " << modelSqu.texCoords.size() << std::endl;
-		std::cout << "법선 벡터 개수: " << modelSqu.normals.size() << std::endl;
-		std::cout << "면 개수: " << modelSqu.faces.size() << std::endl;
-	}
-	catch (const std::exception& e) {
-		std::cerr << e.what() << std::endl;  // 오류 메시지 출력
-	}
+    InitBuffer();  // 버퍼 초기화
 
-	InitBuffer();  // 버퍼 초기화
+    // 콜백 함수 등록
+    glutDisplayFunc(drawScene);  // 화면을 그리는 함수 등록
+    glutReshapeFunc(Reshape);  // 화면 크기 변경 시 호출되는 함수 등록
+    glutKeyboardFunc(keyBoard);  // 키보드 입력 처리 함수 등록
+    glutMouseFunc(mouse);  // 마우스 입력 처리 함수 등록
+    glutMainLoop();  // 이벤트 루프 시작
 
-	// 콜백 함수 등록
-	glutDisplayFunc(drawScene);  // 화면을 그리는 함수 등록
-	glutReshapeFunc(Reshape);  // 화면 크기 변경 시 호출되는 함수 등록
-	glutKeyboardFunc(keyBoard);  // 키보드 입력 처리 함수 등록
-	glutMouseFunc(mouse);  // 마우스 입력 처리 함수 등록
-	glutMainLoop();  // 이벤트 루프 시작
-
-	return 0;  // 프로그램 정상 종료
+    return 0;  // 프로그램 정상 종료
 }
 
 // 화면을 그리는 함수
 GLvoid drawScene() {
-	glEnable(GL_DEPTH_TEST);  // 깊이 테스트 활성화
 
-	glClearColor(1.0, 1.0, 1.0, 1.0f);  // 화면을 흰색으로 초기화
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  // 컬러 버퍼와 깊이 버퍼 초기화
+    glClearColor(1.0, 1.0, 1.0, 1.0f);  // 화면을 흰색으로 초기화
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  // 컬러 버퍼와 깊이 버퍼 초기화
 
-	glUseProgram(shaderProgramID);  // 생성한 쉐이더 프로그램 사용
+    glUseProgram(shaderProgramID);  // 생성한 쉐이더 프로그램 사용
 
-	glBindVertexArray(vao);  // VAO 바인딩
+    glBindVertexArray(vao);  // VAO 바인딩
 
-	// 인덱스 버퍼를 사용해 면 그리기
-	//glDrawElements(GL_TRIANGLES, modelSqu.faces.size() * 3, GL_UNSIGNED_INT, 0);
+    // 인덱스 버퍼를 사용해 면 그리기
+    glDrawElements(GL_TRIANGLES, modelSqu.faces.size() * 3, GL_UNSIGNED_INT, 0);
 
-	//glDrawArrays(GL_TRIANGLES, 0, 3);
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);  // 인덱스를 사용하여 삼각형을 그립니다.
+    glBindVertexArray(0);  // VAO 바인딩 해제
 
-	glBindVertexArray(0);  // VAO 바인딩 해제
+    glutSwapBuffers();  // 더블 버퍼링 사용, 화면 갱신
 
-	glutSwapBuffers();  // 더블 버퍼링 사용, 화면 갱신
-
-	// OpenGL 오류 체크 루프
-	GLenum err;
-	while ((err = glGetError()) != GL_NO_ERROR) {
-		cout << "OpenGL error: " << err << endl;  // 오류 메시지 출력
-	}
+    // OpenGL 오류 체크 루프
+    GLenum err;
+    while ((err = glGetError()) != GL_NO_ERROR) {
+        cout << "OpenGL error: " << err << endl;  // 오류 메시지 출력
+    }
 }
 
 // 화면 크기가 변경될 때 호출되는 함수
 GLvoid Reshape(int w, int h) {
-	glViewport(0, 0, w, h);  // 뷰포트 크기 설정
+    glViewport(0, 0, w, h);  // 뷰포트 크기 설정
 }
 
 // 버텍스 쉐이더를 만드는 함수
 void make_vertexShaders() {
 
-	vertexSource = filetobuf("vertex.glsl");  // 버텍스 쉐이더 파일 읽기
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);  // 버텍스 쉐이더 생성
-	glShaderSource(vertexShader, 1, (const GLchar**)&vertexSource, 0);  // 쉐이더 소스 코드 설정
-	glCompileShader(vertexShader);  // 쉐이더 컴파일
+    vertexSource = filetobuf("vertex.glsl");  // 버텍스 쉐이더 파일 읽기
+    vertexShader = glCreateShader(GL_VERTEX_SHADER);  // 버텍스 쉐이더 생성
+    glShaderSource(vertexShader, 1, (const GLchar**)&vertexSource, 0);  // 쉐이더 소스 코드 설정
+    glCompileShader(vertexShader);  // 쉐이더 컴파일
 
-	GLint result;
-	GLchar errorLog[512];
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &result);  // 컴파일 성공 여부 확인
+    GLint result;
+    GLchar errorLog[512];
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &result);  // 컴파일 성공 여부 확인
 
-	if (!result) {  // 컴파일 실패 시
-		glGetShaderInfoLog(vertexShader, 512, NULL, errorLog);  // 오류 로그 받기
-		cerr << "ERROR: vertex shader 컴파일 실패 \n" << errorLog << endl;  // 오류 메시지 출력
-		return;
-	}
+    if (!result) {  // 컴파일 실패 시
+        glGetShaderInfoLog(vertexShader, 512, NULL, errorLog);  // 오류 로그 받기
+        cerr << "ERROR: vertex shader 컴파일 실패 \n" << errorLog << endl;  // 오류 메시지 출력
+        return;
+    }
 }
 
 // 프래그먼트 쉐이더를 만드는 함수
 void make_fragmentShaders() {
 
-	fragmentSource = filetobuf("fragment.glsl");  // 프래그먼트 쉐이더 파일 읽기
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);  // 프래그먼트 쉐이더 생성
-	glShaderSource(fragmentShader, 1, (const GLchar**)&fragmentSource, 0);  // 쉐이더 소스 코드 설정
-	glCompileShader(fragmentShader);  // 쉐이더 컴파일
+    fragmentSource = filetobuf("fragment.glsl");  // 프래그먼트 쉐이더 파일 읽기
+    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);  // 프래그먼트 쉐이더 생성
+    glShaderSource(fragmentShader, 1, (const GLchar**)&fragmentSource, 0);  // 쉐이더 소스 코드 설정
+    glCompileShader(fragmentShader);  // 쉐이더 컴파일
 
-	GLint result;
-	GLchar errorLog[512];
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &result);  // 컴파일 성공 여부 확인
+    GLint result;
+    GLchar errorLog[512];
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &result);  // 컴파일 성공 여부 확인
 
-	if (!result) {  // 컴파일 실패 시
-		glGetShaderInfoLog(fragmentShader, 512, NULL, errorLog);  // 오류 로그 받기
-		cerr << "ERROR: frag_shader 컴파일 실패\n" << errorLog << endl;  // 오류 메시지 출력
-		return;
-	}
+    if (!result) {  // 컴파일 실패 시
+        glGetShaderInfoLog(fragmentShader, 512, NULL, errorLog);  // 오류 로그 받기
+        cerr << "ERROR: frag_shader 컴파일 실패\n" << errorLog << endl;  // 오류 메시지 출력
+        return;
+    }
 }
 
 // 쉐이더 프로그램을 만드는 함수
 void make_shaderProgram() {
 
-	make_vertexShaders();  // 버텍스 쉐이더 생성
-	make_fragmentShaders();  // 프래그먼트 쉐이더 생성
+    make_vertexShaders();  // 버텍스 쉐이더 생성
+    make_fragmentShaders();  // 프래그먼트 쉐이더 생성
 
-	shaderProgramID = glCreateProgram();  // 쉐이더 프로그램 생성
-	glAttachShader(shaderProgramID, vertexShader);  // 버텍스 쉐이더 프로그램에 첨부
-	glAttachShader(shaderProgramID, fragmentShader);  // 프래그먼트 쉐이더 프로그램에 첨부
-	glLinkProgram(shaderProgramID);  // 쉐이더 프로그램 링크
+    shaderProgramID = glCreateProgram();  // 쉐이더 프로그램 생성
+    glAttachShader(shaderProgramID, vertexShader);  // 버텍스 쉐이더 프로그램에 첨부
+    glAttachShader(shaderProgramID, fragmentShader);  // 프래그먼트 쉐이더 프로그램에 첨부
+    glLinkProgram(shaderProgramID);  // 쉐이더 프로그램 링크
 
-	glDeleteShader(vertexShader);  // 버텍스 쉐이더 삭제 (이미 프로그램에 포함되었으므로)
-	glDeleteShader(fragmentShader);  // 프래그먼트 쉐이더 삭제
+    glDeleteShader(vertexShader);  // 버텍스 쉐이더 삭제 (이미 프로그램에 포함되었으므로)
+    glDeleteShader(fragmentShader);  // 프래그먼트 쉐이더 삭제
 
-	glUseProgram(shaderProgramID);  // 쉐이더 프로그램 사용
+    glUseProgram(shaderProgramID);  // 쉐이더 프로그램 사용
 }
 
 // 버퍼 초기화 함수
 void InitBuffer() {
-	glGenVertexArrays(1, &vao);  // VAO 생성
-	glBindVertexArray(vao);  // VAO 바인딩
+    glGenVertexArrays(1, &vao);  // VAO 생성
+    glBindVertexArray(vao);  // VAO 바인딩
 
-	glGenBuffers(3, vbo);  // VBO 생성 (2개)
+    glGenBuffers(2, vbo);  // VBO 생성 (2개)
 
-	glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-	glBufferData(GL_ARRAY_BUFFER, modelSqu.vertices.size() * sizeof(GLfloat), modelSqu.vertices.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(0);
+    // VBO 생성 및 데이터 설정 (꼭짓점 좌표)
+    glGenBuffers(1, &vbo[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
+    glBufferData(GL_ARRAY_BUFFER, modelSqu.vertices.size() * sizeof(glm::vec3), modelSqu.vertices.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-	glBufferData(GL_ARRAY_BUFFER, 36 * sizeof(GLfloat), colors, GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(1);
+    // 색상 버퍼 설정
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(1);
 
-	// // 1. 정점 데이터 전송
-	//glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-	//glBufferData(GL_ARRAY_BUFFER, 3 * sizeof(triShape), triShape, GL_STATIC_DRAW);
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);  // 정점 속성 포인터 설정
-	//glEnableVertexAttribArray(0);  // 정점 속성 활성화
+    // 면 인덱스 데이터 (EBO) 설정
+    std::vector<unsigned int> indices;
+    for (const Face& face : modelSqu.faces) {
+        indices.push_back(face.v1);
+        indices.push_back(face.v2);
+        indices.push_back(face.v3);
+    }
 
-	//// 컬러 내가넣은거
-	//glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
-	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);  // 색상 속성 포인터 설정
-	//glEnableVertexAttribArray(1);  // 색상 속성 활성화
-
-	// 2. 텍스처 좌표 데이터 전송 (텍스처 좌표가 있을 때만)
-	//if (!modelSqu.texCoords.empty()) {
-	//	glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);  // 두 번째 VBO 바인딩 (색상 데이터 저장)
-	//	glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(GLfloat), modelSquColors, GL_STATIC_DRAW);  // 색상 데이터를 VBO에 복사
-	//	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);  // 색상 속성 포인터 설정
-	//	glEnableVertexAttribArray(1);  // 속성 배열 활성화
-	//}
-
-	// 3. 법선 벡터 데이터 전송 (법선 벡터가 있을 때만)
-	//if (!modelSqu.normals.empty()) {
-	//	glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
-	//	glBufferData(GL_ARRAY_BUFFER, modelSqu.normals.size() * sizeof(Normal), &modelSqu.normals[0], GL_STATIC_DRAW);
-	//	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);  // 법선 속성 포인터 설정
-	//	glEnableVertexAttribArray(2);  // 법선 속성 활성화
-	//}
-
-	// 4. 인덱스 버퍼(EBO) 생성 및 인덱스 데이터 전송
-	GLuint ebo;  // 인덱스 버퍼를 위한 ID
-	glGenBuffers(1, &ebo);  // EBO 생성
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-
-	// InitBuffer 함수에서 인덱스 데이터 전송 부분
-	for (const auto& face : modelSqu.faces) {
-		indices.push_back(face.v1 - 1);  // OBJ 파일은 1부터 시작하므로 0부터 시작하도록 맞춤
-		indices.push_back(face.v2 - 1);
-		indices.push_back(face.v3 - 1);
-	}
-
-	// EBO에 인덱스 데이터를 전송하는 부분은 그대로 유지
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
-
+    GLuint ebo;
+    glGenBuffers(1, &ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 }
