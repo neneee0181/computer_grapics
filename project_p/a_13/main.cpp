@@ -204,14 +204,14 @@ GLvoid drawScene() {
 
     // 카메라 설정 (뷰 변환)
     glm::mat4 view = glm::lookAt(
-        glm::vec3(2.0f, 2.0f, 2.0f),  // 카메라 위치
+        glm::vec3(2.0f, 1.0f, 2.0f),  // 카메라 위치
         glm::vec3(0.0f, 0.0f, 0.0f),  // 카메라가 바라보는 지점
         glm::vec3(0.0f, 1.0f, 0.0f)   // 월드 업 벡터
     );
 
     // 원근 투영 설정 (투영 변환)
     glm::mat4 projection = glm::perspective(
-        glm::radians(45.0f),  // 시야각(FOV)
+        glm::radians(52.0f),  // 시야각(FOV)
         (float)width / (float)height,  // 화면 비율 (종횡비)
         0.1f, 100.0f  // 근거리 및 원거리 클립 평면
     );
