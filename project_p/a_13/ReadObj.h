@@ -29,10 +29,11 @@ struct Model {
     std::vector<TextureCoord> texCoords;  // 텍스처 좌표 배열 (추가)
     std::vector<Normal> normals;   // 법선 벡터 배열
     std::vector<Face> faces;       // 면 배열
+    std::string name;
 };
 
 // OBJ 파일을 읽어와서 모델 데이터를 파싱하는 함수
-void read_obj_file(const std::string& filename, Model& model) {
+void read_obj_file(const std::string& filename, Model& model, std::string name) {
     std::ifstream file(filename);  // 파일 읽기 모드로 열기
     if (!file.is_open()) {  // 파일을 열지 못한 경우
         throw std::runtime_error("Error opening file: " + filename);
@@ -128,6 +129,7 @@ void read_obj_file(const std::string& filename, Model& model) {
             }
         }
     }
+    model.name = name;
 
     file.close();  // 파일 닫기
 }

@@ -1,1 +1,22 @@
-﻿
+﻿  main.cpp
+C:\Users\neneee\computer_grapics-main\project_p\a_04\main.cpp(50,39): warning C4244: '=': 'double'에서 'GLfloat'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_04\main.cpp(51,39): warning C4244: '=': 'double'에서 'GLfloat'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_04\main.cpp(54,39): warning C4244: '=': 'double'에서 'GLfloat'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_04\main.cpp(55,39): warning C4244: '=': 'double'에서 'GLfloat'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_04\main.cpp(59,39): warning C4244: '=': 'double'에서 'GLfloat'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_04\main.cpp(60,39): warning C4244: '=': 'double'에서 'GLfloat'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_04\main.cpp(63,39): warning C4244: '=': 'double'에서 'GLfloat'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_04\main.cpp(64,39): warning C4244: '=': 'double'에서 'GLfloat'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_04\main.cpp(70,39): warning C4244: '=': 'double'에서 'GLfloat'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_04\main.cpp(71,39): warning C4244: '=': 'double'에서 'GLfloat'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_04\main.cpp(74,39): warning C4244: '=': 'double'에서 'GLfloat'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_04\main.cpp(75,39): warning C4244: '=': 'double'에서 'GLfloat'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_04\main.cpp(105,17): warning C4244: '=': 'double'에서 'GLfloat'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_04\main.cpp(106,17): warning C4244: '=': 'double'에서 'GLfloat'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_04\main.cpp(107,17): warning C4244: '=': 'double'에서 'GLfloat'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_04\main.cpp(144,21): warning C4244: '초기화 중': 'double'에서 'GLfloat'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_04\main.cpp(156,18): warning C4244: '=': 'double'에서 'GLfloat'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_04\main.cpp(157,18): warning C4244: '=': 'double'에서 'GLfloat'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_04\main.cpp(158,18): warning C4244: '=': 'double'에서 'GLfloat'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\a_04\main.cpp(185,6): warning C4326: 'main'의 반환 형식이 'int'이어야 하는데 'void'입니다.
+  a_04.vcxproj -> C:\Users\neneee\computer_grapics-main\project_p\x64\Debug\a_4.exe

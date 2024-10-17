@@ -138,7 +138,6 @@
   <ItemGroup>
     <ClInclude Include="filetobuf.h" />
     <ClInclude Include="ReadObj.h" />
-    <ClInclude Include="ReadObj2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

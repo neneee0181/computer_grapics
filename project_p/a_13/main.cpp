@@ -28,11 +28,13 @@ GLuint fragmentShader;  // 프래그먼트 쉐이더 ID를 저장하는 변수
 
 GLchar* vertexSource, * fragmentSource;  // 쉐이더 소스 코드를 저장할 변수들
 
-GLuint vao, vbo[3];  // VAO와 VBO ID를 저장할 변수들
-GLuint vao2, vbo2[3];  // VAO와 VBO ID를 저장할 변수들
-
 GLuint xVBO, xVAO;
 GLuint yVBO, yVAO;
+
+// 여러 3D 모델을 관리하는 벡터
+vector<Model> models;
+vector<GLuint> vaos;
+vector<vector<GLuint>> vbos;
 
 const GLfloat colors[12][3] = {
     {1.0, 0.0, 0.0},   // 빨강
@@ -63,9 +65,6 @@ const glm::vec3 x[2] = {
 const glm::vec3 y[2] = {
       glm::vec3(0.0f,-1.0f,0.5f), glm::vec3(0.0f,1.0f,0.5f)
 };
-
-Model modelSqu;
-Model modelTre;
 
 // 키보드 입력을 처리하는 함수
 void keyBoard(unsigned char key, int x, int y) {
@@ -108,8 +107,13 @@ int main(int argc, char** argv) {
 
     make_shaderProgram();  // 쉐이더 프로그램 생성
         
-    read_obj_file("box3.obj", modelSqu); //obj 파일 가져오기
-    read_obj_file("tetrahedron.obj", modelTre);
+    // 모델들을 로드하고 벡터에 추가
+    Model modelSqu, modelTre;
+    read_obj_file("box3.obj", modelSqu, "cube");
+    read_obj_file("tetrahedron.obj", modelTre, "tre");
+
+    models.push_back(modelSqu);
+    models.push_back(modelTre);
 
     //try {
     //    std::cout << "OBJ 파일 로딩 성공!" << std::endl;
@@ -160,54 +164,35 @@ GLvoid drawScene() {
 
     GLint isLineLoc = glGetUniformLocation(shaderProgramID, "isLine");
 
-    // 2. 정육면체 그리기
-    glBindVertexArray(vao);  // 정육면체 VAO 바인딩
-    glEnable(GL_DEPTH_TEST);
+    // 각 모델을 그리기
+    for (size_t i = 0; i < models.size(); ++i) {
+        glBindVertexArray(vaos[i]);
+        glEnable(GL_DEPTH_TEST);
 
-    // X축 기준으로 10도 회전
-    modelSquMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(-20.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    // Y축 기준으로 10도 회전
-    modelSquMatrix = glm::rotate(modelSquMatrix, glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        glm::mat4 modelMatrix = glm::mat4(1.0f);
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(-20.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-    GLint modelLoc = glGetUniformLocation(shaderProgramID, "cube");
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelSquMatrix));  // 변환 행렬 전달
+        GLint modelLoc = glGetUniformLocation(shaderProgramID, "modelV");
+        if (models[i].name == "tre") {
+            modelMatrix = glm::translate(modelMatrix, glm::vec3(0.5, 0.5, 0.05));
+        }
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 
-    // 유니폼 설정 (면 그리기)
-    glUniform1i(isLineLoc, 0);  // 면 그릴 때 isLine = 0
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);  // 면을 그리는 모드
-    glDrawElements(GL_TRIANGLES, modelSqu.faces.size() * 3, GL_UNSIGNED_INT, 0);  // 정육면체 면 그리기
+        // 면 그리기
+        glUniform1i(isLineLoc, 0);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
 
-    // 유니폼 설정 (선 그리기)
-    glUniform1i(isLineLoc, 1);  // 선 그릴 때 isLine = 1
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);  // 외곽선 그리는 모드
-    glLineWidth(1.0f);  // 선 두께 설정
-    glDrawElements(GL_TRIANGLES, modelSqu.faces.size() * 3, GL_UNSIGNED_INT, 0);  // 정육면체 외곽선 그리기
-    glDisable(GL_DEPTH_TEST);
-    glBindVertexArray(0);  // VAO 바인딩 해제
+        // 외곽선 그리기
+        glUniform1i(isLineLoc, 1);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glLineWidth(1.0f);
+        glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
 
-    // 3. 정사면체
-    glBindVertexArray(vao2); 
-    glEnable(GL_DEPTH_TEST);
-    modelTreMatrix = glm::mat4(1.0f);
-    modelTreMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(-20.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    modelTreMatrix = glm::rotate(modelTreMatrix, glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    modelTreMatrix = glm::translate(modelTreMatrix, glm::vec3(0.5f, 0.5f, 0.0f));
-
-    GLint modelLoc2 = glGetUniformLocation(shaderProgramID, "tre");
-    glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, glm::value_ptr(modelTreMatrix));  // 변환 행렬 전달
-
-    // 유니폼 설정 (면 그리기)
-    glUniform1i(isLineLoc, 4);  // 면 그릴 때 isLine = 0
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);  // 면을 그리는 모드
-    glDrawElements(GL_TRIANGLES, modelTre.faces.size() * 3, GL_UNSIGNED_INT, 0);  // 정육면체 면 그리기
-
-    // 유니폼 설정 (선 그리기)
-    //glUniform1i(isLineLoc, 1);  // 선 그릴 때 isLine = 1
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);  // 외곽선 그리는 모드
-    glLineWidth(1.0f);  // 선 두께 설정
-    glDrawElements(GL_TRIANGLES, modelTre.faces.size() * 3, GL_UNSIGNED_INT, 0);  // 정육면체 외곽선 그리기
-    glDisable(GL_DEPTH_TEST);
-    glBindVertexArray(0);  // VAO 바인딩 해제
+        glDisable(GL_DEPTH_TEST);
+        glBindVertexArray(0);
+    }
 
     // 1. X축 그리기
     //glDisable(GL_DEPTH_TEST);
@@ -325,65 +310,40 @@ void InitBuffer() {
 
 
     // -----------------------------------------------------------------------------------------------------
-    glGenVertexArrays(1, &vao2);  // VAO 생성
-    glBindVertexArray(vao2);  // VAO 바인딩
+    // 각 모델에 대한 VAO, VBO, EBO 설정
+    vaos.resize(models.size());
+    vbos.resize(models.size(), vector<GLuint>(2)); // 모델마다 2개의 VBO가 필요
 
-    glGenBuffers(2, vbo2);  // VBO 생성 (2개)
-    // VBO 생성 및 데이터 설정 (꼭짓점 좌표)
-    glBindBuffer(GL_ARRAY_BUFFER, vbo2[0]);
-    glBufferData(GL_ARRAY_BUFFER, modelTre.vertices.size() * sizeof(glm::vec3), modelTre.vertices.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(0);
+    for (size_t i = 0; i < models.size(); ++i) {
+        glGenVertexArrays(1, &vaos[i]);
+        glBindVertexArray(vaos[i]);
 
-    // 색상 버퍼 설정
-    glBindBuffer(GL_ARRAY_BUFFER, vbo2[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(1);
+        glGenBuffers(2, vbos[i].data());
 
-    // 면 인덱스 데이터 (EBO) 설정
-    std::vector<unsigned int> indices2;
-    for (const Face& face : modelTre.faces) {
-        indices2.push_back(face.v1);
-        indices2.push_back(face.v2);
-        indices2.push_back(face.v3);
+        // 정점 버퍼 설정
+        glBindBuffer(GL_ARRAY_BUFFER, vbos[i][0]);
+        glBufferData(GL_ARRAY_BUFFER, models[i].vertices.size() * sizeof(glm::vec3), models[i].vertices.data(), GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        glEnableVertexAttribArray(0);
+
+        // 색상 버퍼 설정
+        glBindBuffer(GL_ARRAY_BUFFER, vbos[i][1]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        glEnableVertexAttribArray(1);
+
+        // 면 인덱스 데이터 (EBO) 설정
+        vector<unsigned int> indices;
+        for (const Face& face : models[i].faces) {
+            indices.push_back(face.v1);
+            indices.push_back(face.v2);
+            indices.push_back(face.v3);
+        }
+
+        GLuint ebo;
+        glGenBuffers(1, &ebo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
     }
-
-    GLuint ebo2;
-    glGenBuffers(1, &ebo2);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo2);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices2.size() * sizeof(unsigned int), indices2.data(), GL_STATIC_DRAW);
-
-
-    // -----------------------------------------------------------------------------------------------------
-    glGenVertexArrays(1, &vao);  // VAO 생성
-    glBindVertexArray(vao);  // VAO 바인딩
-
-    glGenBuffers(2, vbo);  // VBO 생성 (2개)
-    // VBO 생성 및 데이터 설정 (꼭짓점 좌표)
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-    glBufferData(GL_ARRAY_BUFFER, modelSqu.vertices.size() * sizeof(glm::vec3), modelSqu.vertices.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(0);
-
-    // 색상 버퍼 설정
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(1);
-
-    // 면 인덱스 데이터 (EBO) 설정
-    std::vector<unsigned int> indices;
-    for (const Face& face : modelSqu.faces) {
-        indices.push_back(face.v1);
-        indices.push_back(face.v2);
-        indices.push_back(face.v3);
-    }
-
-    GLuint ebo;
-    glGenBuffers(1, &ebo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
-
 
 }
