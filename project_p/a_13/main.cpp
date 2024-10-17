@@ -65,11 +65,20 @@ const glm::vec3 x[2] = {
 const glm::vec3 y[2] = {
       glm::vec3(0.0f,-1.0f,0.5f), glm::vec3(0.0f,1.0f,0.5f)
 };
-
+char key_result = ' ';
 // 키보드 입력을 처리하는 함수
 void keyBoard(unsigned char key, int x, int y) {
     switch (key)
     {
+    case '1':
+        key_result = '1';
+        break;
+    case '2':
+        key_result = '2';
+        break;
+    case '3':
+        key_result = '3';
+        break;
     default:
         break;
     }
@@ -168,23 +177,38 @@ GLvoid drawScene() {
     for (size_t i = 0; i < models.size(); ++i) {
         glBindVertexArray(vaos[i]);
         glEnable(GL_DEPTH_TEST);
-
+         
         glm::mat4 modelMatrix = glm::mat4(1.0f);
         modelMatrix = glm::rotate(modelMatrix, glm::radians(-20.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         modelMatrix = glm::rotate(modelMatrix, glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
         GLint modelLoc = glGetUniformLocation(shaderProgramID, "modelV");
-        if (models[i].name == "tre") {
-            modelMatrix = glm::translate(modelMatrix, glm::vec3(0.5, 0.5, 0.05));
-        }
+
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 
         // 면 그리기
         glUniform1i(isLineLoc, 0);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
+        //glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
 
-        // 외곽선 그리기
+        if (models[i].name == "cube") {
+            switch (key_result)
+            {
+            case '1':
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                break;
+            case '2':
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(6 * sizeof(unsigned int)));
+                break;
+            case '3':
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(12 * sizeof(unsigned int)));
+                break;
+            default:
+                break;
+            }
+        }
+
+        //// 외곽선 그리기
         glUniform1i(isLineLoc, 1);
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glLineWidth(1.0f);
