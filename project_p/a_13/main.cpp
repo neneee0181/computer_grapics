@@ -3,7 +3,8 @@
 #include <gl/freeglut.h>  // GLUT 라이브러리 포함 (윈도우 창 및 사용자 입력 처리를 위해 사용)
 #include <gl/freeglut_ext.h>  // GLUT 확장 기능 포함
 #include <gl/glm/glm/glm.hpp>  // GLM 라이브러리 포함 (수학적인 계산을 돕기 위한 라이브러리)
-
+#include <gl/glm/glm/gtc/matrix_transform.hpp>
+#include <gl/glm/glm/gtc/type_ptr.hpp>
 #include <vector>  // 표준 벡터 라이브러리 포함 (동적 배열을 사용하기 위해 필요)
 
 #include "filetobuf.h"  // 쉐이더 소스 파일을 버퍼로 읽어오는 함수를 정의한 헤더파일
@@ -44,6 +45,10 @@ const GLfloat colors[12][3] = {
     {1.0, 0.5, 0.5}    // 핑크
 };
 
+const GLfloat x[2] = {
+
+};
+
 Model modelSqu;
 
 // 키보드 입력을 처리하는 함수
@@ -70,10 +75,12 @@ int main(int argc, char** argv) {
 
     // 윈도우 생성
     glutInit(&argc, argv);  // GLUT 초기화
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);  // 화면 모드 설정 (더블 버퍼링, RGBA 컬러 모드)
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);  // 화면 모드 설정 (더블 버퍼링, RGBA 컬러 모드)
     glutInitWindowPosition(100, 100);  // 창의 시작 위치 설정
     glutInitWindowSize(width, height);  // 창의 크기 설정
     glutCreateWindow("실습 13번");  // 창 생성 및 제목 설정
+
+    glEnable(GL_DEPTH_TEST);
 
     // GLEW 초기화
     glewExperimental = GL_TRUE;  // GLEW 실험적 기능 활성화
@@ -123,6 +130,8 @@ int main(int argc, char** argv) {
     return 0;  // 프로그램 정상 종료
 }
 
+glm::mat4 modelMatrix = glm::mat4(1.0f);  // 단위 행렬로 초기화
+
 // 화면을 그리는 함수
 GLvoid drawScene() {
 
@@ -133,7 +142,30 @@ GLvoid drawScene() {
 
     glBindVertexArray(vao);  // VAO 바인딩
 
+    // X축 기준으로 10도 회전
+    modelMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(-10.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+    // Y축 기준으로 10도 회전 (위에서 X축 회전이 적용된 모델에 추가로 회전)
+    modelMatrix = glm::rotate(modelMatrix, glm::radians(10.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+    // 변환 행렬을 쉐이더로 전달 (이때, "model"은 쉐이더에서의 uniform 이름이어야 함)
+    GLint modelLoc = glGetUniformLocation(shaderProgramID, "cube");
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+
+    // 유니폼 변수를 설정하여 면을 그릴 때는 색상을 사용 (isLine = 0)
+    GLint isLineLoc = glGetUniformLocation(shaderProgramID, "isLine");
+    glUniform1i(isLineLoc, 0);  // 면을 그릴 때는 0
+
+    // 면을 그리기
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glDrawElements(GL_TRIANGLES, modelSqu.faces.size() * 3, GL_UNSIGNED_INT, 0);
+
+    // 유니폼 변수를 설정하여 선을 그릴 때는 검정색 (isLine = 1)
+    glUniform1i(isLineLoc, 1);  // 선을 그릴 때는 1
+
     // 인덱스 버퍼를 사용해 면 그리기
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);  // 다각형의 외곽선을 그리는 모드
+    glLineWidth(2.0f);  // 선의 두께 설정 (선택 사항)
     glDrawElements(GL_TRIANGLES, modelSqu.faces.size() * 3, GL_UNSIGNED_INT, 0);
 
     glBindVertexArray(0);  // VAO 바인딩 해제
