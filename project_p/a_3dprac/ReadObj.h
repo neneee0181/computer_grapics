@@ -20,15 +20,15 @@ struct Normal {
 
 struct Face {
     unsigned int v1, v2, v3;  // 정점 인덱스
-    unsigned int t1, t2, t3;  // 텍스처 좌표 인덱스 (추가)
-    unsigned int n1, n2, n3;  // 법선 벡터 인덱스 (추가)
+    unsigned int t1, t2, t3;  // 텍스처 좌표 인덱스 (선택적)
+    unsigned int n1, n2, n3;  // 법선 벡터 인덱스
 };
 
 struct Model {
     std::vector<Vertex> vertices;  // 정점 배열
     std::vector<TextureCoord> texCoords;  // 텍스처 좌표 배열 (추가)
-    std::vector<Normal> normals;  // 법선 벡터 배열 (추가)
-    std::vector<Face> faces;  // 면 배열
+    std::vector<Normal> normals;   // 법선 벡터 배열
+    std::vector<Face> faces;       // 면 배열
 };
 
 // OBJ 파일을 읽어와서 모델 데이터를 파싱하는 함수
@@ -63,18 +63,27 @@ void read_obj_file(const std::string& filename, Model& model) {
         else if (prefix == "f") {  // 면 데이터를 읽을 때
             Face face;
             unsigned int v1, v2, v3;
-            unsigned int t1, t2, t3;
+            unsigned int t1 = 0, t2 = 0, t3 = 0;
             unsigned int n1, n2, n3;
             char slash;  // '/' 구분자를 처리하기 위한 변수
 
-            // 면 정보를 정점 인덱스, 텍스처 좌표 인덱스, 법선 벡터 인덱스로 파싱
-            ss >> v1 >> slash >> t1 >> slash >> n1
-                >> v2 >> slash >> t2 >> slash >> n2
-                >> v3 >> slash >> t3 >> slash >> n3;
+            // 텍스처 좌표가 있는 경우와 없는 경우를 구분해서 파싱
+            if (line.find("//") != std::string::npos) {
+                // 텍스처 좌표가 없는 경우 v//vn
+                ss >> v1 >> slash >> slash >> n1
+                    >> v2 >> slash >> slash >> n2
+                    >> v3 >> slash >> slash >> n3;
+            }
+            else {
+                // 텍스처 좌표가 있는 경우 v/vt/vn
+                ss >> v1 >> slash >> t1 >> slash >> n1
+                    >> v2 >> slash >> t2 >> slash >> n2
+                    >> v3 >> slash >> t3 >> slash >> n3;
+            }
 
             // OBJ 파일에서 인덱스는 1부터 시작하므로, 0부터 시작하도록 변환
             face.v1 = v1 - 1;
-            face.t1 = t1 - 1;
+            face.t1 = t1 - 1;  // 텍스처 좌표가 없을 경우 기본값 0
             face.n1 = n1 - 1;
             face.v2 = v2 - 1;
             face.t2 = t2 - 1;

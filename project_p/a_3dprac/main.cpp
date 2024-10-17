@@ -113,9 +113,21 @@ int main(int argc, char** argv) {
     try {
         std::cout << "OBJ 파일 로딩 성공!" << std::endl;
         std::cout << "정점 개수: " << modelSqu.vertices.size() << std::endl;
+        for (size_t i = 0; i < modelSqu.vertices.size(); ++i) {
+            std::cout << "v[" << i << "] = ("
+                << modelSqu.vertices[i].x << ", "
+                << modelSqu.vertices[i].y << ", "
+                << modelSqu.vertices[i].z << ")" << std::endl;
+        }
         std::cout << "텍스처 좌표 개수: " << modelSqu.texCoords.size() << std::endl;
         std::cout << "법선 벡터 개수: " << modelSqu.normals.size() << std::endl;
         std::cout << "면 개수: " << modelSqu.faces.size() << std::endl;
+        for (size_t i = 0; i < modelSqu.faces.size(); ++i) {
+            const Face& face = modelSqu.faces[i];
+            std::cout << "Face[" << i << "] = ("
+                << face.v1 << ", " << face.v2 << ", " << face.v3 << ")"
+                << std::endl;
+        }
     }
     catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;  // 오류 메시지 출력
@@ -228,9 +240,9 @@ void InitBuffer() {
     glGenBuffers(2, vbo);  // VBO 생성 (2개)
 
     // VBO 생성 및 데이터 설정 (꼭짓점 좌표)
-    glGenBuffers(1, vbo);
+    glGenBuffers(1, &vbo[0]);
     glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(cuboidVertices), cuboidVertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, modelSqu.vertices.size() * sizeof(glm::vec3), modelSqu.vertices.data(), GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
 
@@ -240,10 +252,16 @@ void InitBuffer() {
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(1);
 
-    // EBO 생성 및 데이터 설정 (인덱스)
+    // 면 인덱스 데이터 (EBO) 설정
+    std::vector<unsigned int> indices;
+    for (const Face& face : modelSqu.faces) {
+        indices.push_back(face.v1);
+        indices.push_back(face.v2);
+        indices.push_back(face.v3);
+    }
+
     GLuint ebo;
     glGenBuffers(1, &ebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cuboidIndices), cuboidIndices, GL_STATIC_DRAW);
-
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 }
