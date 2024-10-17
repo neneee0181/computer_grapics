@@ -154,7 +154,7 @@ GLvoid drawScene() {
     glEnable(GL_DEPTH_TEST);
 
     // X축 기준으로 10도 회전
-    modelSquMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(-10.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    modelSquMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(-20.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     // Y축 기준으로 10도 회전
     modelSquMatrix = glm::rotate(modelSquMatrix, glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 

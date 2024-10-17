@@ -22,7 +22,7 @@ void main() {
 
     // 선을 그릴 때는 검정색, 면을 그릴 때는 정점 색상 사용
     if (isLine == 1)
-        out_Color = vec3(0.0, 0.0, 0.0);  // 선일 때는 검정색
+        out_Color = vec3(1.0, 1.0, 1.0);  // 선일 때는 검정색
     else if (isLine == 0)
         out_Color = in_Color;  // 면일 때는 입력된 색상
     else if (isLine == 2)
