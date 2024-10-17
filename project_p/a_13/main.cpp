@@ -29,6 +29,8 @@ GLuint fragmentShader;  // 프래그먼트 쉐이더 ID를 저장하는 변수
 GLchar* vertexSource, * fragmentSource;  // 쉐이더 소스 코드를 저장할 변수들
 
 GLuint vao, vbo[3];  // VAO와 VBO ID를 저장할 변수들
+GLuint xVBO, xVAO;
+GLuint yVBO, yVAO;
 
 const GLfloat colors[12][3] = {
     {1.0, 0.0, 0.0},   // 빨강
@@ -45,8 +47,12 @@ const GLfloat colors[12][3] = {
     {1.0, 0.5, 0.5}    // 핑크
 };
 
-const GLfloat x[2] = {
+const glm::vec3 x[2] = {
+    glm::vec3(-1.0f,0.0f, 0.5f), glm::vec3(1.0f,0.0f,0.5f)
+};
 
+const glm::vec3 y[2] = {
+      glm::vec3(0.0f,-1.0f,0.5f), glm::vec3(0.0f,1.0f,0.5f)
 };
 
 Model modelSqu;
@@ -65,6 +71,7 @@ void keyBoard(unsigned char key, int x, int y) {
 void mouse(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
         std::cout << "x = " << x << " y = " << y << std::endl;  // 마우스 클릭 좌표 출력
+    glutPostRedisplay();  // 키보드 입력 후 화면을 다시 그리도록 요청
 }
 
 // 메인 함수
@@ -79,8 +86,6 @@ int main(int argc, char** argv) {
     glutInitWindowPosition(100, 100);  // 창의 시작 위치 설정
     glutInitWindowSize(width, height);  // 창의 크기 설정
     glutCreateWindow("실습 13번");  // 창 생성 및 제목 설정
-
-    glEnable(GL_DEPTH_TEST);
 
     // GLEW 초기화
     glewExperimental = GL_TRUE;  // GLEW 실험적 기능 활성화
@@ -130,7 +135,9 @@ int main(int argc, char** argv) {
     return 0;  // 프로그램 정상 종료
 }
 
-glm::mat4 modelMatrix = glm::mat4(1.0f);  // 단위 행렬로 초기화
+glm::mat4 modelSquMatrix = glm::mat4(1.0f);  // 단위 행렬로 초기화
+glm::mat4 xLineMatrix = glm::mat4(1.0f);
+glm::mat4 yLineMatrix = glm::mat4(1.0f);
 
 // 화면을 그리는 함수
 GLvoid drawScene() {
@@ -138,36 +145,52 @@ GLvoid drawScene() {
     glClearColor(1.0, 1.0, 1.0, 1.0f);  // 화면을 흰색으로 초기화
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  // 컬러 버퍼와 깊이 버퍼 초기화
 
-    glUseProgram(shaderProgramID);  // 생성한 쉐이더 프로그램 사용
+    glUseProgram(shaderProgramID);  // 쉐이더 프로그램 사용
 
-    glBindVertexArray(vao);  // VAO 바인딩
+    GLint isLineLoc = glGetUniformLocation(shaderProgramID, "isLine");
+
+    // 2. 정육면체 그리기
+    glBindVertexArray(vao);  // 정육면체 VAO 바인딩
+    glEnable(GL_DEPTH_TEST);
 
     // X축 기준으로 10도 회전
-    modelMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(-10.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    modelSquMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(-10.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    // Y축 기준으로 10도 회전
+    modelSquMatrix = glm::rotate(modelSquMatrix, glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-    // Y축 기준으로 10도 회전 (위에서 X축 회전이 적용된 모델에 추가로 회전)
-    modelMatrix = glm::rotate(modelMatrix, glm::radians(10.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-    // 변환 행렬을 쉐이더로 전달 (이때, "model"은 쉐이더에서의 uniform 이름이어야 함)
     GLint modelLoc = glGetUniformLocation(shaderProgramID, "cube");
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelSquMatrix));  // 변환 행렬 전달
 
-    // 유니폼 변수를 설정하여 면을 그릴 때는 색상을 사용 (isLine = 0)
-    GLint isLineLoc = glGetUniformLocation(shaderProgramID, "isLine");
-    glUniform1i(isLineLoc, 0);  // 면을 그릴 때는 0
+    // 유니폼 설정 (면 그리기)
+    glUniform1i(isLineLoc, 0);  // 면 그릴 때 isLine = 0
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);  // 면을 그리는 모드
+    glDrawElements(GL_TRIANGLES, modelSqu.faces.size() * 3, GL_UNSIGNED_INT, 0);  // 정육면체 면 그리기
 
-    // 면을 그리기
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glDrawElements(GL_TRIANGLES, modelSqu.faces.size() * 3, GL_UNSIGNED_INT, 0);
+    // 유니폼 설정 (선 그리기)
+    glUniform1i(isLineLoc, 1);  // 선 그릴 때 isLine = 1
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);  // 외곽선 그리는 모드
+    glLineWidth(1.0f);  // 선 두께 설정
+    glDrawElements(GL_TRIANGLES, modelSqu.faces.size() * 3, GL_UNSIGNED_INT, 0);  // 정육면체 외곽선 그리기
 
-    // 유니폼 변수를 설정하여 선을 그릴 때는 검정색 (isLine = 1)
-    glUniform1i(isLineLoc, 1);  // 선을 그릴 때는 1
+    glBindVertexArray(0);  // VAO 바인딩 해제
 
-    // 인덱스 버퍼를 사용해 면 그리기
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);  // 다각형의 외곽선을 그리는 모드
-    glLineWidth(2.0f);  // 선의 두께 설정 (선택 사항)
-    glDrawElements(GL_TRIANGLES, modelSqu.faces.size() * 3, GL_UNSIGNED_INT, 0);
+    // 1. X축 그리기
+    //glDisable(GL_DEPTH_TEST);
+    glBindVertexArray(xVAO);  // X축 VAO 바인딩
+    GLint xLineLoc = glGetUniformLocation(shaderProgramID, "xLine");
+    glUniformMatrix4fv(xLineLoc, 1, GL_FALSE, glm::value_ptr(xLineMatrix));  // 초기화된 변환 행렬 전달
+    glUniform1i(isLineLoc, 2);  // isLine 값을 2로 설정 (선 그리기 용)
+    glLineWidth(2.0f);  // 선 두께 설정
+    glDrawArrays(GL_LINES, 0, 2);  // X축 그리기
+    glBindVertexArray(0);  // VAO 바인딩 해제
+    //glEnable(GL_DEPTH_TEST);
 
+    glBindVertexArray(yVAO);  // X축 VAO 바인딩
+    GLint yLineLoc = glGetUniformLocation(shaderProgramID, "yLine");
+    glUniformMatrix4fv(yLineLoc, 1, GL_FALSE, glm::value_ptr(yLineMatrix));  // 초기화된 변환 행렬 전달
+    glUniform1i(isLineLoc, 3);  // isLine 값을 2로 설정 (선 그리기 용)
+    glLineWidth(2.0f);  // 선 두께 설정
+    glDrawArrays(GL_LINES, 0, 2);  // X축 그리기
     glBindVertexArray(0);  // VAO 바인딩 해제
 
     glutSwapBuffers();  // 더블 버퍼링 사용, 화면 갱신
@@ -178,6 +201,7 @@ GLvoid drawScene() {
         cout << "OpenGL error: " << err << endl;  // 오류 메시지 출력
     }
 }
+
 
 // 화면 크기가 변경될 때 호출되는 함수
 GLvoid Reshape(int w, int h) {
@@ -241,13 +265,32 @@ void make_shaderProgram() {
 
 // 버퍼 초기화 함수
 void InitBuffer() {
+
+
+    // X축 좌표계 선을 위한 VAO와 VBO 설정
+    glGenVertexArrays(1, &xVAO);  // X축 VAO 생성
+    glBindVertexArray(xVAO);  // VAO 바인딩
+    glGenBuffers(1, &xVBO);  // VBO 생성
+    glBindBuffer(GL_ARRAY_BUFFER, xVBO);  // 버퍼 바인딩
+    glBufferData(GL_ARRAY_BUFFER, sizeof(x), x, GL_STATIC_DRAW);  // X축 좌표 데이터 설정
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);  // 정점 속성 포인터 설정
+    glEnableVertexAttribArray(0);  // 정점 속성 사용
+
+    glGenVertexArrays(1, &yVAO); 
+    glBindVertexArray(yVAO);  // VAO 바인딩
+    glGenBuffers(1, &yVBO);  // VBO 생성
+    glBindBuffer(GL_ARRAY_BUFFER, yVBO);  // 버퍼 바인딩
+    glBufferData(GL_ARRAY_BUFFER, sizeof(y), y, GL_STATIC_DRAW);  // X축 좌표 데이터 설정
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);  // 정점 속성 포인터 설정
+    glEnableVertexAttribArray(0);  // 정점 속성 사용
+
+
+    // -----------------------------------------------------------------------------------------------------
     glGenVertexArrays(1, &vao);  // VAO 생성
     glBindVertexArray(vao);  // VAO 바인딩
 
     glGenBuffers(2, vbo);  // VBO 생성 (2개)
-
     // VBO 생성 및 데이터 설정 (꼭짓점 좌표)
-    glGenBuffers(1, &vbo[0]);
     glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
     glBufferData(GL_ARRAY_BUFFER, modelSqu.vertices.size() * sizeof(glm::vec3), modelSqu.vertices.data(), GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
