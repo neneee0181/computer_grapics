@@ -29,28 +29,6 @@ GLchar* vertexSource, * fragmentSource;  // 쉐이더 소스 코드를 저장할 변수들
 
 GLuint vao, vbo[3];  // VAO와 VBO ID를 저장할 변수들
 
-// 정육면체의 꼭짓점 좌표 (중심을 (0.0, 0.0, 0.0)으로 설정)
-const GLfloat cuboidVertices[8][3] = {
-    {-0.5f, -0.5f, -0.5f}, // 0
-    { 0.5f, -0.5f, -0.5f}, // 1
-    { 0.5f,  0.5f, -0.5f}, // 2
-    {-0.5f,  0.5f, -0.5f}, // 3
-    {-0.5f, -0.5f,  0.5f}, // 4
-    { 0.5f, -0.5f,  0.5f}, // 5
-    { 0.5f,  0.5f,  0.5f}, // 6
-    {-0.5f,  0.5f,  0.5f}  // 7
-};
-
-// 정육면체의 면을 정의하는 인덱스 배열 (삼각형 12개로 구성)
-const GLuint cuboidIndices[36] = {
-    0, 1, 2,  2, 3, 0,  // 앞면
-    4, 5, 6,  6, 7, 4,  // 뒷면
-    0, 3, 7,  7, 4, 0,  // 왼쪽면
-    1, 2, 6,  6, 5, 1,  // 오른쪽면
-    0, 1, 5,  5, 4, 0,  // 밑면
-    3, 2, 6,  6, 7, 3   // 윗면
-};
-
 const GLfloat colors[12][3] = {
     {1.0, 0.0, 0.0},   // 빨강
     {0.0, 1.0, 0.0},   // 초록
@@ -157,9 +135,6 @@ GLvoid drawScene() {
 
     // 인덱스 버퍼를 사용해 면 그리기
     glDrawElements(GL_TRIANGLES, modelSqu.faces.size() * 3, GL_UNSIGNED_INT, 0);
-
-   // glDrawElements를 사용해 정육면체 그리기
-    //glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
     glBindVertexArray(0);  // VAO 바인딩 해제
 
