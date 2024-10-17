@@ -24,13 +24,64 @@ struct Face {
     unsigned int n1, n2, n3;  // 법선 벡터 인덱스
 };
 
+struct Material {
+    glm::vec3 Ka;  // 환경광 색상
+    glm::vec3 Kd;  // 난반사광 색상
+    glm::vec3 Ks;  // 반사광 색상
+    float Ns;      // 반짝임 강도
+    std::string map_Kd;  // 텍스처 이미지 경로 (선택적)
+    GLuint textureID;  // 텍스처 ID 필드 추가
+    bool hasTexture;  // 텍스처가 있는지 여부
+};
+
 struct Model {
     std::vector<Vertex> vertices;  // 정점 배열
     std::vector<TextureCoord> texCoords;  // 텍스처 좌표 배열 (추가)
     std::vector<Normal> normals;   // 법선 벡터 배열
     std::vector<Face> faces;       // 면 배열
+    Material material;
     std::string name;
+
+    GLuint textureID;  // 텍스처 ID 필드 추가
 };
+
+
+// MTL 파일을 읽어와서 재질 정보를 파싱하는 함수
+void read_mtl_file(const std::string& filename, Material& material) {
+    std::ifstream file(filename);  // MTL 파일 열기
+    if (!file.is_open()) {  // 파일 열기 실패 시 예외 처리
+        throw std::runtime_error("Error opening MTL file: " + filename);
+    }
+
+    std::string line;
+    bool hasTexture = false;
+
+    while (std::getline(file, line)) {
+        std::istringstream ss(line);
+        std::string prefix;
+        ss >> prefix;
+
+        if (prefix == "Ka") {  // 환경광 색상
+            ss >> material.Ka.x >> material.Ka.y >> material.Ka.z;
+        }
+        else if (prefix == "Kd") {  // 난반사광 색상
+            ss >> material.Kd.x >> material.Kd.y >> material.Kd.z;
+        }
+        else if (prefix == "Ks") {  // 반사광 색상
+            ss >> material.Ks.x >> material.Ks.y >> material.Ks.z;
+        }
+        else if (prefix == "Ns") {  // 반짝임 강도
+            ss >> material.Ns;
+        }
+        else if (prefix == "map_Kd") {  // 텍스처 파일 경로
+            ss >> material.map_Kd;
+            hasTexture = true;
+        }
+    }
+
+    material.hasTexture = hasTexture;  // 텍스처가 있는지 여부 플래그 설정
+    file.close();  // 파일 닫기
+}
 
 // OBJ 파일을 읽어와서 모델 데이터를 파싱하는 함수
 void read_obj_file(const std::string& filename, Model& model, std::string name) {
@@ -40,6 +91,8 @@ void read_obj_file(const std::string& filename, Model& model, std::string name) 
     }
 
     std::string line;
+    std::string mtlFilename;
+
     // 파일을 한 줄씩 읽어가며 정점, 텍스처 좌표, 법선 벡터, 면 데이터를 처리하는 루프
     while (std::getline(file, line)) {
         std::istringstream ss(line);
@@ -128,8 +181,17 @@ void read_obj_file(const std::string& filename, Model& model, std::string name) 
                 model.faces.push_back(face2);
             }
         }
+        else if (prefix == "mtllib") {  // MTL 파일 참조
+            ss >> mtlFilename;
+        }
     }
+
+
     model.name = name;
+
+    if (!mtlFilename.empty()) {
+        read_mtl_file(mtlFilename, model.material);  // MTL 파일 로드
+    }
 
     file.close();  // 파일 닫기
 }

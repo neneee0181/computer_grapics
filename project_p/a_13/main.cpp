@@ -110,6 +110,9 @@ void keyBoard(unsigned char key, int x, int y) {
     case 't':
         key_result = 't';
         break;
+    case 'a':
+        key_result = 'a';
+        break;
     default:
         break;
     }
@@ -279,6 +282,9 @@ GLvoid drawScene() {
 
                 break;
             }
+            case 'a':
+                glDrawElements(GL_TRIANGLES, models[i].vertices.size() * sizeof(GLfloat), GL_UNSIGNED_INT, 0);
+                break;
             default:
                 break;
             }
