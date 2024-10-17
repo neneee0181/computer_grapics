@@ -145,7 +145,7 @@ int main(int argc, char** argv) {
 
     return 0;  // 프로그램 정상 종료
 }
-
+glm::mat4 modelTreMatrix = glm::mat4(1.0f);  // 단위 행렬로 초기화
 glm::mat4 modelSquMatrix = glm::mat4(1.0f);  // 단위 행렬로 초기화
 glm::mat4 xLineMatrix = glm::mat4(1.0f);
 glm::mat4 yLineMatrix = glm::mat4(1.0f);
@@ -188,12 +188,13 @@ GLvoid drawScene() {
     // 3. 정사면체
     glBindVertexArray(vao2); 
     glEnable(GL_DEPTH_TEST);
-    modelSquMatrix = glm::mat4(1.0f);
-    modelSquMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(-20.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    modelSquMatrix = glm::rotate(modelSquMatrix, glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    modelTreMatrix = glm::mat4(1.0f);
+    modelTreMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(-20.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    modelTreMatrix = glm::rotate(modelTreMatrix, glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    modelTreMatrix = glm::translate(modelTreMatrix, glm::vec3(0.5f, 0.5f, 0.0f));
 
     GLint modelLoc2 = glGetUniformLocation(shaderProgramID, "tre");
-    glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, glm::value_ptr(modelSquMatrix));  // 변환 행렬 전달
+    glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, glm::value_ptr(modelTreMatrix));  // 변환 행렬 전달
 
     // 유니폼 설정 (면 그리기)
     glUniform1i(isLineLoc, 4);  // 면 그릴 때 isLine = 0
