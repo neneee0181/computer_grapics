@@ -61,38 +61,71 @@ void read_obj_file(const std::string& filename, Model& model) {
             model.normals.push_back(normal);
         }
         else if (prefix == "f") {  // 면 데이터를 읽을 때
-            Face face;
-            unsigned int v1, v2, v3;
-            unsigned int t1 = 0, t2 = 0, t3 = 0;
-            unsigned int n1, n2, n3;
-            char slash;  // '/' 구분자를 처리하기 위한 변수
+            std::vector<unsigned int> vertexIndices, texCoordIndices, normalIndices;
+            unsigned int v, t = 0, n;
+            char slash;
 
-            // 텍스처 좌표가 있는 경우와 없는 경우를 구분해서 파싱
-            if (line.find("//") != std::string::npos) {
-                // 텍스처 좌표가 없는 경우 v//vn
-                ss >> v1 >> slash >> slash >> n1
-                    >> v2 >> slash >> slash >> n2
-                    >> v3 >> slash >> slash >> n3;
+            while (ss >> v) {
+                vertexIndices.push_back(v - 1); // OBJ 인덱스는 1부터 시작하므로 -1
+                if (ss.peek() == '/') {
+                    ss >> slash;
+                    if (ss.peek() != '/') {
+                        ss >> t;
+                        texCoordIndices.push_back(t - 1);
+                    }
+                    else {
+                        texCoordIndices.push_back(0);  // 텍스처 좌표가 없을 경우
+                    }
+                    if (ss.peek() == '/') {
+                        ss >> slash >> n;
+                        normalIndices.push_back(n - 1);
+                    }
+                }
             }
-            else {
-                // 텍스처 좌표가 있는 경우 v/vt/vn
-                ss >> v1 >> slash >> t1 >> slash >> n1
-                    >> v2 >> slash >> t2 >> slash >> n2
-                    >> v3 >> slash >> t3 >> slash >> n3;
+
+            // 삼각형 또는 사각형인지 확인
+            if (vertexIndices.size() == 3) {
+                // 삼각형인 경우
+                Face face;
+                face.v1 = vertexIndices[0];
+                face.v2 = vertexIndices[1];
+                face.v3 = vertexIndices[2];
+                face.t1 = texCoordIndices.size() > 0 ? texCoordIndices[0] : 0;
+                face.t2 = texCoordIndices.size() > 1 ? texCoordIndices[1] : 0;
+                face.t3 = texCoordIndices.size() > 2 ? texCoordIndices[2] : 0;
+                face.n1 = normalIndices[0];
+                face.n2 = normalIndices[1];
+                face.n3 = normalIndices[2];
+                model.faces.push_back(face);
             }
+            else if (vertexIndices.size() == 4) {
+                // 사각형인 경우, 두 개의 삼각형으로 분할
+                Face face1, face2;
 
-            // OBJ 파일에서 인덱스는 1부터 시작하므로, 0부터 시작하도록 변환
-            face.v1 = v1 - 1;
-            face.t1 = t1 - 1;  // 텍스처 좌표가 없을 경우 기본값 0
-            face.n1 = n1 - 1;
-            face.v2 = v2 - 1;
-            face.t2 = t2 - 1;
-            face.n2 = n2 - 1;
-            face.v3 = v3 - 1;
-            face.t3 = t3 - 1;
-            face.n3 = n3 - 1;
+                // 첫 번째 삼각형 (v1, v2, v3)
+                face1.v1 = vertexIndices[0];
+                face1.v2 = vertexIndices[1];
+                face1.v3 = vertexIndices[2];
+                face1.t1 = texCoordIndices.size() > 0 ? texCoordIndices[0] : 0;
+                face1.t2 = texCoordIndices.size() > 1 ? texCoordIndices[1] : 0;
+                face1.t3 = texCoordIndices.size() > 2 ? texCoordIndices[2] : 0;
+                face1.n1 = normalIndices[0];
+                face1.n2 = normalIndices[1];
+                face1.n3 = normalIndices[2];
+                model.faces.push_back(face1);
 
-            model.faces.push_back(face);
+                // 두 번째 삼각형 (v1, v3, v4)
+                face2.v1 = vertexIndices[0];
+                face2.v2 = vertexIndices[2];
+                face2.v3 = vertexIndices[3];
+                face2.t1 = texCoordIndices.size() > 0 ? texCoordIndices[0] : 0;
+                face2.t2 = texCoordIndices.size() > 2 ? texCoordIndices[2] : 0;
+                face2.t3 = texCoordIndices.size() > 3 ? texCoordIndices[3] : 0;
+                face2.n1 = normalIndices[0];
+                face2.n2 = normalIndices[2];
+                face2.n3 = normalIndices[3];
+                model.faces.push_back(face2);
+            }
         }
     }
 

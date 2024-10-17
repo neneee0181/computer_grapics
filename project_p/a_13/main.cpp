@@ -98,7 +98,7 @@ int main(int argc, char** argv) {
 
     make_shaderProgram();  // 쉐이더 프로그램 생성
         
-    read_obj_file("cube.obj", modelSqu); //obj 파일 가져오기
+    read_obj_file("box3.obj", modelSqu); //obj 파일 가져오기
 
     try {
         std::cout << "OBJ 파일 로딩 성공!" << std::endl;
