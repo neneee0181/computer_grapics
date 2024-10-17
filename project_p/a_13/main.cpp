@@ -142,7 +142,7 @@ glm::mat4 yLineMatrix = glm::mat4(1.0f);
 // 화면을 그리는 함수
 GLvoid drawScene() {
 
-    glClearColor(1.0, 1.0, 1.0, 1.0f);  // 화면을 흰색으로 초기화
+    glClearColor(0.0, 0.0, 0.0, 1.0f);  // 화면을 흰색으로 초기화
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  // 컬러 버퍼와 깊이 버퍼 초기화
 
     glUseProgram(shaderProgramID);  // 쉐이더 프로그램 사용
