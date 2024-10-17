@@ -6,11 +6,15 @@
 #include <gl/glm/glm/gtc/matrix_transform.hpp>
 #include <gl/glm/glm/gtc/type_ptr.hpp>
 #include <vector>  // 표준 벡터 라이브러리 포함 (동적 배열을 사용하기 위해 필요)
+#include <random>
 
 #include "filetobuf.h"  // 쉐이더 소스 파일을 버퍼로 읽어오는 함수를 정의한 헤더파일
 #include "ReadObj.h"
 
 using namespace std;  // 네임스페이스 std 사용으로 코드 내에서 std:: 생략 가능
+
+random_device rd;
+mt19937 gen(rd());
 
 // 함수 선언부
 void make_vertexShaders();  // 버텍스 쉐이더를 만드는 함수 선언
@@ -78,6 +82,33 @@ void keyBoard(unsigned char key, int x, int y) {
         break;
     case '3':
         key_result = '3';
+        break;
+    case '4':
+        key_result = '4';
+        break;
+    case '5':
+        key_result = '5';
+        break;
+    case '6':
+        key_result = '6';
+        break;
+    case '7':
+        key_result = '7';
+        break;
+    case '8':
+        key_result = '8';
+        break;
+    case '9':
+        key_result = '9';
+        break;
+    case '0':
+        key_result = '0';
+        break;
+    case 'c':
+        key_result = 'c';
+        break;
+    case 't':
+        key_result = 't';
         break;
     default:
         break;
@@ -203,16 +234,90 @@ GLvoid drawScene() {
             case '3':
                 glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(12 * sizeof(unsigned int)));
                 break;
+            case '4':
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(18 * sizeof(unsigned int)));
+                break;
+            case '5':
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(24 * sizeof(unsigned int)));
+                break;
+            case '6':
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(30 * sizeof(unsigned int)));
+                break;
+            case 'c':
+            {
+                uniform_int_distribution<> rand_c(0, 5);
+                int rand_i1 = rand_c(gen);
+                int rand_i2 = rand_c(gen);
+                while (true) {
+                    if (rand_i1 == rand_i2)
+                        rand_i2 = rand_c(gen);
+                    else
+                        break;
+                }
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)((rand_i1 * 6) * sizeof(unsigned int)));
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)((rand_i2 * 6) * sizeof(unsigned int)));
+
+                break;
+            }
             default:
                 break;
             }
+            //if (key_result > '0' && key_result < '7') {
+            //    // 외곽선 그리기
+            //    glUniform1i(isLineLoc, 1);
+            //    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            //    glLineWidth(1.0f);
+            //    glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
+            //}
         }
 
-        //// 외곽선 그리기
-        glUniform1i(isLineLoc, 1);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        glLineWidth(1.0f);
-        glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
+        if (models[i].name == "tre") {
+            switch (key_result)
+            {
+            case '7':
+                glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+                break;
+            case '8':
+                glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(3 * sizeof(unsigned int)));
+                break;
+            case '9':
+                glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(6 * sizeof(unsigned int)));
+                break;
+            case '0':
+                glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(9 * sizeof(unsigned int)));
+                break;
+            case 't':
+            {
+                uniform_int_distribution<> rand_c(0, 3);
+                int rand_i1 = rand_c(gen);
+                int rand_i2 = rand_c(gen);
+                while (true) {
+                    if (rand_i1 == rand_i2)
+                        rand_i2 = rand_c(gen);
+                    else
+                        break;
+                }
+                glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)((rand_i1 * 3) * sizeof(unsigned int)));
+                glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)((rand_i2 * 3) * sizeof(unsigned int)));
+
+                break;
+            }
+            default:
+                break;
+            }
+
+            //if (key_result >= '7' && key_result <= '9' || key_result == '0') {
+            //    // 외곽선 그리기
+            //    glUniform1i(isLineLoc, 1);
+            //    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            //    glLineWidth(1.0f);
+            //    glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
+            //}
+        }
+
+        
+
+       
 
         glDisable(GL_DEPTH_TEST);
         glBindVertexArray(0);
