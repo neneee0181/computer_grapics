@@ -83,6 +83,11 @@ const glm::vec3 z[2] = {
     glm::vec3(0.0f, 0.0f, -0.8f), glm::vec3(0.0f, 0.0f, 0.8f)
 };
 
+glm::mat4 modelSquMatrix = glm::mat4(1.0f);  // 단위 행렬로 초기화
+glm::mat4 xLineMatrix = glm::mat4(1.0f);
+glm::mat4 yLineMatrix = glm::mat4(1.0f);
+glm::mat4 zLineMatrix = glm::mat4(1.0f);
+
 void keyBoard(unsigned char key, int x, int y) {
     switch (key) {
     case 'w':  // 위로 회전 (pitch 증가)
@@ -111,7 +116,6 @@ void keyBoard(unsigned char key, int x, int y) {
 
     glutPostRedisplay();  // 화면 다시 그리기 요청
 }
-
 
 void specialKeys(int key, int x, int y) {
     float speed = 0.1f;  // 카메라 이동 속도
@@ -152,7 +156,7 @@ int main(int argc, char** argv) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);  // 화면 모드 설정 (더블 버퍼링, RGBA 컬러 모드)
     glutInitWindowPosition(100, 100);  // 창의 시작 위치 설정
     glutInitWindowSize(width, height);  // 창의 크기 설정
-    glutCreateWindow("실습 13번");  // 창 생성 및 제목 설정
+    glutCreateWindow("실습 15번");  // 창 생성 및 제목 설정
 
     // GLEW 초기화
     glewExperimental = GL_TRUE;  // GLEW 실험적 기능 활성화
@@ -166,10 +170,21 @@ int main(int argc, char** argv) {
     make_shaderProgram();  // 쉐이더 프로그램 생성
         
     // 모델들을 로드하고 벡터에 추가
-    Model modelSqu;
+    Model modelSqu, modelCone, modelSphere, modelCylinder;
     read_obj_file("box3.obj", modelSqu, "cube");
 
+    // 정육면체
     models.push_back(modelSqu);
+    modelSquMatrix = glm::rotate(modelSquMatrix, glm::radians(45.0f), glm::vec3(1.0, 0.0, 0.0));
+    modelSquMatrix = glm::rotate(modelSquMatrix, glm::radians(-45.0f), glm::vec3(0.0, 1.0, 0.0));
+    zLineMatrix = glm::rotate(modelSquMatrix, glm::radians(45.0f), glm::vec3(1.0, 0.0, 0.0));
+    zLineMatrix = glm::rotate(modelSquMatrix, glm::radians(-45.0f), glm::vec3(0.0, 1.0, 0.0));
+    xLineMatrix = glm::rotate(modelSquMatrix, glm::radians(45.0f), glm::vec3(1.0, 0.0, 0.0));
+    xLineMatrix = glm::rotate(modelSquMatrix, glm::radians(-45.0f), glm::vec3(0.0, 1.0, 0.0));
+    yLineMatrix = glm::rotate(modelSquMatrix, glm::radians(45.0f), glm::vec3(1.0, 0.0, 0.0));
+    yLineMatrix = glm::rotate(modelSquMatrix, glm::radians(-45.0f), glm::vec3(0.0, 1.0, 0.0));
+    modelSquMatrix = glm::scale(modelSquMatrix, glm::vec3(0.35, 0.35, 0.35));
+    modelSquMatrix = glm::translate(modelSquMatrix, glm::vec3(-1.0, 1.0, 0.0));
 
     InitBuffer();  // 버퍼 초기화
 
@@ -184,10 +199,6 @@ int main(int argc, char** argv) {
     return 0;  // 프로그램 정상 종료
 }
 
-glm::mat4 modelSquMatrix = glm::mat4(1.0f);  // 단위 행렬로 초기화
-glm::mat4 xLineMatrix = glm::mat4(1.0f);
-glm::mat4 yLineMatrix = glm::mat4(1.0f);
-
 // 화면을 그리는 함수
 GLvoid drawScene() {
     glClearColor(1.0, 1.0, 1.0, 1.0f);  // 화면을 흰색으로 초기화
@@ -197,21 +208,18 @@ GLvoid drawScene() {
 
     GLint isLineLoc = glGetUniformLocation(shaderProgramID, "isLine");
 
-    glm::mat4 modelMatrix = glm::mat4(1.0f);
-    GLint modelLoc = glGetUniformLocation(shaderProgramID, "modelV");
-    modelMatrix = glm::rotate(modelMatrix, glm::radians(30.0f), glm::vec3(1.0, 0.0, 0.0));
-    modelMatrix = glm::rotate(modelMatrix, glm::radians(-30.0f), glm::vec3(0.0, 1.0, 0.0));
-
     glEnable(GL_DEPTH_TEST);
     // 각 모델을 그리기
     for (size_t i = 0; i < models.size(); ++i) {
         glBindVertexArray(vaos[i]);
-       
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+
+        GLint modelLoc = glGetUniformLocation(shaderProgramID, "modelV");
+        if (models[i].name == "cube")
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelSquMatrix));
 
         // 면 그리기
         glUniform1i(isLineLoc, 0);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
 
         glBindVertexArray(0);
@@ -220,7 +228,7 @@ GLvoid drawScene() {
     // X축 그리기
     glBindVertexArray(xVAO);  // X축 VAO 바인딩
     GLint xLineLoc = glGetUniformLocation(shaderProgramID, "xLine");
-    glUniformMatrix4fv(xLineLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));  // 초기화된 변환 행렬 전달
+    glUniformMatrix4fv(xLineLoc, 1, GL_FALSE, glm::value_ptr(xLineMatrix));  // 초기화된 변환 행렬 전달
     glUniform1i(isLineLoc, 2);  // isLine 값을 2로 설정 (선 그리기 용)
     glLineWidth(1.0f);  // 선 두께 설정
     glDrawArrays(GL_LINES, 0, 2);  // X축 그리기
@@ -229,7 +237,7 @@ GLvoid drawScene() {
     // Y축 그리기
     glBindVertexArray(yVAO);  // Y축 VAO 바인딩
     GLint yLineLoc = glGetUniformLocation(shaderProgramID, "yLine");
-    glUniformMatrix4fv(yLineLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));  // 초기화된 변환 행렬 전달
+    glUniformMatrix4fv(yLineLoc, 1, GL_FALSE, glm::value_ptr(yLineMatrix));  // 초기화된 변환 행렬 전달
     glUniform1i(isLineLoc, 3);  // isLine 값을 3으로 설정 (선 그리기 용)
     glLineWidth(1.0f);  // 선 두께 설정
     glDrawArrays(GL_LINES, 0, 2);  // Y축 그리기
@@ -237,9 +245,9 @@ GLvoid drawScene() {
 
     // z축 그리기
     glBindVertexArray(zVAO);  // Y축 VAO 바인딩
-    GLint zLineLoc = glGetUniformLocation(shaderProgramID, "xLine");
-    glUniformMatrix4fv(zLineLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));  // 초기화된 변환 행렬 전달
-    glUniform1i(isLineLoc, 3);  // isLine 값을 3으로 설정 (선 그리기 용)
+    GLint zLineLoc = glGetUniformLocation(shaderProgramID, "zLine");
+    glUniformMatrix4fv(zLineLoc, 1, GL_FALSE, glm::value_ptr(zLineMatrix));  // 초기화된 변환 행렬 전달
+    glUniform1i(isLineLoc, 4);  // isLine 값을 3으로 설정 (선 그리기 용)
     glLineWidth(1.0f);  // 선 두께 설정
     glDrawArrays(GL_LINES, 0, 2);  // Y축 그리기
     glBindVertexArray(0);  // VAO 바인딩 해제
