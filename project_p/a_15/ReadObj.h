@@ -39,7 +39,9 @@ struct Model {
     std::vector<TextureCoord> texCoords;  // 텍스처 좌표 배열 (추가)
     std::vector<Normal> normals;   // 법선 벡터 배열
     std::vector<Face> faces;       // 면 배열
+    glm::mat4 modelMatrix = glm::mat4(1.0f);
     Material material;
+    std::vector<glm::vec3> colors;      // **각 정점에 대한 색상 배열**
     std::string name;
 
     GLuint textureID;  // 텍스처 ID 필드 추가
@@ -50,7 +52,8 @@ struct Model {
 void read_mtl_file(const std::string& filename, Material& material) {
     std::ifstream file(filename);  // MTL 파일 열기
     if (!file.is_open()) {  // 파일 열기 실패 시 예외 처리
-        throw std::runtime_error("Error opening MTL file: " + filename);
+        //throw std::runtime_error("Error opening MTL file: " + filename);
+        return;
     }
 
     std::string line;
@@ -87,7 +90,8 @@ void read_mtl_file(const std::string& filename, Material& material) {
 void read_obj_file(const std::string& filename, Model& model, std::string name) {
     std::ifstream file(filename);  // 파일 읽기 모드로 열기
     if (!file.is_open()) {  // 파일을 열지 못한 경우
-        throw std::runtime_error("Error opening file: " + filename);
+        //throw std::runtime_error("Error opening file: " + filename);
+        return;
     }
 
     std::string line;

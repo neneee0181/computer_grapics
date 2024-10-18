@@ -38,104 +38,26 @@ vector<Model> models;
 vector<GLuint> vaos;
 vector<vector<GLuint>> vbos;
 
-// 카메라 관련 변수들
-glm::vec3 cameraPos = glm::vec3(4.0f, 4.0f, 4.0f);  // 초기 카메라 위치
-glm::vec3 cameraFront = glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)); // 카메라 방향 (원점 바라봄)
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);   // 월드 업 벡터
-float yaw = -135.0f;  // 좌우 회전 각도
-float pitch = 0.0f;   // 상하 회전 각도
-float cameraSpeed = 0.1f;  // 카메라 이동 속도
-float sensitivity = 2.00f; // 마우스/키보드 회전 속도
-
-const GLfloat colors[20][3] = {
-    {1.0, 0.0, 0.0},   // 빨강
-    {0.0, 1.0, 0.0},   // 초록
-    {0.0, 0.0, 1.0},   // 파랑
-    {1.0, 1.0, 0.0},   // 노랑
-    {1.0, 0.0, 1.0},   // 마젠타
-    {0.0, 1.0, 1.0},   // 시안
-    {0.5, 0.5, 0.5},   // 회색
-    {1.0, 0.5, 0.0},   // 주황
-    {0.0, 0.5, 0.5},   // 청록
-    {0.5, 0.0, 0.5},   // 보라
-    {0.5, 1.0, 0.5},   // 연두
-    {1.0, 0.5, 0.5},    // 핑크
-     {0.0, 0.5, 0.5},   // 청록
-    {0.5, 0.0, 0.5},   // 보라
-    {0.5, 1.0, 0.5},   // 연두
-    {1.0, 0.5, 0.5},
-     {0.0, 0.5, 0.5},   // 청록
-    {0.5, 0.0, 0.5},   // 보라
-    {0.5, 1.0, 0.5},   // 연두
-    {1.0, 0.5, 0.5},
-
+const Vertex x[2] = {
+    {-0.8f,0.0f, 0.0f},
+    {0.8f,0.0f, 0.0f}
 };
 
-const glm::vec3 x[2] = {
-    glm::vec3(-0.8f,0.0f, 0.0f), glm::vec3(0.8f,0.0f, 0.0f)
+const Vertex y[2] = {
+    {0.0f,-0.8f, 0.0f},
+    {0.0f, 0.8f, 0.0f}
 };
 
-const glm::vec3 y[2] = {
-    glm::vec3(0.0f,-0.8f, 0.0f), glm::vec3(0.0f, 0.8f, 0.0f)
+const Vertex z[2] = {
+    {0.0f, 0.0f, -0.8f},
+    {0.0f, 0.0f, 0.8f}
 };
-
-const glm::vec3 z[2] = {
-    glm::vec3(0.0f, 0.0f, -0.8f), glm::vec3(0.0f, 0.0f, 0.8f)
-};
-
-glm::mat4 modelSquMatrix = glm::mat4(1.0f);  // 단위 행렬로 초기화
-glm::mat4 xLineMatrix = glm::mat4(1.0f);
-glm::mat4 yLineMatrix = glm::mat4(1.0f);
-glm::mat4 zLineMatrix = glm::mat4(1.0f);
 
 void keyBoard(unsigned char key, int x, int y) {
-    switch (key) {
-    case 'w':  // 위로 회전 (pitch 증가)
-        pitch += sensitivity;
-        if (pitch > 89.0f)
-            pitch = 89.0f;
-        break;
-    case 's':  // 아래로 회전 (pitch 감소)
-        pitch -= sensitivity;
-        if (pitch < -89.0f)
-            pitch = -89.0f;
-        break;
-    case 'a':  // 왼쪽 회전 (yaw 감소)
-        yaw -= sensitivity;
-        break;
-    case 'd':  // 오른쪽 회전 (yaw 증가)
-        yaw += sensitivity;
-        break;
-    }
-    // 회전된 yaw, pitch에 따라 cameraFront를 업데이트
-    glm::vec3 front;
-    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    front.y = sin(glm::radians(pitch));
-    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    cameraFront = glm::normalize(front);
-
     glutPostRedisplay();  // 화면 다시 그리기 요청
 }
 
 void specialKeys(int key, int x, int y) {
-    float speed = 0.1f;  // 카메라 이동 속도
-
-    switch (key) {
-    case GLUT_KEY_UP:  // 위쪽 방향키: 전진
-        cameraPos += speed * cameraFront;
-        break;
-    case GLUT_KEY_DOWN:  // 아래쪽 방향키: 후진
-        cameraPos -= speed * cameraFront;
-        break;
-    case GLUT_KEY_LEFT:  // 왼쪽 방향키: 좌측으로 이동
-        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * speed;
-        break;
-    case GLUT_KEY_RIGHT:  // 오른쪽 방향키: 우측으로 이동
-        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * speed;
-        break;
-    default:
-        break;
-    }
     glutPostRedisplay();  // 화면 다시 그리기 요청
 }
 // 마우스 입력을 처리하는 함수
@@ -172,19 +94,39 @@ int main(int argc, char** argv) {
     // 모델들을 로드하고 벡터에 추가
     Model modelSqu, modelCone, modelSphere, modelCylinder;
     read_obj_file("box3.obj", modelSqu, "cube");
-
     // 정육면체
+    modelSqu.modelMatrix = glm::rotate(modelSqu.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
+    modelSqu.modelMatrix = glm::rotate(modelSqu.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));
+    modelSqu.modelMatrix = glm::scale(modelSqu.modelMatrix, glm::vec3(0.2, 0.2, 0.2));
+    modelSqu.modelMatrix = glm::translate(modelSqu.modelMatrix, glm::vec3(-3.0, 0.0, 0.0));
+    modelSqu.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
     models.push_back(modelSqu);
-    modelSquMatrix = glm::rotate(modelSquMatrix, glm::radians(45.0f), glm::vec3(1.0, 0.0, 0.0));
-    modelSquMatrix = glm::rotate(modelSquMatrix, glm::radians(-45.0f), glm::vec3(0.0, 1.0, 0.0));
-    zLineMatrix = glm::rotate(modelSquMatrix, glm::radians(45.0f), glm::vec3(1.0, 0.0, 0.0));
-    zLineMatrix = glm::rotate(modelSquMatrix, glm::radians(-45.0f), glm::vec3(0.0, 1.0, 0.0));
-    xLineMatrix = glm::rotate(modelSquMatrix, glm::radians(45.0f), glm::vec3(1.0, 0.0, 0.0));
-    xLineMatrix = glm::rotate(modelSquMatrix, glm::radians(-45.0f), glm::vec3(0.0, 1.0, 0.0));
-    yLineMatrix = glm::rotate(modelSquMatrix, glm::radians(45.0f), glm::vec3(1.0, 0.0, 0.0));
-    yLineMatrix = glm::rotate(modelSquMatrix, glm::radians(-45.0f), glm::vec3(0.0, 1.0, 0.0));
-    modelSquMatrix = glm::scale(modelSquMatrix, glm::vec3(0.35, 0.35, 0.35));
-    modelSquMatrix = glm::translate(modelSquMatrix, glm::vec3(-1.0, 1.0, 0.0));
+
+    Model modelXLine, modelYLine, modelZLine;
+    modelXLine.name = "xLine";
+    modelXLine.vertices.push_back(x[0]);
+    modelXLine.vertices.push_back(x[1]);
+    modelXLine.colors.push_back(glm::vec3(1.0, 0.0, 0.0));
+    modelXLine.modelMatrix = glm::rotate(modelXLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
+    modelXLine.modelMatrix = glm::rotate(modelXLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));
+
+    modelYLine.name = "yLine";
+    modelYLine.vertices.push_back(y[0]);
+    modelYLine.vertices.push_back(y[1]);
+    modelYLine.colors.push_back(glm::vec3(0.0, 1.0, 0.0));
+    modelYLine.modelMatrix = glm::rotate(modelYLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
+    modelYLine.modelMatrix = glm::rotate(modelYLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));
+
+    modelZLine.name = "zLine";
+    modelZLine.vertices.push_back(z[0]);
+    modelZLine.vertices.push_back(z[1]);
+    modelZLine.colors.push_back(glm::vec3(0.0, 0.0, 1.0));
+    modelZLine.modelMatrix = glm::rotate(modelZLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
+    modelZLine.modelMatrix = glm::rotate(modelZLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));
+
+    models.push_back(modelXLine);
+    models.push_back(modelYLine);
+    models.push_back(modelZLine);
 
     InitBuffer();  // 버퍼 초기화
 
@@ -206,51 +148,32 @@ GLvoid drawScene() {
 
     glUseProgram(shaderProgramID);  // 쉐이더 프로그램 사용
 
-    GLint isLineLoc = glGetUniformLocation(shaderProgramID, "isLine");
 
     glEnable(GL_DEPTH_TEST);
     // 각 모델을 그리기
     for (size_t i = 0; i < models.size(); ++i) {
         glBindVertexArray(vaos[i]);
 
-        GLint modelLoc = glGetUniformLocation(shaderProgramID, "modelV");
-        if (models[i].name == "cube")
-            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelSquMatrix));
+        GLint modelStatus = glGetUniformLocation(shaderProgramID, "modelStatus");
 
-        // 면 그리기
-        glUniform1i(isLineLoc, 0);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
+        if (models[i].name == "cube") {
+            GLint modelLoc = glGetUniformLocation(shaderProgramID, "model");
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
+            // 면 그리기
+            glUniform1i(modelStatus, 0);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
+        }
+        else if (models[i].name == "xLine" || models[i].name == "yLine" || models[i].name == "zLine") {
+            GLint lineLoc = glGetUniformLocation(shaderProgramID, "Line");
+            glUniformMatrix4fv(lineLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
+            glUniform1i(modelStatus, 1);
+            glLineWidth(1.0f);
+            glDrawArrays(GL_LINES, 0, 2);
+        }
 
         glBindVertexArray(0);
     }
-
-    // X축 그리기
-    glBindVertexArray(xVAO);  // X축 VAO 바인딩
-    GLint xLineLoc = glGetUniformLocation(shaderProgramID, "xLine");
-    glUniformMatrix4fv(xLineLoc, 1, GL_FALSE, glm::value_ptr(xLineMatrix));  // 초기화된 변환 행렬 전달
-    glUniform1i(isLineLoc, 2);  // isLine 값을 2로 설정 (선 그리기 용)
-    glLineWidth(1.0f);  // 선 두께 설정
-    glDrawArrays(GL_LINES, 0, 2);  // X축 그리기
-    glBindVertexArray(0);  // VAO 바인딩 해제
-
-    // Y축 그리기
-    glBindVertexArray(yVAO);  // Y축 VAO 바인딩
-    GLint yLineLoc = glGetUniformLocation(shaderProgramID, "yLine");
-    glUniformMatrix4fv(yLineLoc, 1, GL_FALSE, glm::value_ptr(yLineMatrix));  // 초기화된 변환 행렬 전달
-    glUniform1i(isLineLoc, 3);  // isLine 값을 3으로 설정 (선 그리기 용)
-    glLineWidth(1.0f);  // 선 두께 설정
-    glDrawArrays(GL_LINES, 0, 2);  // Y축 그리기
-    glBindVertexArray(0);  // VAO 바인딩 해제
-
-    // z축 그리기
-    glBindVertexArray(zVAO);  // Y축 VAO 바인딩
-    GLint zLineLoc = glGetUniformLocation(shaderProgramID, "zLine");
-    glUniformMatrix4fv(zLineLoc, 1, GL_FALSE, glm::value_ptr(zLineMatrix));  // 초기화된 변환 행렬 전달
-    glUniform1i(isLineLoc, 4);  // isLine 값을 3으로 설정 (선 그리기 용)
-    glLineWidth(1.0f);  // 선 두께 설정
-    glDrawArrays(GL_LINES, 0, 2);  // Y축 그리기
-    glBindVertexArray(0);  // VAO 바인딩 해제
 
     glDisable(GL_DEPTH_TEST);
 
@@ -322,30 +245,6 @@ void make_shaderProgram() {
 
 // 버퍼 초기화 함수
 void InitBuffer() {
-    // X축 좌표계 선을 위한 VAO와 VBO 설정
-    glGenVertexArrays(1, &xVAO);  // X축 VAO 생성
-    glBindVertexArray(xVAO);  // VAO 바인딩
-    glGenBuffers(1, &xVBO);  // VBO 생성
-    glBindBuffer(GL_ARRAY_BUFFER, xVBO);  // 버퍼 바인딩
-    glBufferData(GL_ARRAY_BUFFER, sizeof(x), x, GL_STATIC_DRAW);  // X축 좌표 데이터 설정
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);  // 정점 속성 포인터 설정
-    glEnableVertexAttribArray(0);  // 정점 속성 사용
-
-    glGenVertexArrays(1, &yVAO); 
-    glBindVertexArray(yVAO);  // VAO 바인딩
-    glGenBuffers(1, &yVBO);  // VBO 생성
-    glBindBuffer(GL_ARRAY_BUFFER, yVBO);  // 버퍼 바인딩
-    glBufferData(GL_ARRAY_BUFFER, sizeof(y), y, GL_STATIC_DRAW);  // Y축 좌표 데이터 설정
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);  // 정점 속성 포인터 설정
-    glEnableVertexAttribArray(0);  // 정점 속성 사용
-
-    glGenVertexArrays(1, &zVAO);
-    glBindVertexArray(zVAO);  // VAO 바인딩
-    glGenBuffers(1, &zVBO);  // VBO 생성
-    glBindBuffer(GL_ARRAY_BUFFER, zVBO);  // 버퍼 바인딩
-    glBufferData(GL_ARRAY_BUFFER, sizeof(z), z, GL_STATIC_DRAW);  // Y축 좌표 데이터 설정
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);  // 정점 속성 포인터 설정
-    glEnableVertexAttribArray(0);  // 정점 속성 사용
 
     // 각 모델에 대한 VAO, VBO, EBO 설정
     vaos.resize(models.size());
@@ -366,8 +265,8 @@ void InitBuffer() {
 
         // 색상 버퍼 설정
         glBindBuffer(GL_ARRAY_BUFFER, vbos[i][1]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        glBufferData(GL_ARRAY_BUFFER, models[i].colors.size() * sizeof(glm::vec3), models[i].colors.data(), GL_STATIC_DRAW);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);  // location 1에 색상 할당
         glEnableVertexAttribArray(1);
 
         // 면 인덱스 데이터 (EBO) 설정
