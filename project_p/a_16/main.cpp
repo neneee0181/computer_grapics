@@ -165,6 +165,42 @@ void timer(int value) {
         }
 
     }
+    else if (key_result == '5') {
+
+        float speed = 0.03;
+        float rotationSpeed = 0.05;  // 자전 속도 (공전과 별도)
+        static float scaleFactor = 1.0f;  // 스케일을 저장하는 변수 (초기값)
+
+        static bool growing = true;       // 도형이 커지고 있는지 여부를 저장하는 플래그
+
+        float maxScale = 1.005f;  // 최대 스케일
+        float minScale = 1.003f;  // 최소 스케일
+        float scaleSpeed = 0.0001f;  // 스케일 변화 속도
+
+        // Step 2: 로컬 Y축 기준 자전
+        //models[0].modelMatrix = glm::translate(models[0].modelMatrix, -models[0].translationOffset);  // 공전 중심으로 이동
+        //models[0].modelMatrix = glm::rotate(models[0].modelMatrix, glm::radians(-35.0f), glm::vec3(1.0, 0.0, 0.0));
+        //models[0].modelMatrix = glm::rotate(models[0].modelMatrix, glm::radians(35.0f), glm::vec3(0.0, 1.0, 0.0));
+        //models[0].modelMatrix = glm::scale(models[0].modelMatrix, glm::vec3(-0.2, -0.2, -0.2));
+        //models[0].modelMatrix = glm::rotate(models[0].modelMatrix, rotationSpeed, glm::vec3(0.0, 0.0, 1.0));  // 로컬 Y축 기준 자전
+        //models[0].modelMatrix = glm::scale(models[0].modelMatrix, glm::vec3(-5.0, -5.0, -5.0));
+        //models[0].modelMatrix = glm::rotate(models[0].modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
+        //models[0].modelMatrix = glm::rotate(models[0].modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));
+        //models[0].modelMatrix = glm::translate(models[0].modelMatrix, models[0].translationOffset);   // 다시 원래 위치로 이동
+
+        // Step 1: 공전 (공전 궤도를 따라 이동)
+        models[0].modelMatrix = glm::translate(models[0].modelMatrix, -models[0].translationOffset);  // 공전 중심으로 이동
+        models[0].modelMatrix = glm::rotate(models[0].modelMatrix, -speed * Direction1, glm::vec3(0.0, 0.0, 1.0));  // Z축을 기준으로 공전
+        models[0].modelMatrix = glm::translate(models[0].modelMatrix, models[0].translationOffset);   // 다시 원래 위치로 이동
+
+        // 모델 1도 동일하게 처리
+        //models[1].modelMatrix = glm::translate(models[1].modelMatrix, -models[1].translationOffset);  // 중심으로 이동
+        models[1].modelMatrix = glm::rotate(models[1].modelMatrix, speed * Direction2, glm::vec3(0.0, 1.0, 0.0));  // Z축을 기준으로 공전
+        //models[1].modelMatrix = glm::translate(models[1].modelMatrix, models[1].translationOffset);  // 다시 원래 위치로 이동
+
+    }
+
+    
 
     glutPostRedisplay();  // 화면 다시 그리기 요청
     glutTimerFunc(16, timer, value);  // 타이머 재설정 (약 60 FPS)
@@ -193,6 +229,15 @@ void makeSpiral() {
 
         spirals_v.push_back({ x, 0.0f, z });  // XZ 평면에 점 추가
     }
+}
+
+void timer2(int value) {
+    // Z축 중심으로 도형들을 공전시키기 위한 로직
+    float speed = 0.5f;
+
+    models[0].modelMatrix = glm::rotate(models[0].modelMatrix, glm::radians(speed), glm::vec3(1.0, 0.0, 0.0));
+    glutPostRedisplay();  // 화면 다시 그리기 요청
+    glutTimerFunc(16, timer2, value);  // 타이머 재설정 (약 60 FPS)
 }
 
 void keyBoard(unsigned char key, int x, int y) {
@@ -275,6 +320,24 @@ void keyBoard(unsigned char key, int x, int y) {
 
         glutTimerFunc(0, timer, 0);  // 타이머 시작
         break;
+    case '5':
+        isTimerRunning = !isTimerRunning;
+        key_result = '5';
+
+        // 초기 위치와 크기를 설정 (3번과 동일)
+        for (int i = 0; i < 2; ++i) {
+            glm::mat4 transformationMatrix1 = models[i].initialRotation;  // 초기 회전 적용
+            transformationMatrix1 = glm::scale(transformationMatrix1, glm::vec3(0.2f, 0.2f, 0.2f));  // 스케일
+            transformationMatrix1 = glm::translate(transformationMatrix1, models[i].translationOffset);
+            models[i].modelMatrix = transformationMatrix1;
+        }
+
+        f_f1 = models[0].modelMatrix[3];  // 첫번째 도형의 위치
+        f_f2 = models[1].modelMatrix[3];  // 두번째 도형의 위치
+
+        //glutTimerFunc(0, timer2, 0);
+        glutTimerFunc(0, timer, 0);  // 타이머 시작
+        break;
     default:
         break;
     }
@@ -343,22 +406,22 @@ int main(int argc, char** argv) {
     modelXLine.vertices.push_back(x[0]);
     modelXLine.vertices.push_back(x[1]);
     modelXLine.colors.push_back(glm::vec3(1.0, 0.0, 0.0));
-    modelXLine.modelMatrix = glm::rotate(modelXLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
-    modelXLine.modelMatrix = glm::rotate(modelXLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));
+    /*modelXLine.modelMatrix = glm::rotate(modelXLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
+    modelXLine.modelMatrix = glm::rotate(modelXLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));*/
 
     modelYLine.name = "yLine";
     modelYLine.vertices.push_back(y[0]);
     modelYLine.vertices.push_back(y[1]);
     modelYLine.colors.push_back(glm::vec3(0.0, 1.0, 0.0));
-    modelYLine.modelMatrix = glm::rotate(modelYLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
-    modelYLine.modelMatrix = glm::rotate(modelYLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));
+    /*modelYLine.modelMatrix = glm::rotate(modelYLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
+    modelYLine.modelMatrix = glm::rotate(modelYLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));*/
 
     modelZLine.name = "zLine";
     modelZLine.vertices.push_back(z[0]);
     modelZLine.vertices.push_back(z[1]);
     modelZLine.colors.push_back(glm::vec3(0.0, 0.0, 1.0));
-    modelZLine.modelMatrix = glm::rotate(modelZLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
-    modelZLine.modelMatrix = glm::rotate(modelZLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));
+    /*modelZLine.modelMatrix = glm::rotate(modelZLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
+    modelZLine.modelMatrix = glm::rotate(modelZLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));*/
 
     models.push_back(modelXLine);
     models.push_back(modelYLine);
