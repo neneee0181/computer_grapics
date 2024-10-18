@@ -81,7 +81,16 @@ void timer(int value) {
                 models[i].modelMatrix = glm::rotate(models[i].modelMatrix, glm::radians(-speed), glm::vec3(0.0, 1.0, 0.0));
             }
         }
+
+        if (key_result == 'r') {
+
+        }
+        else if (key_result == 'R') {
+
+        }
     }
+
+
     glutPostRedisplay();  // 화면 다시 그리기 요청
     glutTimerFunc(16, timer, 0);
 }
@@ -104,6 +113,12 @@ void keyBoard(unsigned char key, int x, int y) {
     case 'Y':
         key_result = 'Y';
         y_status = false;
+        break;
+    case 'r':
+        key_result = 'r';
+        break;
+    case 'R':
+        key_result = 'R';
         break;
     case '0':
         number_status = 0;
@@ -162,36 +177,46 @@ int main(int argc, char** argv) {
         
     // 모델들을 로드하고 벡터에 추가
     Model modelSqu, modelCone, modelSphere, modelCylinder;
-    read_obj_file("box3.obj", modelSqu, "cube");
+
     // 정육면체
-    modelSqu.modelMatrix = glm::rotate(modelSqu.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
-    modelSqu.modelMatrix = glm::rotate(modelSqu.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));
+    read_obj_file("box3.obj", modelSqu, "cube");
+   /* modelSqu.modelMatrix = glm::rotate(modelSqu.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
+    modelSqu.modelMatrix = glm::rotate(modelSqu.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));*/
     modelSqu.modelMatrix = glm::scale(modelSqu.modelMatrix, glm::vec3(0.2, 0.2, 0.2));
     modelSqu.modelMatrix = glm::translate(modelSqu.modelMatrix, glm::vec3(-3.0, 0.0, 0.0));
     modelSqu.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
     models.push_back(modelSqu);
+
+    // cone
+    read_obj_file("cone.obj", modelCone, "cone");
+    modelCone.modelMatrix = glm::rotate(modelCone.modelMatrix, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
+    /*modelCone.modelMatrix = glm::rotate(modelCone.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));*/
+    modelCone.modelMatrix = glm::scale(modelCone.modelMatrix, glm::vec3(0.2, 0.2, 0.2));
+    modelCone.modelMatrix = glm::translate(modelCone.modelMatrix, glm::vec3(3.0, 0.0, 0.0));
+    modelCone.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
+    models.push_back(modelCone);
 
     Model modelXLine, modelYLine, modelZLine;
     modelXLine.name = "xLine";
     modelXLine.vertices.push_back(x[0]);
     modelXLine.vertices.push_back(x[1]);
     modelXLine.colors.push_back(glm::vec3(1.0, 0.0, 0.0));
-    modelXLine.modelMatrix = glm::rotate(modelXLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
-    modelXLine.modelMatrix = glm::rotate(modelXLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));
+    /*modelXLine.modelMatrix = glm::rotate(modelXLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
+    modelXLine.modelMatrix = glm::rotate(modelXLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));*/
 
     modelYLine.name = "yLine";
     modelYLine.vertices.push_back(y[0]);
     modelYLine.vertices.push_back(y[1]);
     modelYLine.colors.push_back(glm::vec3(0.0, 1.0, 0.0));
-    modelYLine.modelMatrix = glm::rotate(modelYLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
-    modelYLine.modelMatrix = glm::rotate(modelYLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));
+    /*modelYLine.modelMatrix = glm::rotate(modelYLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
+    modelYLine.modelMatrix = glm::rotate(modelYLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));*/
 
     modelZLine.name = "zLine";
     modelZLine.vertices.push_back(z[0]);
     modelZLine.vertices.push_back(z[1]);
     modelZLine.colors.push_back(glm::vec3(0.0, 0.0, 1.0));
-    modelZLine.modelMatrix = glm::rotate(modelZLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
-    modelZLine.modelMatrix = glm::rotate(modelZLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));
+    /*modelZLine.modelMatrix = glm::rotate(modelZLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
+    modelZLine.modelMatrix = glm::rotate(modelZLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));*/
 
     models.push_back(modelXLine);
     models.push_back(modelYLine);
@@ -225,7 +250,7 @@ GLvoid drawScene() {
 
         GLint modelStatus = glGetUniformLocation(shaderProgramID, "modelStatus");
 
-        if (models[i].name == "cube") {
+        if (models[i].name == "cube" || models[i].name == "cone") {
             GLint modelLoc = glGetUniformLocation(shaderProgramID, "model");
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
             // 면 그리기
