@@ -53,7 +53,76 @@ const Vertex z[2] = {
     {0.0f, 0.0f, 0.8f}
 };
 
+int number_status = 0;
+char key_result = ' ';
+bool x_status = false, y_status = false;
+
+void timer(int value) {
+    if (number_status == 0) {
+        return;
+    }
+
+    float speed = 0.5f;
+    for (int i = 0; i < number_status; ++i) {
+        if (key_result == 'x' || key_result == 'X') {
+            if (x_status) {
+                models[i].modelMatrix = glm::rotate(models[i].modelMatrix, glm::radians(speed), glm::vec3(1.0, 0.0, 0.0));
+            }
+            else {
+                models[i].modelMatrix = glm::rotate(models[i].modelMatrix, glm::radians(-speed), glm::vec3(1.0, 0.0, 0.0));
+            }
+        }
+
+        if (key_result == 'y' || key_result == 'Y') {
+            if (y_status) {
+                models[i].modelMatrix = glm::rotate(models[i].modelMatrix, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
+            }
+            else {
+                models[i].modelMatrix = glm::rotate(models[i].modelMatrix, glm::radians(-speed), glm::vec3(0.0, 1.0, 0.0));
+            }
+        }
+    }
+    glutPostRedisplay();  // 화면 다시 그리기 요청
+    glutTimerFunc(16, timer, 0);
+}
+
 void keyBoard(unsigned char key, int x, int y) {
+    switch (key)
+    {
+    case 'x':
+        key_result = 'x';
+        x_status = true;
+        break;
+    case 'X':
+        key_result = 'X';
+        x_status = false;
+        break;
+    case 'y':
+        key_result = 'y';
+        y_status = true;
+        break;
+    case 'Y':
+        key_result = 'Y';
+        y_status = false;
+        break;
+    case '0':
+        number_status = 0;
+        break;
+    case '1':
+        number_status = 1;
+        glutTimerFunc(0, timer, 0);
+        break;
+    case '2':
+        number_status = 2;
+        glutTimerFunc(0, timer, 0);
+        break;
+    case '3':
+        number_status = 3;
+        glutTimerFunc(0, timer, 0);
+        break;
+    default:
+        break;
+    }
     glutPostRedisplay();  // 화면 다시 그리기 요청
 }
 
@@ -161,7 +230,7 @@ GLvoid drawScene() {
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
             // 면 그리기
             glUniform1i(modelStatus, 0);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
         }
         else if (models[i].name == "xLine" || models[i].name == "yLine" || models[i].name == "zLine") {
