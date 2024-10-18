@@ -43,30 +43,77 @@ GLvoid Reshape(int w, int h) {
     glViewport(0, 0, w, h);  // 뷰포트 크기 설정
 }
 
-void timer(int value) {
-    glutPostRedisplay();  // 화면 다시 그리기 요청
-    glutTimerFunc(16, timer, 0);
-}
+int currentSpiralIndex1 = 0;  // 1번 도형의 현재 스파이럴 인덱스
+int currentSpiralIndex2 = 0;  // 2번 도형의 현재 스파이럴 인덱스
 
-void keyBoard(unsigned char key, int x, int y) {
-    glutPostRedisplay();  // 화면 다시 그리기 요청
-}
+int spiralDirection1 = 1;  // 1번 도형의 스파이럴 진행 방향 (1: 앞으로, -1: 뒤로)
+int spiralDirection2 = -1;  // 2번 도형의 스파이럴 진행 방향 (1: 앞으로, -1: 뒤로)
 
-// 마우스 입력을 처리하는 함수
-void mouse(int button, int state, int x, int y) {
-    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
-        std::cout << "x = " << x << " y = " << y << std::endl;  // 마우스 클릭 좌표 출력
-    glutPostRedisplay();  // 키보드 입력 후 화면을 다시 그리도록 요청
-}
+bool startModel2 = false;  // 2번 도형이 스파이럴을 돌기 시작했는지 여부
 
 vector<Vertex> spirals_v;
+
+void timer(int value) {
+    if (value == 1) {
+        // 1번 도형 스파이럴 이동 처리
+        currentSpiralIndex1 += spiralDirection1;
+
+        // 1번 도형이 스파이럴 끝에 도달했을 때 방향 전환
+        if (currentSpiralIndex1 >= spirals_v.size() || currentSpiralIndex1 < 0) {
+            spiralDirection1 *= -1;
+            currentSpiralIndex1 += spiralDirection1;
+        }
+
+        // 스파이럴 경로의 1번 도형 위치
+        Vertex currentPos1 = spirals_v[currentSpiralIndex1];
+        float scaleFactor = 3.5f;  // 스파이럴 반지름 확장
+        glm::vec3 scaledPos1 = glm::vec3(currentPos1.x * scaleFactor, currentPos1.y * scaleFactor, currentPos1.z * scaleFactor);
+
+        // 1번 도형의 변환 설정
+        glm::mat4 transformationMatrix1 = models[0].initialRotation;  // 초기 회전 적용
+        transformationMatrix1 = glm::scale(transformationMatrix1, glm::vec3(0.2f, 0.2f, 0.2f));  // 스케일
+        transformationMatrix1 = glm::translate(transformationMatrix1, models[0].translationOffset);
+        transformationMatrix1 = glm::translate(transformationMatrix1, scaledPos1);  // 위치 설정
+        models[0].modelMatrix = transformationMatrix1;
+
+        // 2번 도형 시작 여부 확인 (2초 후 시작)
+        if (startModel2) {
+            currentSpiralIndex2 += spiralDirection2;
+
+            // 2번 도형이 스파이럴 끝에 도달했을 때 방향 전환
+            if (currentSpiralIndex2 >= spirals_v.size() || currentSpiralIndex2 < 0) {
+                spiralDirection2 *= -1;
+                currentSpiralIndex2 += spiralDirection2;
+            }
+
+            // 스파이럴 경로의 2번 도형 위치
+            Vertex currentPos2 = spirals_v[currentSpiralIndex2];
+            glm::vec3 scaledPos2 = glm::vec3(currentPos2.x * scaleFactor, currentPos2.y * scaleFactor, currentPos2.z * scaleFactor);
+
+            // 2번 도형의 변환 설정
+            glm::mat4 transformationMatrix2 = models[1].initialRotation;  // 초기 회전 적용
+            transformationMatrix2 = glm::scale(transformationMatrix2, glm::vec3(0.2f, 0.2f, 0.2f));  // 스케일
+            transformationMatrix2 = glm::translate(transformationMatrix2, models[1].translationOffset);
+            transformationMatrix2 = glm::translate(transformationMatrix2, scaledPos2);  // 위치 설정
+            models[1].modelMatrix = transformationMatrix2;
+        }
+    }
+
+    glutPostRedisplay();  // 화면 다시 그리기 요청
+    glutTimerFunc(16, timer, value);  // 타이머 재설정 (약 60 FPS)
+}
+
+// 2번 도형 시작 타이머 (2초 후 시작)
+void startModel2Timer(int value) {
+    startModel2 = true;  // 2번 도형 스파이럴 시작
+}
 
 void makeSpiral() {
     spirals_v.clear();  // 기존 데이터를 초기화
 
     float radiusIncreaseRate = 0.001f;  // 반지름 증가율
     float angleStep = 0.1f;  // 각도 증가량 (라디안)
-    int numTurns = 7;  // 스파이럴의 회전 수 (몇 바퀴 돌 것인지)
+    int numTurns = 6;  // 스파이럴의 회전 수 (몇 바퀴 돌 것인지)
     int numPointsPerTurn = 100;  // 한 바퀴 당 생성할 점의 수
     float initialRadius = 0.0f;  // 초기 반지름
 
@@ -79,6 +126,49 @@ void makeSpiral() {
 
         spirals_v.push_back({ x, 0.0f, z });  // XZ 평면에 점 추가
     }
+}
+
+void keyBoard(unsigned char key, int x, int y) {
+    switch (key)
+    {
+    case '1':
+    {
+        makeSpiral();
+        Model modelSpiral;
+        modelSpiral.name = "spiral";
+        modelSpiral.vertices = spirals_v;
+        modelSpiral.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
+        modelSpiral.modelMatrix = glm::rotate(modelSpiral.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
+        modelSpiral.modelMatrix = glm::rotate(modelSpiral.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));
+
+        models.push_back(modelSpiral);
+
+        for (int i = 0; i < 2; ++i) {
+            models[i].translationOffset.x = spirals_v[0].x;
+            models[i].translationOffset.y = spirals_v[0].y;
+            models[i].translationOffset.y = spirals_v[0].z;
+        }
+
+        InitBuffer();
+
+        // 1번 도형은 바로 시작
+        glutTimerFunc(0, timer, 1);
+        currentSpiralIndex2 = spirals_v.size();
+        // 2번 도형은 2초 후에 시작
+        glutTimerFunc(0, startModel2Timer, 0);
+        break;
+    }
+    default:
+        break;
+    }
+    glutPostRedisplay();  // 화면 다시 그리기 요청
+}
+
+// 마우스 입력을 처리하는 함수
+void mouse(int button, int state, int x, int y) {
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+        std::cout << "x = " << x << " y = " << y << std::endl;  // 마우스 클릭 좌표 출력
+    glutPostRedisplay();  // 키보드 입력 후 화면을 다시 그리도록 요청
 }
 
 // 메인 함수
@@ -157,19 +247,6 @@ int main(int argc, char** argv) {
     models.push_back(modelYLine);
     models.push_back(modelZLine);
 
-    makeSpiral();
-
-    if (spirals_v.size() != 0) {
-        Model modelSpiral;
-        modelSpiral.name = "spiral";
-        modelSpiral.vertices = spirals_v;
-        modelSpiral.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
-        modelSpiral.modelMatrix = glm::rotate(modelZLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
-        modelSpiral.modelMatrix = glm::rotate(modelZLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));
-
-        models.push_back(modelSpiral);
-    }
-
     InitBuffer();  // 버퍼 초기화
 
     // 콜백 함수 등록
@@ -209,7 +286,7 @@ GLvoid drawScene() {
             GLint lineLoc = glGetUniformLocation(shaderProgramID, "Line");
             glUniformMatrix4fv(lineLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
             glUniform1i(modelStatus, 1);
-            glLineWidth(2.0f);
+            glLineWidth(1.0f);
             glDrawArrays(GL_LINES, 0, 2);
         }
         else if (models[i].name == "spiral") {
