@@ -56,9 +56,11 @@ const Vertex z[2] = {
 int number_status = 0;
 char key_result = ' ';
 bool x_status = false, y_status = false;
+bool timerRunning = false;  // 타이머 실행 여부를 체크하는 플래그
 
 void timer(int value) {
     if (number_status == 0) {
+        timerRunning = false;  // number_status가 0이면 타이머를 정지 상태로 설정
         return;
     }
 
@@ -82,11 +84,19 @@ void timer(int value) {
             }
         }
 
-        if (key_result == 'r') {
+        if (key_result == 'r' || key_result == 'R') {
+            // Step 1: 원점으로 이동 (이동된 상태를 역변환)
+            models[i].modelMatrix = glm::translate(models[i].modelMatrix, -models[i].translationOffset);
 
-        }
-        else if (key_result == 'R') {
+            // Step 2: 초기 회전 상태로 복귀
+            //models[i].modelMatrix = models[i].initialRotation;
 
+            // Step 3: 원점 기준 Y축 회전
+            float rotationSpeed = (key_result == 'r') ? glm::radians(speed) : glm::radians(-speed);
+            models[i].modelMatrix = glm::rotate(models[i].modelMatrix, rotationSpeed, glm::vec3(0.0, 1.0, 0.0));
+
+            // Step 4: 다시 원래 위치로 이동
+            models[i].modelMatrix = glm::translate(models[i].modelMatrix, models[i].translationOffset);
         }
     }
 
@@ -125,15 +135,17 @@ void keyBoard(unsigned char key, int x, int y) {
         break;
     case '1':
         number_status = 1;
-        glutTimerFunc(0, timer, 0);
+        if (!timerRunning) {  // 타이머가 실행 중이지 않을 때만 타이머 시작
+            timerRunning = true;
+            glutTimerFunc(0, timer, 0);  // 타이머 시작
+        }
         break;
     case '2':
         number_status = 2;
-        glutTimerFunc(0, timer, 0);
-        break;
-    case '3':
-        number_status = 3;
-        glutTimerFunc(0, timer, 0);
+        if (!timerRunning) {  // 타이머가 실행 중이지 않을 때만 타이머 시작
+            timerRunning = true;
+            glutTimerFunc(0, timer, 0);  // 타이머 시작
+        }
         break;
     default:
         break;
@@ -180,19 +192,24 @@ int main(int argc, char** argv) {
 
     // 정육면체
     read_obj_file("box3.obj", modelSqu, "cube");
-   /* modelSqu.modelMatrix = glm::rotate(modelSqu.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
-    modelSqu.modelMatrix = glm::rotate(modelSqu.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));*/
+    // 초기 회전 상태를 저장 (초기 회전 상태는 고정됨)
+    modelSqu.initialRotation = glm::mat4(1.0f);  // 초기 회전 행렬을 단위 행렬로 설정
+    modelSqu.initialRotation = glm::rotate(modelSqu.initialRotation, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0)); // X축 회전
+    modelSqu.initialRotation = glm::rotate(modelSqu.initialRotation, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0)); // Y축 회전
+    modelSqu.modelMatrix = modelSqu.initialRotation;
     modelSqu.modelMatrix = glm::scale(modelSqu.modelMatrix, glm::vec3(0.2, 0.2, 0.2));
-    modelSqu.modelMatrix = glm::translate(modelSqu.modelMatrix, glm::vec3(-3.0, 0.0, 0.0));
+    modelSqu.translationOffset = glm::vec3(-3.0f, 0.0f, 0.0f);
+    modelSqu.modelMatrix = glm::translate(modelSqu.modelMatrix, modelSqu.translationOffset);
     modelSqu.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
     models.push_back(modelSqu);
 
     // cone
     read_obj_file("cone.obj", modelCone, "cone");
-    modelCone.modelMatrix = glm::rotate(modelCone.modelMatrix, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
-    /*modelCone.modelMatrix = glm::rotate(modelCone.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));*/
+    modelCone.modelMatrix = glm::rotate(modelCone.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
+    modelCone.modelMatrix = glm::rotate(modelCone.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));
     modelCone.modelMatrix = glm::scale(modelCone.modelMatrix, glm::vec3(0.2, 0.2, 0.2));
-    modelCone.modelMatrix = glm::translate(modelCone.modelMatrix, glm::vec3(3.0, 0.0, 0.0));
+    modelCone.translationOffset = glm::vec3(3.0f, 0.0f, 0.0f);
+    modelCone.modelMatrix = glm::translate(modelCone.modelMatrix, modelCone.translationOffset);
     modelCone.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
     models.push_back(modelCone);
 
@@ -201,22 +218,22 @@ int main(int argc, char** argv) {
     modelXLine.vertices.push_back(x[0]);
     modelXLine.vertices.push_back(x[1]);
     modelXLine.colors.push_back(glm::vec3(1.0, 0.0, 0.0));
-    /*modelXLine.modelMatrix = glm::rotate(modelXLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
-    modelXLine.modelMatrix = glm::rotate(modelXLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));*/
+    modelXLine.modelMatrix = glm::rotate(modelXLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
+    modelXLine.modelMatrix = glm::rotate(modelXLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));
 
     modelYLine.name = "yLine";
     modelYLine.vertices.push_back(y[0]);
     modelYLine.vertices.push_back(y[1]);
     modelYLine.colors.push_back(glm::vec3(0.0, 1.0, 0.0));
-    /*modelYLine.modelMatrix = glm::rotate(modelYLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
-    modelYLine.modelMatrix = glm::rotate(modelYLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));*/
+    modelYLine.modelMatrix = glm::rotate(modelYLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
+    modelYLine.modelMatrix = glm::rotate(modelYLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));
 
     modelZLine.name = "zLine";
     modelZLine.vertices.push_back(z[0]);
     modelZLine.vertices.push_back(z[1]);
     modelZLine.colors.push_back(glm::vec3(0.0, 0.0, 1.0));
-    /*modelZLine.modelMatrix = glm::rotate(modelZLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
-    modelZLine.modelMatrix = glm::rotate(modelZLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));*/
+    modelZLine.modelMatrix = glm::rotate(modelZLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
+    modelZLine.modelMatrix = glm::rotate(modelZLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));
 
     models.push_back(modelXLine);
     models.push_back(modelYLine);
