@@ -53,19 +53,56 @@ const GLfloat colors[12][3] = {
 };
 
 const glm::vec3 x[2] = {
-    glm::vec3(-1.0f,0.0f, 0.8f), glm::vec3(1.0f,0.0f, 0.8f)
+    glm::vec3(-1.0f,0.0f, 0.0f), glm::vec3(1.0f,0.0f, 0.0f)
 };
 
 const glm::vec3 y[2] = {
-    glm::vec3(0.0f,-1.0f, 0.8f), glm::vec3(0.0f,1.0f, 0.8f)
+    glm::vec3(0.0f,-1.0f, 0.0f), glm::vec3(0.0f,1.0f, 0.0f)
 };
 
 char key_result = ' ';
+bool squ_status = false, pyramid_status = false, h_status = false, w_status = false, x_status = false, y_status = false;
 
 void keyBoard(unsigned char key, int x, int y) {
-
-    key_result = key;
-   
+    switch (key)
+    {
+    case 'c': // 정육면체
+        squ_status = !squ_status;
+        pyramid_status = false;
+        break;
+    case 'p': // 사각뿔
+        pyramid_status = !pyramid_status;
+        squ_status = false;
+        break;
+    case 'h': // 은면제거/허용
+        h_status = !h_status;
+        break;
+    case 'w':
+    case 'W':
+        w_status = !w_status;
+        break;
+    case 'x':
+        key_result = 'x';
+        x_status = !x_status;
+        break;
+    case 'X':
+        key_result = 'X';
+        x_status = !x_status;
+        break;
+    case 'y':
+        key_result = 'y';
+        y_status = !y_status;
+        break;
+    case 'Y':
+        key_result = 'Y';
+        y_status = !y_status;
+        break;
+    case 's':
+        key_result = 's';
+        break;
+    default:
+        break;
+    }
     glutPostRedisplay();  // 화면 다시 그리기 요청
 }
 
@@ -78,6 +115,22 @@ void mouse(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
         std::cout << "x = " << x << " y = " << y << std::endl;  // 마우스 클릭 좌표 출력
     glutPostRedisplay();  // 키보드 입력 후 화면을 다시 그리도록 요청
+}
+
+glm::mat4 modelMatrix = glm::mat4(1.0f);
+
+void timer(int vlaue) {
+    float speed = 0.5f;
+
+    if (key_result == 'x' && x_status) {
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(speed), glm::vec3(1.0, 0.0, 0.0));
+    }
+    else if (key_result == 'X' && x_status) {
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(-speed), glm::vec3(1.0, 0.0, 0.0));
+    }
+    
+    glutTimerFunc(16, timer, vlaue);
+    glutPostRedisplay();  // 화면 다시 그리기
 }
 
 // 메인 함수
@@ -112,6 +165,9 @@ int main(int argc, char** argv) {
     models.push_back(modelSqu);
     models.push_back(modelSquarePyramid);
 
+    modelMatrix = glm::rotate(modelMatrix, glm::radians(30.0f), glm::vec3(1.0, 0.0, 0.0));
+    modelMatrix = glm::rotate(modelMatrix, glm::radians(-30.0f), glm::vec3(0.0, 1.0, 0.0));
+
     InitBuffer();  // 버퍼 초기화
 
     // 콜백 함수 등록
@@ -120,12 +176,12 @@ int main(int argc, char** argv) {
     glutKeyboardFunc(keyBoard);  // 키보드 입력 처리 함수 등록
     glutMouseFunc(mouse);  // 마우스 입력 처리 함수 등록
     glutSpecialFunc(specialKeys);  // 특수 키 (방향키 등) 입력 처리 함수 등록
+    glutTimerFunc(0, timer, 0);
     glutMainLoop();  // 이벤트 루프 시작
 
     return 0;  // 프로그램 정상 종료
 }
 
-glm::mat4 modelSquMatrix = glm::mat4(1.0f);  // 단위 행렬로 초기화
 glm::mat4 xLineMatrix = glm::mat4(1.0f);
 glm::mat4 yLineMatrix = glm::mat4(1.0f);
  
@@ -141,46 +197,27 @@ GLvoid drawScene() {
     // 각 모델을 그리기
     for (size_t i = 0; i < models.size(); ++i) {
         glBindVertexArray(vaos[i]);
-        glEnable(GL_DEPTH_TEST);
 
-        glm::mat4 modelMatrix = glm::mat4(1.0f);
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(30.0f), glm::vec3(1.0, 0.0, 0.0));
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(-30.0f), glm::vec3(0.0, 1.0, 0.0));
         GLint modelLoc = glGetUniformLocation(shaderProgramID, "modelV");
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 
-        switch (key_result)
-        {
-        case 'c': // 정육면체
-            if (models[i].name != "cube")
-                break;
-            // 면 그리기
-            glUniform1i(isLineLoc, 0);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
-            break;
-        case 'p': // 사각뿔
-            if (models[i].name != "pyramid")
-                break;
-            // 면 그리기
-            glUniform1i(isLineLoc, 0);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
-            break;
-        case 'h': // 은면제거/허용
-            break;
-        case 'w':
-            break;
-        case 'W':
-            break;
-        case 'x':
-            break;
-        case 'X':
-            break;
-        case 's':
-            break;
-        default:
-            break;
+        if (h_status)
+            glEnable(GL_DEPTH_TEST);
+
+        if (squ_status && models[i].name == "cube" || pyramid_status && models[i].name == "pyramid") {
+            if (w_status) {
+                // 면 그리기
+                glUniform1i(isLineLoc, 0);
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
+            }
+            else {
+                // 면 그리기
+                glUniform1i(isLineLoc, 0);
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
+            }
+           
         }
 
         glDisable(GL_DEPTH_TEST);
@@ -195,12 +232,10 @@ GLvoid drawScene() {
     glUniform1i(isLineLoc, 2);  // isLine 값을 2로 설정 (선 그리기 용)
     glLineWidth(1.0f);  // 선 두께 설정
     glDrawArrays(GL_LINES, 0, 2);  // X축 그리기
-    glDisable(GL_DEPTH_TEST);
     glBindVertexArray(0);  // VAO 바인딩 해제
 
     // Y축 그리기
     glBindVertexArray(yVAO);  // Y축 VAO 바인딩
-    glEnable(GL_DEPTH_TEST);
     GLint yLineLoc = glGetUniformLocation(shaderProgramID, "yLine");
     glUniformMatrix4fv(yLineLoc, 1, GL_FALSE, glm::value_ptr(yLineMatrix));  // 초기화된 변환 행렬 전달
     glUniform1i(isLineLoc, 3);  // isLine 값을 3으로 설정 (선 그리기 용)
