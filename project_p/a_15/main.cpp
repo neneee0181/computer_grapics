@@ -105,6 +105,8 @@ void timer(int value) {
     glutTimerFunc(16, timer, 0);
 }
 
+bool c_status = false;
+
 void keyBoard(unsigned char key, int x, int y) {
     switch (key)
     {
@@ -129,6 +131,52 @@ void keyBoard(unsigned char key, int x, int y) {
         break;
     case 'R':
         key_result = 'R';
+        break;
+    case 'c':
+    {
+        c_status = !c_status;
+
+        if (c_status) {
+            models[0].vertices.clear();
+            models[0].faces.clear();
+            read_obj_file("cylinder.obj", models[0], "cube");
+
+            models[1].vertices.clear();
+            models[1].faces.clear();
+            read_obj_file("sphere.obj", models[1], "cone");
+        }
+        else {
+            models[0].vertices.clear();
+            models[0].faces.clear();
+            read_obj_file("box3.obj", models[0], "cube");
+
+            models[1].vertices.clear();
+            models[1].faces.clear();
+            read_obj_file("cone.obj", models[1], "cone");
+        }
+       
+        InitBuffer();
+        break;
+    }
+    case 's':
+        for (int i = 0; i < 2; ++i) {
+            models[i].modelMatrix = glm::mat4(1.0f);
+
+            if (models[i].name == "cube") {
+                models[i].modelMatrix = glm::rotate(models[i].modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0)); // X축 회전
+                models[i].modelMatrix = glm::rotate(models[i].modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0)); // Y축 회전
+                models[i].modelMatrix = glm::scale(models[i].modelMatrix, glm::vec3(0.2, 0.2, 0.2));
+                models[i].modelMatrix = glm::translate(models[i].modelMatrix, glm::vec3(-3.0f, 0.0f, 0.0f));
+            }
+
+            if (models[i].name == "cone") {
+                models[i].modelMatrix = glm::rotate(models[i].modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
+                models[i].modelMatrix = glm::rotate(models[i].modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));
+                models[i].modelMatrix = glm::scale(models[i].modelMatrix, glm::vec3(0.2, 0.2, 0.2));
+                models[i].translationOffset = glm::vec3(3.0f, 0.0f, 0.0f);
+                models[i].modelMatrix = glm::translate(models[i].modelMatrix, models[i].translationOffset);
+            }
+        }
         break;
     case '0':
         number_status = 0;
@@ -188,7 +236,7 @@ int main(int argc, char** argv) {
     make_shaderProgram();  // 쉐이더 프로그램 생성
         
     // 모델들을 로드하고 벡터에 추가
-    Model modelSqu, modelCone, modelSphere, modelCylinder;
+    Model modelSqu, modelCone, modelSphere;
 
     // 정육면체
     read_obj_file("box3.obj", modelSqu, "cube");
