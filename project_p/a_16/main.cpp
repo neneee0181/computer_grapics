@@ -46,8 +46,8 @@ GLvoid Reshape(int w, int h) {
 int currentSpiralIndex1 = 0;  // 1번 도형의 현재 스파이럴 인덱스
 int currentSpiralIndex2 = 0;  // 2번 도형의 현재 스파이럴 인덱스
 
-int spiralDirection1 = 1;  // 1번 도형의 스파이럴 진행 방향 (1: 앞으로, -1: 뒤로)
-int spiralDirection2 = -1;  // 2번 도형의 스파이럴 진행 방향 (1: 앞으로, -1: 뒤로)
+int Direction1 = 1;  // 1번 도형의 스파이럴 진행 방향 (1: 앞으로, -1: 뒤로)
+int Direction2 = -1;  // 2번 도형의 스파이럴 진행 방향 (1: 앞으로, -1: 뒤로)
 
 bool startModel2 = false;  // 2번 도형이 스파이럴을 돌기 시작했는지 여부
 
@@ -65,12 +65,12 @@ void timer(int value) {
 
     if (key_result == '1') {
         // 1번 도형 스파이럴 이동 처리
-        currentSpiralIndex1 += spiralDirection1;
+        currentSpiralIndex1 += Direction1;
 
         // 1번 도형이 스파이럴 끝에 도달했을 때 방향 전환
         if (currentSpiralIndex1 >= spirals_v.size() || currentSpiralIndex1 < 0) {
-            spiralDirection1 *= -1;
-            currentSpiralIndex1 += spiralDirection1;
+            Direction1 *= -1;
+            currentSpiralIndex1 += Direction1;
         }
 
         // 스파이럴 경로의 1번 도형 위치
@@ -81,18 +81,18 @@ void timer(int value) {
         // 1번 도형의 변환 설정
         glm::mat4 transformationMatrix1 = models[0].initialRotation;  // 초기 회전 적용
         transformationMatrix1 = glm::scale(transformationMatrix1, glm::vec3(0.2f, 0.2f, 0.2f));  // 스케일
-        transformationMatrix1 = glm::translate(transformationMatrix1, models[0].translationOffset);
+        transformationMatrix1 = glm::translate(transformationMatrix1, glm::vec3(spirals_v[0].x, spirals_v[0].y, spirals_v[0].z));
         transformationMatrix1 = glm::translate(transformationMatrix1, scaledPos1);  // 위치 설정
         models[0].modelMatrix = transformationMatrix1;
 
         // 2번 도형 시작 여부 확인 (2초 후 시작)
         if (startModel2) {
-            currentSpiralIndex2 += spiralDirection2;
+            currentSpiralIndex2 += Direction2;
 
             // 2번 도형이 스파이럴 끝에 도달했을 때 방향 전환
             if (currentSpiralIndex2 >= spirals_v.size() || currentSpiralIndex2 < 0) {
-                spiralDirection2 *= -1;
-                currentSpiralIndex2 += spiralDirection2;
+                Direction2 *= -1;
+                currentSpiralIndex2 += Direction2;
             }
 
             // 스파이럴 경로의 2번 도형 위치
@@ -102,10 +102,13 @@ void timer(int value) {
             // 2번 도형의 변환 설정
             glm::mat4 transformationMatrix2 = models[1].initialRotation;  // 초기 회전 적용
             transformationMatrix2 = glm::scale(transformationMatrix2, glm::vec3(0.2f, 0.2f, 0.2f));  // 스케일
-            transformationMatrix2 = glm::translate(transformationMatrix2, models[1].translationOffset);
+            transformationMatrix2 = glm::translate(transformationMatrix2, glm::vec3(spirals_v[0].x, spirals_v[0].y, spirals_v[0].z));
             transformationMatrix2 = glm::translate(transformationMatrix2, scaledPos2);  // 위치 설정
             models[1].modelMatrix = transformationMatrix2;
         }
+    }
+    else if (key_result == '2') {
+        
     }
 
     glutPostRedisplay();  // 화면 다시 그리기 요청
@@ -155,12 +158,6 @@ void keyBoard(unsigned char key, int x, int y) {
 
         models.push_back(modelSpiral);
 
-        for (int i = 0; i < 2; ++i) {
-            models[i].translationOffset.x = spirals_v[0].x;
-            models[i].translationOffset.y = spirals_v[0].y;
-            models[i].translationOffset.y = spirals_v[0].z;
-        }
-
         InitBuffer();
 
         // 1번 도형은 바로 시작
@@ -175,6 +172,15 @@ void keyBoard(unsigned char key, int x, int y) {
     {
         isTimerRunning = !isTimerRunning;
         key_result = '2';
+
+
+
+        for (int i = 0; i < 2; ++i) {
+            glm::mat4 transformationMatrix1 = models[i].initialRotation;  // 초기 회전 적용
+            transformationMatrix1 = glm::scale(transformationMatrix1, glm::vec3(0.2f, 0.2f, 0.2f));  // 스케일
+            transformationMatrix1 = glm::translate(transformationMatrix1, models[i].translationOffset);
+            models[i].modelMatrix = transformationMatrix1;
+        }
 
         break;
     }
@@ -309,7 +315,7 @@ GLvoid drawScene() {
             glLineWidth(1.0f);
             glDrawArrays(GL_LINES, 0, 2);
         }
-        else if (models[i].name == "spiral") {
+        else if (models[i].name == "spiral" && key_result == '1') {
             GLint lineLoc = glGetUniformLocation(shaderProgramID, "Line");
             glUniformMatrix4fv(lineLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
             glUniform1i(modelStatus, 1);
