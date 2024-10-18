@@ -59,6 +59,9 @@ bool isTimerRunning = false;  // 타이머가 실행 중인지 여부를 관리하는 플래그
 glm::vec3 f_f1;
 glm::vec3 f_f2;
 
+glm::vec3 f_4_1;
+glm::vec3 f_4_2;
+
 void timer(int value) {
 
     if (!isTimerRunning) {
@@ -113,18 +116,54 @@ void timer(int value) {
     else if (key_result == '2') {
         float speed = 0.1f;
 
-       
+        models[0].modelMatrix = glm::translate(models[0].modelMatrix, glm::vec3(speed * Direction1, 0.0, 0.0));
+
+        if (models[0].modelMatrix[3].x >= f_4_2.x || models[0].modelMatrix[3].x <= f_4_1.x) {
+            Direction1 *= -1;
+        }
+
+        models[1].modelMatrix = glm::translate(models[1].modelMatrix, glm::vec3(speed * Direction2, 0.0, 0.0));
+
+        if (models[1].modelMatrix[3].x >= f_4_2.x || models[1].modelMatrix[3].x <= f_4_1.x) {
+            Direction2 *= -1;
+        }
+
 
     }
     else if (key_result == '3') {
         // 1번 도형의 위치로 0번 도형을 이동
-        
+       
         glm::vec3 targetPosition1 = f_f2 - glm::vec3(models[0].modelMatrix[3]);  // 1번 도형의 위치 추출
         models[0].modelMatrix = glm::translate(models[0].modelMatrix, targetPosition1);
 
         glm::vec3 targetPosition2 = f_f1 - glm::vec3(models[1].modelMatrix[3]);  // 1번 도형의 위치 추출
         models[1].modelMatrix = glm::translate(models[1].modelMatrix, targetPosition2);
-        
+
+        if (f_f1.x >= glm::vec3(models[1].modelMatrix[3]).x && f_f2.x >= glm::vec3(models[1].modelMatrix[3]).x) {
+            glm::vec3 temp = f_f1;
+            f_f1 = f_f2;
+            f_f2 = temp;
+        }
+
+    }
+    else if (key_result == '4') {
+        float speed = 0.01;
+        // Step 1: 원점으로 이동 (이동된 상태를 역변환)
+        models[0].modelMatrix = glm::translate(models[0].modelMatrix, -models[0].translationOffset);
+        // Step 3: 원점 기준 Y축 회전
+        models[0].modelMatrix = glm::rotate(models[0].modelMatrix, -speed * Direction1, glm::vec3(0.0, 0.0, 1.0));
+        // Step 4: 다시 원래 위치로 이동
+        models[0].modelMatrix = glm::translate(models[0].modelMatrix, models[0].translationOffset);
+
+        models[1].modelMatrix = glm::translate(models[1].modelMatrix, -models[1].translationOffset);
+        models[1].modelMatrix = glm::rotate(models[1].modelMatrix, speed * Direction2, glm::vec3(0.0, 0.0, 1.0));
+        models[1].modelMatrix = glm::translate(models[1].modelMatrix, models[1].translationOffset);
+
+        if (models[1].modelMatrix[3].x <= f_f1.x + 0.001 && models[1].modelMatrix[3].y >= f_f2.y) {
+            Direction1 *= -1;
+            Direction2 *= -1;
+        }
+
     }
 
     glutPostRedisplay();  // 화면 다시 그리기 요청
@@ -189,14 +228,15 @@ void keyBoard(unsigned char key, int x, int y) {
         isTimerRunning = !isTimerRunning;
         key_result = '2';
 
-
-
         for (int i = 0; i < 2; ++i) {
             glm::mat4 transformationMatrix1 = models[i].initialRotation;  // 초기 회전 적용
             transformationMatrix1 = glm::scale(transformationMatrix1, glm::vec3(0.2f, 0.2f, 0.2f));  // 스케일
             transformationMatrix1 = glm::translate(transformationMatrix1, models[i].translationOffset);
             models[i].modelMatrix = transformationMatrix1;
         }
+
+        f_4_1 = models[0].modelMatrix[3];
+        f_4_2 = models[1].modelMatrix[3];
 
         glutTimerFunc(0, timer, 0);
 
@@ -217,6 +257,23 @@ void keyBoard(unsigned char key, int x, int y) {
         f_f2 = models[1].modelMatrix[3];
 
         glutTimerFunc(0, timer, 0);
+        break;
+    case '4':
+        isTimerRunning = !isTimerRunning;
+        key_result = '4';
+
+        // 초기 위치와 크기를 설정 (3번과 동일)
+        for (int i = 0; i < 2; ++i) {
+            glm::mat4 transformationMatrix1 = models[i].initialRotation;  // 초기 회전 적용
+            transformationMatrix1 = glm::scale(transformationMatrix1, glm::vec3(0.2f, 0.2f, 0.2f));  // 스케일
+            transformationMatrix1 = glm::translate(transformationMatrix1, models[i].translationOffset);
+            models[i].modelMatrix = transformationMatrix1;
+        }
+
+        f_f1 = models[0].modelMatrix[3];  // 첫번째 도형의 위치
+        f_f2 = models[1].modelMatrix[3];  // 두번째 도형의 위치
+
+        glutTimerFunc(0, timer, 0);  // 타이머 시작
         break;
     default:
         break;
