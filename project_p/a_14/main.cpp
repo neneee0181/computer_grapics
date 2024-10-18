@@ -63,6 +63,8 @@ const glm::vec3 y[2] = {
 char key_result = ' ';
 bool squ_status = false, pyramid_status = false, h_status = false, w_status = false, x_status = false, y_status = false;
 
+glm::mat4 modelMatrix = glm::mat4(1.0f);
+
 void keyBoard(unsigned char key, int x, int y) {
     switch (key)
     {
@@ -99,6 +101,9 @@ void keyBoard(unsigned char key, int x, int y) {
         break;
     case 's':
         key_result = 's';
+        modelMatrix = glm::mat4(1.0f);
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(30.0f), glm::vec3(1.0, 0.0, 0.0));
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(-30.0f), glm::vec3(0.0, 1.0, 0.0));
         break;
     default:
         break;
@@ -108,6 +113,24 @@ void keyBoard(unsigned char key, int x, int y) {
 
 
 void specialKeys(int key, int x, int y) {
+    float speed = 0.01f;
+    switch (key)
+    {
+    case GLUT_KEY_UP:
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0, speed, 0.0));
+        break;
+    case GLUT_KEY_DOWN:
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0, -speed, 0.0));
+        break;
+    case GLUT_KEY_LEFT:
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(-speed, 0.0, 0.0));
+        break;
+    case GLUT_KEY_RIGHT:
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(speed, 0.0, 0.0));
+        break;
+    default:
+        break;
+    }
     glutPostRedisplay();  // 화면 다시 그리기 요청
 }
 // 마우스 입력을 처리하는 함수
@@ -116,8 +139,6 @@ void mouse(int button, int state, int x, int y) {
         std::cout << "x = " << x << " y = " << y << std::endl;  // 마우스 클릭 좌표 출력
     glutPostRedisplay();  // 키보드 입력 후 화면을 다시 그리도록 요청
 }
-
-glm::mat4 modelMatrix = glm::mat4(1.0f);
 
 void timer(int vlaue) {
     float speed = 0.5f;
