@@ -59,6 +59,28 @@ void mouse(int button, int state, int x, int y) {
     glutPostRedisplay();  // 키보드 입력 후 화면을 다시 그리도록 요청
 }
 
+vector<Vertex> spirals_v;
+
+void makeSpiral() {
+    spirals_v.clear();  // 기존 데이터를 초기화
+
+    float radiusIncreaseRate = 0.001f;  // 반지름 증가율
+    float angleStep = 0.1f;  // 각도 증가량 (라디안)
+    int numTurns = 7;  // 스파이럴의 회전 수 (몇 바퀴 돌 것인지)
+    int numPointsPerTurn = 100;  // 한 바퀴 당 생성할 점의 수
+    float initialRadius = 0.0f;  // 초기 반지름
+
+    for (int i = 0; i < numTurns * numPointsPerTurn; ++i) {
+        float angle = i * angleStep;  // 각도 계산
+        float radius = initialRadius + i * radiusIncreaseRate;  // 현재 반지름 계산
+
+        float x = radius * cos(angle);  // x 좌표
+        float z = radius * sin(angle);  // z 좌표
+
+        spirals_v.push_back({ x, 0.0f, z });  // XZ 평면에 점 추가
+    }
+}
+
 // 메인 함수
 int main(int argc, char** argv) {
 
@@ -135,6 +157,19 @@ int main(int argc, char** argv) {
     models.push_back(modelYLine);
     models.push_back(modelZLine);
 
+    makeSpiral();
+
+    if (spirals_v.size() != 0) {
+        Model modelSpiral;
+        modelSpiral.name = "spiral";
+        modelSpiral.vertices = spirals_v;
+        modelSpiral.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
+        modelSpiral.modelMatrix = glm::rotate(modelZLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
+        modelSpiral.modelMatrix = glm::rotate(modelZLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));
+
+        models.push_back(modelSpiral);
+    }
+
     InitBuffer();  // 버퍼 초기화
 
     // 콜백 함수 등록
@@ -174,8 +209,15 @@ GLvoid drawScene() {
             GLint lineLoc = glGetUniformLocation(shaderProgramID, "Line");
             glUniformMatrix4fv(lineLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
             glUniform1i(modelStatus, 1);
-            glLineWidth(1.0f);
+            glLineWidth(2.0f);
             glDrawArrays(GL_LINES, 0, 2);
+        }
+        else if (models[i].name == "spiral") {
+            GLint lineLoc = glGetUniformLocation(shaderProgramID, "Line");
+            glUniformMatrix4fv(lineLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
+            glUniform1i(modelStatus, 1);
+            glLineWidth(1.0f);
+            glDrawArrays(GL_LINE_STRIP, 0, models[i].vertices.size());
         }
 
         glBindVertexArray(0);
