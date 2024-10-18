@@ -128,6 +128,13 @@ void timer(int vlaue) {
     else if (key_result == 'X' && x_status) {
         modelMatrix = glm::rotate(modelMatrix, glm::radians(-speed), glm::vec3(1.0, 0.0, 0.0));
     }
+
+    if (key_result == 'y' && y_status) {
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
+    }
+    else if (key_result == 'Y' && y_status) {
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(-speed), glm::vec3(0.0, 1.0, 0.0));
+    }
     
     glutTimerFunc(16, timer, vlaue);
     glutPostRedisplay();  // 화면 다시 그리기
