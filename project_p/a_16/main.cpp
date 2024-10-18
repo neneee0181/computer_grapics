@@ -53,8 +53,17 @@ bool startModel2 = false;  // 2번 도형이 스파이럴을 돌기 시작했는지 여부
 
 vector<Vertex> spirals_v;
 
+char key_result = ' ';
+bool isTimerRunning = false;  // 타이머가 실행 중인지 여부를 관리하는 플래그
+
 void timer(int value) {
-    if (value == 1) {
+
+    if (!isTimerRunning) {
+        return;  // 타이머가 멈추면 더 이상 갱신하지 않음
+    }
+
+
+    if (key_result == '1') {
         // 1번 도형 스파이럴 이동 처리
         currentSpiralIndex1 += spiralDirection1;
 
@@ -133,6 +142,9 @@ void keyBoard(unsigned char key, int x, int y) {
     {
     case '1':
     {
+        isTimerRunning = !isTimerRunning;
+
+        key_result = '1';
         makeSpiral();
         Model modelSpiral;
         modelSpiral.name = "spiral";
@@ -152,10 +164,18 @@ void keyBoard(unsigned char key, int x, int y) {
         InitBuffer();
 
         // 1번 도형은 바로 시작
-        glutTimerFunc(0, timer, 1);
-        currentSpiralIndex2 = spirals_v.size();
+        glutTimerFunc(0, timer, 0);
+        if (currentSpiralIndex2 == 0)
+            currentSpiralIndex2 = spirals_v.size();
         // 2번 도형은 2초 후에 시작
         glutTimerFunc(0, startModel2Timer, 0);
+        break;
+    }
+    case '2':
+    {
+        isTimerRunning = !isTimerRunning;
+        key_result = '2';
+
         break;
     }
     default:
