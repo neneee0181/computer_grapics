@@ -56,6 +56,9 @@ vector<Vertex> spirals_v;
 char key_result = ' ';
 bool isTimerRunning = false;  // 타이머가 실행 중인지 여부를 관리하는 플래그
 
+glm::vec3 f_f1;
+glm::vec3 f_f2;
+
 void timer(int value) {
 
     if (!isTimerRunning) {
@@ -108,6 +111,19 @@ void timer(int value) {
         }
     }
     else if (key_result == '2') {
+        float speed = 0.1f;
+
+       
+
+    }
+    else if (key_result == '3') {
+        // 1번 도형의 위치로 0번 도형을 이동
+        
+        glm::vec3 targetPosition1 = f_f2 - glm::vec3(models[0].modelMatrix[3]);  // 1번 도형의 위치 추출
+        models[0].modelMatrix = glm::translate(models[0].modelMatrix, targetPosition1);
+
+        glm::vec3 targetPosition2 = f_f1 - glm::vec3(models[1].modelMatrix[3]);  // 1번 도형의 위치 추출
+        models[1].modelMatrix = glm::translate(models[1].modelMatrix, targetPosition2);
         
     }
 
@@ -182,8 +198,26 @@ void keyBoard(unsigned char key, int x, int y) {
             models[i].modelMatrix = transformationMatrix1;
         }
 
+        glutTimerFunc(0, timer, 0);
+
         break;
     }
+    case '3':
+        isTimerRunning = !isTimerRunning;
+        key_result = '3';
+
+        for (int i = 0; i < 2; ++i) {
+            glm::mat4 transformationMatrix1 = models[i].initialRotation;  // 초기 회전 적용
+            transformationMatrix1 = glm::scale(transformationMatrix1, glm::vec3(0.2f, 0.2f, 0.2f));  // 스케일
+            transformationMatrix1 = glm::translate(transformationMatrix1, models[i].translationOffset);
+            models[i].modelMatrix = transformationMatrix1;
+        }
+
+        f_f1 = models[0].modelMatrix[3];
+        f_f2 = models[1].modelMatrix[3];
+
+        glutTimerFunc(0, timer, 0);
+        break;
     default:
         break;
     }
