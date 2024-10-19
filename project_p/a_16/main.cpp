@@ -171,9 +171,11 @@ void timer(int value) {
         float rotationSpeed = 0.1;  // 자전 속도 (공전과 별도)
         static float stac1 = 0.0;
         static float stac2 = 0.0;
+        static float time = 0.0;  // 시간 값 추가
 
         stac1 += rotationSpeed;
         stac2 += speed;
+        time += 0.05f;  // 시간 값 증가 (0.05f는 스케일 변화 속도)
 
         // Step 1: 공전 (공전 궤도를 따라 이동)
         glm::mat4 orbitMatrix = glm::mat4(1.0f);  // 공전용 행렬
@@ -186,12 +188,14 @@ void timer(int value) {
 
         // Step 2: 자전 (로컬 축을 기준으로 회전)
         glm::mat4 rotationMatrix = glm::mat4(1.0f);  // 자전용 행렬
-        rotationMatrix = glm::rotate(rotationMatrix, glm::radians(35.0f), glm::vec3(1.0f, 0.0f, 0.0f));  // X축 회전
-        rotationMatrix = glm::rotate(rotationMatrix, glm::radians(-35.0f), glm::vec3(0.0f, 1.0f, 0.0f));  // Y축 회전
         rotationMatrix = glm::rotate(rotationMatrix, stac1, glm::vec3(0.0f, 0.0f, 1.0f));  // 로컬 Z축 기준 자전
 
+        glm::mat4 sizeMatrix1 = glm::mat4(1.0f);  // 공전용 행렬
+        float scaleValue1 = 0.25f * sin(time) + 0.35f;  // (0.1 ~ 0.6) 범위로 변화
+        sizeMatrix1 = glm::scale(sizeMatrix1, glm::vec3(scaleValue1));  // 모델 크기 조절
+
         // 최종 변환: 공전과 자전 합침
-        models[0].modelMatrix = orbitMatrix * rotationMatrix;
+        models[0].modelMatrix = orbitMatrix * rotationMatrix * sizeMatrix1;
 
 
         // Step 1: 공전 (공전 궤도를 따라 이동)
@@ -205,11 +209,13 @@ void timer(int value) {
 
         // Step 2: 자전 (로컬 축을 기준으로 회전)
         glm::mat4 rotationMatrix2 = glm::mat4(1.0f);  // 자전용 행렬
-        rotationMatrix2 = glm::rotate(rotationMatrix2, glm::radians(35.0f), glm::vec3(1.0f, 0.0f, 0.0f));  // X축 회전
-        rotationMatrix2 = glm::rotate(rotationMatrix2, glm::radians(-35.0f), glm::vec3(0.0f, 1.0f, 0.0f));  // Y축 회전
         rotationMatrix2 = glm::rotate(rotationMatrix2, stac1, glm::vec3(0.0f, 0.0f, 1.0f));  // 로컬 Z축 기준 자전
 
-        models[1].modelMatrix = orbitMatrix2 * rotationMatrix2;
+        glm::mat4 sizeMatrix2 = glm::mat4(1.0f);  // 공전용 행렬
+        float scaleValue2 = 0.25f * sin(time) + 0.35f;  // (0.1 ~ 0.6) 범위로 변화
+        sizeMatrix2 = glm::scale(sizeMatrix2, glm::vec3(scaleValue2));  // 모델 크기 조절
+
+        models[1].modelMatrix = orbitMatrix2 * rotationMatrix2 * sizeMatrix2;
     }
 
     
