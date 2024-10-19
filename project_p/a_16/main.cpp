@@ -168,35 +168,35 @@ void timer(int value) {
     else if (key_result == '5') {
 
         float speed = 0.03;
-        float rotationSpeed = 0.05;  // 자전 속도 (공전과 별도)
-        static float scaleFactor = 1.0f;  // 스케일을 저장하는 변수 (초기값)
+        float rotationSpeed = 0.1;  // 자전 속도 (공전과 별도)
+        static float stac1 = 0.0;
+        static float stac2 = 0.0;
 
-        static bool growing = true;       // 도형이 커지고 있는지 여부를 저장하는 플래그
-
-        float maxScale = 1.005f;  // 최대 스케일
-        float minScale = 1.003f;  // 최소 스케일
-        float scaleSpeed = 0.0001f;  // 스케일 변화 속도
-
-        // Step 2: 로컬 Y축 기준 자전
-        //models[0].modelMatrix = glm::translate(models[0].modelMatrix, -models[0].translationOffset);  // 공전 중심으로 이동
-        //models[0].modelMatrix = glm::rotate(models[0].modelMatrix, glm::radians(-35.0f), glm::vec3(1.0, 0.0, 0.0));
-        //models[0].modelMatrix = glm::rotate(models[0].modelMatrix, glm::radians(35.0f), glm::vec3(0.0, 1.0, 0.0));
-        //models[0].modelMatrix = glm::scale(models[0].modelMatrix, glm::vec3(-0.2, -0.2, -0.2));
-        //models[0].modelMatrix = glm::rotate(models[0].modelMatrix, rotationSpeed, glm::vec3(0.0, 0.0, 1.0));  // 로컬 Y축 기준 자전
-        //models[0].modelMatrix = glm::scale(models[0].modelMatrix, glm::vec3(-5.0, -5.0, -5.0));
-        //models[0].modelMatrix = glm::rotate(models[0].modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
-        //models[0].modelMatrix = glm::rotate(models[0].modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));
-        //models[0].modelMatrix = glm::translate(models[0].modelMatrix, models[0].translationOffset);   // 다시 원래 위치로 이동
+        stac1 += rotationSpeed;
+        stac2 += speed;
 
         // Step 1: 공전 (공전 궤도를 따라 이동)
-        models[0].modelMatrix = glm::translate(models[0].modelMatrix, -models[0].translationOffset);  // 공전 중심으로 이동
-        models[0].modelMatrix = glm::rotate(models[0].modelMatrix, -speed * Direction1, glm::vec3(0.0, 0.0, 1.0));  // Z축을 기준으로 공전
-        models[0].modelMatrix = glm::translate(models[0].modelMatrix, models[0].translationOffset);   // 다시 원래 위치로 이동
+        glm::mat4 orbitMatrix = glm::mat4(1.0f);  // 공전용 행렬
+        orbitMatrix = glm::scale(orbitMatrix, glm::vec3(0.2f, 0.2f, 0.2f));  // 모델 축소
+        orbitMatrix = glm::rotate(orbitMatrix, glm::radians(35.0f), glm::vec3(1.0f, 0.0f, 0.0f));  // X축 회전
+        orbitMatrix = glm::rotate(orbitMatrix, glm::radians(-35.0f), glm::vec3(0.0f, 1.0f, 0.0f));  // Y축 회전
+        orbitMatrix = glm::rotate(orbitMatrix, stac2, glm::vec3(0.0, 1.0, 0.0));  // 공전 (Y축 기준 회전)
+        orbitMatrix = glm::translate(orbitMatrix, models[0].translationOffset);  // 공전 중심으로 이동
+
+
+        // Step 2: 자전 (로컬 축을 기준으로 회전)
+        glm::mat4 rotationMatrix = glm::mat4(1.0f);  // 자전용 행렬
+        rotationMatrix = glm::rotate(rotationMatrix, glm::radians(35.0f), glm::vec3(1.0f, 0.0f, 0.0f));  // X축 회전
+        rotationMatrix = glm::rotate(rotationMatrix, glm::radians(-35.0f), glm::vec3(0.0f, 1.0f, 0.0f));  // Y축 회전
+        rotationMatrix = glm::rotate(rotationMatrix, stac1, glm::vec3(0.0f, 0.0f, 1.0f));  // 로컬 Z축 기준 자전
+
+        // 최종 변환: 공전과 자전 합침
+        models[0].modelMatrix = orbitMatrix * rotationMatrix;
 
         // 모델 1도 동일하게 처리
-        //models[1].modelMatrix = glm::translate(models[1].modelMatrix, -models[1].translationOffset);  // 중심으로 이동
+        models[1].modelMatrix = glm::translate(models[1].modelMatrix, -models[1].translationOffset);  // 중심으로 이동
         models[1].modelMatrix = glm::rotate(models[1].modelMatrix, speed * Direction2, glm::vec3(0.0, 1.0, 0.0));  // Z축을 기준으로 공전
-        //models[1].modelMatrix = glm::translate(models[1].modelMatrix, models[1].translationOffset);  // 다시 원래 위치로 이동
+        models[1].modelMatrix = glm::translate(models[1].modelMatrix, models[1].translationOffset);  // 다시 원래 위치로 이동
 
     }
 
