@@ -212,7 +212,7 @@ void timer(int value) {
         rotationMatrix2 = glm::rotate(rotationMatrix2, stac1, glm::vec3(0.0f, 0.0f, 1.0f));  // 로컬 Z축 기준 자전
 
         glm::mat4 sizeMatrix2 = glm::mat4(1.0f);  // 공전용 행렬
-        float scaleValue2 = 0.25f * sin(time) + 0.35f;  // (0.1 ~ 0.6) 범위로 변화
+        float scaleValue2 = 0.25f * sin(-time) + 0.35f;  // (0.1 ~ 0.6) 범위로 변화
         sizeMatrix2 = glm::scale(sizeMatrix2, glm::vec3(scaleValue2));  // 모델 크기 조절
 
         models[1].modelMatrix = orbitMatrix2 * rotationMatrix2 * sizeMatrix2;
