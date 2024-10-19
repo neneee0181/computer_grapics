@@ -193,11 +193,23 @@ void timer(int value) {
         // 최종 변환: 공전과 자전 합침
         models[0].modelMatrix = orbitMatrix * rotationMatrix;
 
-        // 모델 1도 동일하게 처리
-        models[1].modelMatrix = glm::translate(models[1].modelMatrix, -models[1].translationOffset);  // 중심으로 이동
-        models[1].modelMatrix = glm::rotate(models[1].modelMatrix, speed * Direction2, glm::vec3(0.0, 1.0, 0.0));  // Z축을 기준으로 공전
-        models[1].modelMatrix = glm::translate(models[1].modelMatrix, models[1].translationOffset);  // 다시 원래 위치로 이동
 
+        // Step 1: 공전 (공전 궤도를 따라 이동)
+        glm::mat4 orbitMatrix2 = glm::mat4(1.0f);  // 공전용 행렬
+        orbitMatrix2 = glm::scale(orbitMatrix2, glm::vec3(0.2f, 0.2f, 0.2f));  // 모델 축소
+        orbitMatrix2 = glm::rotate(orbitMatrix2, glm::radians(35.0f), glm::vec3(1.0f, 0.0f, 0.0f));  // X축 회전
+        orbitMatrix2 = glm::rotate(orbitMatrix2, glm::radians(-35.0f), glm::vec3(0.0f, 1.0f, 0.0f));  // Y축 회전
+        orbitMatrix2 = glm::rotate(orbitMatrix2, stac2, glm::vec3(0.0, 1.0, 0.0));  // 공전 (Y축 기준 회전)
+        orbitMatrix2 = glm::translate(orbitMatrix2, models[1].translationOffset);  // 공전 중심으로 이동
+
+
+        // Step 2: 자전 (로컬 축을 기준으로 회전)
+        glm::mat4 rotationMatrix2 = glm::mat4(1.0f);  // 자전용 행렬
+        rotationMatrix2 = glm::rotate(rotationMatrix2, glm::radians(35.0f), glm::vec3(1.0f, 0.0f, 0.0f));  // X축 회전
+        rotationMatrix2 = glm::rotate(rotationMatrix2, glm::radians(-35.0f), glm::vec3(0.0f, 1.0f, 0.0f));  // Y축 회전
+        rotationMatrix2 = glm::rotate(rotationMatrix2, stac1, glm::vec3(0.0f, 0.0f, 1.0f));  // 로컬 Z축 기준 자전
+
+        models[1].modelMatrix = orbitMatrix2 * rotationMatrix2;
     }
 
     
