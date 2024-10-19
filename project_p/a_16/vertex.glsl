@@ -52,8 +52,7 @@ void main() {
         out_Color = in_Color;  // 모델 색상 전달
     } else if (modelStatus == 1) {
         // 좌표계 변환 적용
-        mat4 newLine = Line * rotationMatrix;
-        gl_Position = newLine * vec4(in_Position, 1.0);
+        gl_Position = Line * vec4(in_Position, 1.0);
         out_Color = in_Color;  // 좌표계 색상 전달
     }
 }

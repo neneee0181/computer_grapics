@@ -424,22 +424,22 @@ int main(int argc, char** argv) {
     modelXLine.vertices.push_back(x[0]);
     modelXLine.vertices.push_back(x[1]);
     modelXLine.colors.push_back(glm::vec3(1.0, 0.0, 0.0));
-    /*modelXLine.modelMatrix = glm::rotate(modelXLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
-    modelXLine.modelMatrix = glm::rotate(modelXLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));*/
+    modelXLine.modelMatrix = glm::rotate(modelXLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
+    modelXLine.modelMatrix = glm::rotate(modelXLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));
 
     modelYLine.name = "yLine";
     modelYLine.vertices.push_back(y[0]);
     modelYLine.vertices.push_back(y[1]);
     modelYLine.colors.push_back(glm::vec3(0.0, 1.0, 0.0));
-    /*modelYLine.modelMatrix = glm::rotate(modelYLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
-    modelYLine.modelMatrix = glm::rotate(modelYLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));*/
+    modelYLine.modelMatrix = glm::rotate(modelYLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
+    modelYLine.modelMatrix = glm::rotate(modelYLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));
 
     modelZLine.name = "zLine";
     modelZLine.vertices.push_back(z[0]);
     modelZLine.vertices.push_back(z[1]);
     modelZLine.colors.push_back(glm::vec3(0.0, 0.0, 1.0));
-    /*modelZLine.modelMatrix = glm::rotate(modelZLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
-    modelZLine.modelMatrix = glm::rotate(modelZLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));*/
+    modelZLine.modelMatrix = glm::rotate(modelZLine.modelMatrix, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0));
+    modelZLine.modelMatrix = glm::rotate(modelZLine.modelMatrix, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0));
 
     models.push_back(modelXLine);
     models.push_back(modelYLine);
