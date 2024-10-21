@@ -392,7 +392,7 @@ int main(int argc, char** argv) {
         cout << "GLEW Initialized\n";  // 초기화 성공 시 메시지 출력
 
     make_shaderProgram();  // 쉐이더 프로그램 생성
-        
+
     // 모델들을 로드하고 벡터에 추가
     Model modelSqu, modelSphere;
 
