@@ -5,6 +5,7 @@
 #include <gl/glm/glm/glm.hpp>  // GLM 라이브러리 포함 (수학적인 계산을 돕기 위한 라이브러리)
 #include <gl/glm/glm/gtc/matrix_transform.hpp>
 #include <gl/glm/glm/gtc/type_ptr.hpp>
+#include <gl/glm/glm/gtx/matrix_decompose.hpp>
 #include <vector>  // 표준 벡터 라이브러리 포함 (동적 배열을 사용하기 위해 필요)
 #include <unordered_map>
 
@@ -155,6 +156,41 @@ void timer_squ_f(int value) {
     }
 }
 
+//5~8
+void timer_pira_o(int value) {
+
+    if (keyStates['o']) {
+
+        static  float currentRotation = 0.8f;
+        currentRotation += 0.8f;
+
+        models[5].modelMatrix = glm::translate(models[5].modelMatrix, glm::vec3(0.0, 0.0, 0.5));
+        models[5].modelMatrix = glm::rotate(models[5].modelMatrix, glm::radians(0.8f), glm::vec3(1.0, 0.0, 0.0));
+        models[5].modelMatrix = glm::translate(models[5].modelMatrix, glm::vec3(0.0, 0.0, -0.5));
+
+        models[6].modelMatrix = glm::translate(models[6].modelMatrix, glm::vec3(0.5, 0.0, 0.0));
+        models[6].modelMatrix = glm::rotate(models[6].modelMatrix, glm::radians(-0.8f), glm::vec3(0.0, 0.0, 1.0));
+        models[6].modelMatrix = glm::translate(models[6].modelMatrix, glm::vec3(-0.5, 0.0, 0.0));
+
+        models[7].modelMatrix = glm::translate(models[7].modelMatrix, glm::vec3(0.0, 0.0, -0.5));
+        models[7].modelMatrix = glm::rotate(models[7].modelMatrix, glm::radians(-0.8f), glm::vec3(1.0, 0.0, 0.0));
+        models[7].modelMatrix = glm::translate(models[7].modelMatrix, glm::vec3(0.0, 0.0, 0.5));
+
+        models[8].modelMatrix = glm::translate(models[8].modelMatrix, glm::vec3(-0.5, 0.0, 0.0));
+        models[8].modelMatrix = glm::rotate(models[8].modelMatrix, glm::radians(0.8f), glm::vec3(0.0, 0.0, 1.0));
+        models[8].modelMatrix = glm::translate(models[8].modelMatrix, glm::vec3(0.5, 0.0, 0.0));
+
+        if (currentRotation <= 235.0f) {
+            glutPostRedisplay();
+            glutTimerFunc(16, timer_pira_o, value);
+        }
+    }
+    else {
+
+    }
+
+}
+
 void keyBoard(unsigned char key, int x, int y) {
 
     keyStates[key] = !keyStates[key];
@@ -173,6 +209,9 @@ void keyBoard(unsigned char key, int x, int y) {
 
     if (key == 'b')
         glutTimerFunc(0, timer_squ_b, 0);
+
+    if (key == 'o')
+        glutTimerFunc(0, timer_pira_o, 0);
 
 
     for (const auto& pair : keyStates) {
@@ -236,16 +275,19 @@ int main(int argc, char** argv) {
         modelSqu.colors = colors_m;
         models.push_back(modelSqu);
     }
-   
 
-    read_obj_file("squarePyramid.obj", squarePyramid, "squarePyramid");
-    squarePyramid.initialRotation = glm::mat4(1.0f);  // 초기 회전 행렬을 단위 행렬로 설정
-    squarePyramid.modelMatrix = squarePyramid.initialRotation;
-    squarePyramid.modelMatrix = glm::scale(squarePyramid.modelMatrix, glm::vec3(0.5, 0.5, 0.5));
-    squarePyramid.translationOffset = glm::vec3(0.0f, 0.0f, 0.0f);
-    squarePyramid.modelMatrix = glm::translate(squarePyramid.modelMatrix, squarePyramid.translationOffset);
-    squarePyramid.colors = colors_m;
-    models.push_back(squarePyramid);
+    for (int i = 1; i < 6; ++i) {
+        Model squarePyramid;
+        read_obj_file("squarePyramid" + std::to_string(i) + ".obj", squarePyramid, "squarePyramid");
+        // 초기 회전 상태를 저장 (초기 회전 상태는 고정됨)
+        squarePyramid.initialRotation = glm::mat4(1.0f);  // 초기 회전 행렬을 단위 행렬로 설정
+        squarePyramid.modelMatrix = squarePyramid.initialRotation;
+        squarePyramid.modelMatrix = glm::scale(squarePyramid.modelMatrix, glm::vec3(0.5, 0.5, 0.5));
+        squarePyramid.translationOffset = glm::vec3(0.0f, 0.0f, 0.0f);
+        squarePyramid.modelMatrix = glm::translate(squarePyramid.modelMatrix, squarePyramid.translationOffset);
+        squarePyramid.colors = colors_m;
+        models.push_back(squarePyramid);
+    }
 
     Model modelXLine, modelYLine, modelZLine;
     modelXLine.name = "xLine";
