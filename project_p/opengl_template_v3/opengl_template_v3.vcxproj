@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{394aab06-dc6d-4460-97de-b9aa8604698c}</ProjectGuid>
-    <RootNamespace>opengl_template_v2</RootNamespace>
+    <ProjectGuid>{a7e8d919-012e-4c3a-8f41-fd05d3b1d822}</ProjectGuid>
+    <RootNamespace>opengl_template_v3</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

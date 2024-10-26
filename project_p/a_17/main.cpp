@@ -45,6 +45,8 @@ const Vertex z[2] = {
 // 화면 크기가 변경될 때 호출되는 함수
 GLvoid Reshape(int w, int h) {
     glViewport(0, 0, w, h);  // 뷰포트 크기 설정
+    width = w;
+    height = h;
 }
 
 void timer(int value) {
@@ -146,13 +148,12 @@ GLvoid drawScene() {
 
     glUseProgram(shaderProgramID);  // 쉐이더 프로그램 사용
 
+    // 카메라
     cameraPos = glm::vec3(0.0, 0.0, 3.0);
     glm::mat4 view = glm::mat4(1.0f);
-    // Y축 기준으로 35도 회전
-    glm::mat4 rotationMatrix_x = glm::rotate(glm::mat4(1.0f), glm::radians(35.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::mat4 rotationMatrix_y = glm::rotate(glm::mat4(1.0f), glm::radians(-35.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    glm::mat4 rotationMatrix_x = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 rotationMatrix_y = glm::rotate(glm::mat4(1.0f), glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     cameraPos = glm::vec3(rotationMatrix_x * rotationMatrix_y * glm::vec4(cameraPos, 1.0f));
-
     view = glm::lookAt(
         cameraPos,  //--- 카메라위치
         cameraDirection,  //--- 카메라바라보는방향
@@ -161,8 +162,9 @@ GLvoid drawScene() {
     unsigned int viewLocation = glGetUniformLocation(shaderProgramID, "viewTransform");
     glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
 
+    // 투영
     glm::mat4 projection = glm::mat4(1.0f);
-    projection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 100.0f);
+    projection = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / static_cast<float>(height), 0.1f, 100.0f);
     unsigned int projectionLocation = glGetUniformLocation(shaderProgramID, "projectionTransform");
     glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, &projection[0][0]);
 
