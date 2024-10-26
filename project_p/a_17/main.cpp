@@ -83,12 +83,26 @@ void timer_squ(int value) {
 
     if (keyStates['t']) {
         models[0].modelMatrix = glm::rotate(models[0].modelMatrix, glm::radians(0.5f), glm::vec3(0.0, 1.0, 0.0));
+        glutPostRedisplay();
+        glutTimerFunc(16, timer_squ, value);
+    }
+
+    if (keyStates['f']) {
+        models[1].modelMatrix = glm::translate(models[1].modelMatrix, glm::vec3(0.0, 0.01, 0.0));
+        if (models[1].modelMatrix[3].y <= 0.5) {
+            glutPostRedisplay();
+            glutTimerFunc(16, timer_squ, value);
+        }
+    }
+    else {
+        models[1].modelMatrix = glm::translate(models[1].modelMatrix, glm::vec3(0.0, -0.01, 0.0));
+        if (models[1].modelMatrix[3].y >= 0.0) {
+            glutPostRedisplay();
+            glutTimerFunc(16, timer_squ, value);
+        }
     }
 
 
-    glutPostRedisplay();  // 화면 다시 그리기 요청
-    if (keyStates['t'] || keyStates['f'] || keyStates['s'] || keyStates['b'])
-        glutTimerFunc(16, timer_squ, value);
 }
 
 void keyBoard(unsigned char key, int x, int y) {
@@ -97,7 +111,7 @@ void keyBoard(unsigned char key, int x, int y) {
         glutTimerFunc(0, timer_y, 0);
     }
 
-    if (key == 't' && !keyStates['t']) {
+    if (key == 't' && !keyStates['t'] || key == 'f') {
         glutTimerFunc(0, timer_squ, 0);
     }
 
