@@ -94,20 +94,27 @@ int main(int argc, char** argv) {
     make_shaderProgram();  // 쉐이더 프로그램 생성
         
     // 모델들을 로드하고 벡터에 추가
-    Model modelSqu, modelCone, modelSphere, modelCylinder;
+    Model modelSqu, squarePyramid;
 
     // 정육면체
     read_obj_file("box3.obj", modelSqu, "cube");
     // 초기 회전 상태를 저장 (초기 회전 상태는 고정됨)
     modelSqu.initialRotation = glm::mat4(1.0f);  // 초기 회전 행렬을 단위 행렬로 설정
-    modelSqu.initialRotation = glm::rotate(modelSqu.initialRotation, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0)); // X축 회전
-    modelSqu.initialRotation = glm::rotate(modelSqu.initialRotation, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0)); // Y축 회전
     modelSqu.modelMatrix = modelSqu.initialRotation;
-    modelSqu.modelMatrix = glm::scale(modelSqu.modelMatrix, glm::vec3(0.2, 0.2, 0.2));
-    modelSqu.translationOffset = glm::vec3(-3.0f, 0.0f, 0.0f);
+    modelSqu.modelMatrix = glm::scale(modelSqu.modelMatrix, glm::vec3(0.5, 0.5, 0.5));
+    modelSqu.translationOffset = glm::vec3(0.0f, 0.0f, 0.0f);
     modelSqu.modelMatrix = glm::translate(modelSqu.modelMatrix, modelSqu.translationOffset);
     modelSqu.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
     models.push_back(modelSqu);
+
+    read_obj_file("squarePyramid.obj", squarePyramid, "squarePyramid");
+    squarePyramid.initialRotation = glm::mat4(1.0f);  // 초기 회전 행렬을 단위 행렬로 설정
+    squarePyramid.modelMatrix = squarePyramid.initialRotation;
+    squarePyramid.modelMatrix = glm::scale(squarePyramid.modelMatrix, glm::vec3(0.5, 0.5, 0.5));
+    squarePyramid.translationOffset = glm::vec3(0.0f, 0.0f, 0.0f);
+    squarePyramid.modelMatrix = glm::translate(squarePyramid.modelMatrix, squarePyramid.translationOffset);
+    squarePyramid.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
+    models.push_back(squarePyramid);
 
     Model modelXLine, modelYLine, modelZLine;
     modelXLine.name = "xLine";
@@ -175,7 +182,7 @@ GLvoid drawScene() {
 
         GLint modelStatus = glGetUniformLocation(shaderProgramID, "modelStatus");
 
-        if (models[i].name == "cube" || models[i].name == "cone") {
+        if (models[i].name == "cube" || models[i].name == "squarePyramid") {
             GLint modelLoc = glGetUniformLocation(shaderProgramID, "model");
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
             // 면 그리기
