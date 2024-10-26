@@ -78,6 +78,29 @@ void timer_y(int value) {
         glutTimerFunc(16, timer_y, value);
 }
 
+void timer_squ(int value) {
+
+    if (keyStates['t']) {
+
+    }
+
+    if (keyStates['f']) {
+
+    }
+
+    if (keyStates['s']) {
+
+    }
+
+    if (keyStates['b']) {
+
+    }
+
+    glutPostRedisplay();  // 화면 다시 그리기 요청
+    if (keyStates['t'] || keyStates['f'] || keyStates['s'] || keyStates['b'])
+        glutTimerFunc(16, timer_y, value);
+}
+
 void keyBoard(unsigned char key, int x, int y) {
 
     if (key == 'y' && !keyStates['y']) {
@@ -220,7 +243,7 @@ GLvoid drawScene() {
 
         glEnable(GL_CULL_FACE);
         if (keyStates['h']) {
-            glCullFace(GL_FRONT);
+            glCullFace(GL_BACK);
             glFrontFace(GL_CCW);
         }
         else {
