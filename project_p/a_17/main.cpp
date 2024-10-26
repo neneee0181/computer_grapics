@@ -78,31 +78,36 @@ void timer_y(int value) {
         glutTimerFunc(16, timer_y, value);
 }
 
+bool timer_squ_status = false;
+
 void timer_squ(int value) {
 
-
-    if (keyStates['t']) {
-        models[0].modelMatrix = glm::rotate(models[0].modelMatrix, glm::radians(0.5f), glm::vec3(0.0, 1.0, 0.0));
-        glutPostRedisplay();
-        glutTimerFunc(16, timer_squ, value);
-    }
-
     if (keyStates['f']) {
-        models[1].modelMatrix = glm::translate(models[1].modelMatrix, glm::vec3(0.0, 0.01, 0.0));
         if (models[1].modelMatrix[3].y <= 0.5) {
-            glutPostRedisplay();
-            glutTimerFunc(16, timer_squ, value);
+            models[1].modelMatrix = glm::translate(models[1].modelMatrix, glm::vec3(0.0, 0.01, 0.0));
+        }
+        if (models[1].modelMatrix[3].y >= 0.5) {
+            timer_squ_status = false;
         }
     }
     else {
-        models[1].modelMatrix = glm::translate(models[1].modelMatrix, glm::vec3(0.0, -0.01, 0.0));
         if (models[1].modelMatrix[3].y >= 0.0) {
-            glutPostRedisplay();
-            glutTimerFunc(16, timer_squ, value);
+            models[1].modelMatrix = glm::translate(models[1].modelMatrix, glm::vec3(0.0, -0.01, 0.0));
+        }
+        if (models[1].modelMatrix[3].y <= 0.0) {
+            timer_squ_status = false;
         }
     }
 
+    if (keyStates['t']) {
+        models[0].modelMatrix = glm::rotate(models[0].modelMatrix, glm::radians(0.5f), glm::vec3(0.0, 1.0, 0.0));
+        timer_squ_status = true;
+    }
 
+   
+    glutPostRedisplay();
+    if (timer_squ_status)
+        glutTimerFunc(16, timer_squ, value);
 }
 
 void keyBoard(unsigned char key, int x, int y) {
@@ -112,7 +117,10 @@ void keyBoard(unsigned char key, int x, int y) {
     }
 
     if (key == 't' && !keyStates['t'] || key == 'f') {
-        glutTimerFunc(0, timer_squ, 0);
+        if (!timer_squ_status) {
+            glutTimerFunc(0, timer_squ, 0);
+            timer_squ_status = true;
+        }
     }
 
     keyStates[key] = !keyStates[key];
