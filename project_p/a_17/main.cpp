@@ -67,13 +67,32 @@ GLvoid Reshape(int w, int h) {
     height = h;
 }
 
-void timer(int value) {
+void timer_y(int value) {
+
+    for (auto& model : models) {
+        model.modelMatrix = glm::rotate(model.modelMatrix, glm::radians(0.1f), glm::vec3(0.0, 1.0, 0.0));
+    }
+
     glutPostRedisplay();  // 화면 다시 그리기 요청
-    glutTimerFunc(16, timer, 0);
+    if (keyStates['y'])
+        glutTimerFunc(16, timer_y, value);
 }
 
 void keyBoard(unsigned char key, int x, int y) {
+
+    if (key == 'y' && !keyStates['y']) {
+        glutTimerFunc(0, timer_y, 0);
+    }
+
     keyStates[key] = !keyStates[key];
+
+    for (const auto& pair : keyStates) {
+        unsigned char key = pair.first; // 키 이름
+        bool isPressed = pair.second;   // 해당 키의 상태
+
+        std::cout << "Key: " << key << " | status: " << (isPressed ? "true" : "false") << std::endl;
+    }
+
     glutPostRedisplay();  // 화면 다시 그리기 요청
 }
 
@@ -197,10 +216,15 @@ GLvoid drawScene() {
     // 각 모델을 그리기
     for (size_t i = 0; i < models.size(); ++i) {
 
+        glEnable(GL_DEPTH_TEST);
+
         glEnable(GL_CULL_FACE);
         if (keyStates['h']) {
-            glCullFace(GL_BACK);
+            glCullFace(GL_FRONT);
             glFrontFace(GL_CCW);
+        }
+        else {
+            glDisable(GL_CULL_FACE);
         }
 
         glBindVertexArray(vaos[i]);
@@ -225,12 +249,13 @@ GLvoid drawScene() {
         }
 
         glBindVertexArray(0);
-        glDisable(GL_CULL_FACE);
+        glDisable(GL_DEPTH_TEST);
+
     }
 
 
     glutSwapBuffers();  // 더블 버퍼링 사용, 화면 갱신
-
+    
     // OpenGL 오류 체크 루프
     GLenum err;
     while ((err = glGetError()) != GL_NO_ERROR) {
