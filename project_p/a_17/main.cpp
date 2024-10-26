@@ -31,6 +31,8 @@ glm::vec3 cameraPos = glm::vec3(0.0, 0.0, 4.0);
 glm::vec3 cameraDirection = glm::vec3(0.0, 0.0, 0.0);
 glm::vec3 cameraUp = glm::vec3(0.0, 1.0, 0.0);
 
+glm::mat4 projection = glm::mat4(1.0f);
+
 const vector<glm::vec3> colors_m = {
     {1.0, 0.0, 0.0},   // ª°∞≠
     {1.0, 0.0, 0.0},   // ª°∞≠
@@ -352,6 +354,15 @@ void keyBoard(unsigned char key, int x, int y) {
         glutTimerFunc(0, timer_pira_r, 0);
     }
 
+    if (keyStates['p']) {
+        projection = glm::mat4(1.0f);
+        projection = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / static_cast<float>(height), 0.1f, 50.0f);
+        projection = glm::translate(projection, glm::vec3(0.0, 0.0, -0.5));
+    }
+    else {
+        projection = glm::mat4(1.0f);
+        projection = glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, -100.0f, 100.0f);
+    }
 
     for (const auto& pair : keyStates) {
         unsigned char key = pair.first; // ≈∞ ¿Ã∏ß
@@ -482,8 +493,8 @@ GLvoid drawScene() {
     glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
 
     // ≈ıøµ
-    glm::mat4 projection = glm::mat4(1.0f);
-    projection = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / static_cast<float>(height), 0.1f, 100.0f);
+    //glm::mat4 projection = glm::mat4(1.0f);
+    //projection = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / static_cast<float>(height), 0.1f, 100.0f);
     unsigned int projectionLocation = glGetUniformLocation(shaderProgramID, "projectionTransform");
     glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, &projection[0][0]);
 
