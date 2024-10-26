@@ -27,6 +27,21 @@ glm::vec3 cameraPos = glm::vec3(0.0, 0.0, 4.0);
 glm::vec3 cameraDirection = glm::vec3(0.0, 0.0, 0.0);
 glm::vec3 cameraUp = glm::vec3(0.0, 1.0, 0.0);
 
+const vector<glm::vec3> colors_m = {
+    {1.0, 0.0, 0.0},   // »¡°­
+    {1.0, 0.0, 0.0},   // »¡°­
+    {1.0, 0.0, 0.0},   // »¡°­
+    {1.0, 1.0, 0.0},   // ³ë¶û
+    {0.0, 1.0, 0.0},   // ÃÊ·Ï
+    {0.0, 1.0, 0.0},   // ÃÊ·Ï
+    {0.0, 1.0, 0.0},   // ÃÊ·Ï
+    {0.0, 1.0, 0.0},   // ÃÊ·Ï
+    {0.0, 0.0, 1.0},   // ÆÄ¶û
+    {0.0, 0.0, 1.0},   // ÆÄ¶û
+    {0.0, 0.0, 1.0},   // ÆÄ¶û
+    {0.0, 0.0, 1.0},   // ÆÄ¶û
+};
+
 const Vertex x[2] = {
     {-0.8f,0.0f, 0.0f},
     {0.8f,0.0f, 0.0f}
@@ -104,7 +119,7 @@ int main(int argc, char** argv) {
     modelSqu.modelMatrix = glm::scale(modelSqu.modelMatrix, glm::vec3(0.5, 0.5, 0.5));
     modelSqu.translationOffset = glm::vec3(0.0f, 0.0f, 0.0f);
     modelSqu.modelMatrix = glm::translate(modelSqu.modelMatrix, modelSqu.translationOffset);
-    modelSqu.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
+    modelSqu.colors = colors_m;
     models.push_back(modelSqu);
 
     read_obj_file("squarePyramid.obj", squarePyramid, "squarePyramid");
@@ -113,7 +128,7 @@ int main(int argc, char** argv) {
     squarePyramid.modelMatrix = glm::scale(squarePyramid.modelMatrix, glm::vec3(0.5, 0.5, 0.5));
     squarePyramid.translationOffset = glm::vec3(0.0f, 0.0f, 0.0f);
     squarePyramid.modelMatrix = glm::translate(squarePyramid.modelMatrix, squarePyramid.translationOffset);
-    squarePyramid.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
+    squarePyramid.colors = colors_m;
     models.push_back(squarePyramid);
 
     Model modelXLine, modelYLine, modelZLine;
@@ -187,7 +202,8 @@ GLvoid drawScene() {
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
             // ¸é ±×¸®±â
             glUniform1i(modelStatus, 0);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            glLineWidth(1.0f);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
         }
         else if (models[i].name == "xLine" || models[i].name == "yLine" || models[i].name == "zLine") {
