@@ -155,14 +155,14 @@ void timer_squ_f(int value) {
         }
     }
 }
+float currentRotation1 = 0.8f;
+float currentRotation2 = 235.0f;
 
 //5~8
 void timer_pira_o(int value) {
 
     if (keyStates['o']) {
-
-        static  float currentRotation = 0.8f;
-        currentRotation += 0.8f;
+        currentRotation1 += 0.8f;
 
         models[5].modelMatrix = glm::translate(models[5].modelMatrix, glm::vec3(0.0, 0.0, 0.5));
         models[5].modelMatrix = glm::rotate(models[5].modelMatrix, glm::radians(0.8f), glm::vec3(1.0, 0.0, 0.0));
@@ -180,15 +180,147 @@ void timer_pira_o(int value) {
         models[8].modelMatrix = glm::rotate(models[8].modelMatrix, glm::radians(0.8f), glm::vec3(0.0, 0.0, 1.0));
         models[8].modelMatrix = glm::translate(models[8].modelMatrix, glm::vec3(0.5, 0.0, 0.0));
 
-        if (currentRotation <= 235.0f) {
+        if (currentRotation1 <= 235.0f) {
             glutPostRedisplay();
             glutTimerFunc(16, timer_pira_o, value);
         }
     }
     else {
+        currentRotation2 -= 0.8f;
 
+        models[5].modelMatrix = glm::translate(models[5].modelMatrix, glm::vec3(0.0, 0.0, 0.5));
+        models[5].modelMatrix = glm::rotate(models[5].modelMatrix, glm::radians(-0.8f), glm::vec3(1.0, 0.0, 0.0));
+        models[5].modelMatrix = glm::translate(models[5].modelMatrix, glm::vec3(0.0, 0.0, -0.5));
+
+        models[6].modelMatrix = glm::translate(models[6].modelMatrix, glm::vec3(0.5, 0.0, 0.0));
+        models[6].modelMatrix = glm::rotate(models[6].modelMatrix, glm::radians(0.8f), glm::vec3(0.0, 0.0, 1.0));
+        models[6].modelMatrix = glm::translate(models[6].modelMatrix, glm::vec3(-0.5, 0.0, 0.0));
+
+        models[7].modelMatrix = glm::translate(models[7].modelMatrix, glm::vec3(0.0, 0.0, -0.5));
+        models[7].modelMatrix = glm::rotate(models[7].modelMatrix, glm::radians(0.8f), glm::vec3(1.0, 0.0, 0.0));
+        models[7].modelMatrix = glm::translate(models[7].modelMatrix, glm::vec3(0.0, 0.0, 0.5));
+
+        models[8].modelMatrix = glm::translate(models[8].modelMatrix, glm::vec3(-0.5, 0.0, 0.0));
+        models[8].modelMatrix = glm::rotate(models[8].modelMatrix, glm::radians(-0.8f), glm::vec3(0.0, 0.0, 1.0));
+        models[8].modelMatrix = glm::translate(models[8].modelMatrix, glm::vec3(0.5, 0.0, 0.0));
+
+        if (currentRotation2 >= 0.0f) {
+            glutPostRedisplay();
+            glutTimerFunc(16, timer_pira_o, value);
+        }
     }
 
+}
+
+void timer_pira_r(int value) {
+    if (keyStates['r']) {
+        static float n1 = 0.0f, n2 = 0.0f, n3 = 0.0f, n4 = 0.0f;
+
+        if (n2 == 0.0f && n3 == 0.0f && n4 == 0.0f) {
+            models[5].modelMatrix = glm::translate(models[5].modelMatrix, glm::vec3(0.0, 0.0, 0.5));
+            models[5].modelMatrix = glm::rotate(models[5].modelMatrix, glm::radians(0.8f), glm::vec3(1.0, 0.0, 0.0));
+            models[5].modelMatrix = glm::translate(models[5].modelMatrix, glm::vec3(0.0, 0.0, -0.5));
+            n1 += 0.8f;
+        }
+        
+        if (n1 >= 118.5f) {
+            n2 += 0.8f;
+            n1 = 0.0f;
+        }
+
+        if (n1 == 0.0f && n3 == 0.0f && n4 == 0.0f) {
+            models[6].modelMatrix = glm::translate(models[6].modelMatrix, glm::vec3(0.5, 0.0, 0.0));
+            models[6].modelMatrix = glm::rotate(models[6].modelMatrix, glm::radians(-0.8f), glm::vec3(0.0, 0.0, 1.0));
+            models[6].modelMatrix = glm::translate(models[6].modelMatrix, glm::vec3(-0.5, 0.0, 0.0));
+            n2 += 0.8f;
+        }
+
+        if (n2 >= 118.5f) {
+            n3 += 0.8f;
+            n2 = 0.0f;
+        }
+
+        if (n1 == 0.0f && n2 == 0.0f && n4 == 0.0f) {
+            models[7].modelMatrix = glm::translate(models[7].modelMatrix, glm::vec3(0.0, 0.0, -0.5));
+            models[7].modelMatrix = glm::rotate(models[7].modelMatrix, glm::radians(-0.8f), glm::vec3(1.0, 0.0, 0.0));
+            models[7].modelMatrix = glm::translate(models[7].modelMatrix, glm::vec3(0.0, 0.0, 0.5));
+            n3 += 0.8f;
+        }
+
+        if (n3 >= 118.5f) {
+            n4 += 0.8f;
+            n3 = 0.0f;
+        }
+
+        if (n1 == 0.0f && n2 == 0.0f && n3 == 0.0f) {
+            models[8].modelMatrix = glm::translate(models[8].modelMatrix, glm::vec3(-0.5, 0.0, 0.0));
+            models[8].modelMatrix = glm::rotate(models[8].modelMatrix, glm::radians(0.8f), glm::vec3(0.0, 0.0, 1.0));
+            models[8].modelMatrix = glm::translate(models[8].modelMatrix, glm::vec3(0.5, 0.0, 0.0));
+            n4 += 0.8f;
+        }
+
+        if (n4 >= 118.5f) {
+            n4 = 0.0f;
+            keyStates['r'] = false;
+        }
+
+        glutPostRedisplay();
+        glutTimerFunc(16, timer_pira_r, value);
+    }
+    else {
+        static float n1 = 0.0f, n2 = 0.0f, n3 = 0.0f, n4 = 0.0f;
+
+        if (n2 == 0.0f && n3 == 0.0f && n4 == 0.0f) {
+            models[5].modelMatrix = glm::translate(models[5].modelMatrix, glm::vec3(0.0, 0.0, 0.5));
+            models[5].modelMatrix = glm::rotate(models[5].modelMatrix, glm::radians(-0.8f), glm::vec3(1.0, 0.0, 0.0));
+            models[5].modelMatrix = glm::translate(models[5].modelMatrix, glm::vec3(0.0, 0.0, -0.5));
+            n1 += 0.8f;
+        }
+
+        if (n1 >= 118.5f) {
+            n2 += 0.8f;
+            n1 = 0.0f;
+        }
+
+        if (n1 == 0.0f && n3 == 0.0f && n4 == 0.0f) {
+            models[6].modelMatrix = glm::translate(models[6].modelMatrix, glm::vec3(0.5, 0.0, 0.0));
+            models[6].modelMatrix = glm::rotate(models[6].modelMatrix, glm::radians(0.8f), glm::vec3(0.0, 0.0, 1.0));
+            models[6].modelMatrix = glm::translate(models[6].modelMatrix, glm::vec3(-0.5, 0.0, 0.0));
+            n2 += 0.8f;
+        }
+
+        if (n2 >= 118.5f) {
+            n3 += 0.8f;
+            n2 = 0.0f;
+        }
+
+        if (n1 == 0.0f && n2 == 0.0f && n4 == 0.0f) {
+            models[7].modelMatrix = glm::translate(models[7].modelMatrix, glm::vec3(0.0, 0.0, -0.5));
+            models[7].modelMatrix = glm::rotate(models[7].modelMatrix, glm::radians(0.8f), glm::vec3(1.0, 0.0, 0.0));
+            models[7].modelMatrix = glm::translate(models[7].modelMatrix, glm::vec3(0.0, 0.0, 0.5));
+            n3 += 0.8f;
+        }
+
+        if (n3 >= 118.5f) {
+            n4 += 0.8f;
+            n3 = 0.0f;
+        }
+
+        if (n1 == 0.0f && n2 == 0.0f && n3 == 0.0f) {
+            models[8].modelMatrix = glm::translate(models[8].modelMatrix, glm::vec3(-0.5, 0.0, 0.0));
+            models[8].modelMatrix = glm::rotate(models[8].modelMatrix, glm::radians(-0.8f), glm::vec3(0.0, 0.0, 1.0));
+            models[8].modelMatrix = glm::translate(models[8].modelMatrix, glm::vec3(0.5, 0.0, 0.0));
+            n4 += 0.8f;
+        }
+
+        if (n4 >= 118.5f) {
+            n4 = 0.0f;
+            keyStates['r'] = true;
+        }
+
+        glutPostRedisplay();
+        glutTimerFunc(16, timer_pira_r, value);
+    }
 }
 
 void keyBoard(unsigned char key, int x, int y) {
@@ -210,8 +342,15 @@ void keyBoard(unsigned char key, int x, int y) {
     if (key == 'b')
         glutTimerFunc(0, timer_squ_b, 0);
 
-    if (key == 'o')
+    if (key == 'o') {
+        currentRotation1 = 0.8f;
+        currentRotation2 = 235.0f;
         glutTimerFunc(0, timer_pira_o, 0);
+    }
+
+    if (key == 'r') {
+        glutTimerFunc(0, timer_pira_r, 0);
+    }
 
 
     for (const auto& pair : keyStates) {
