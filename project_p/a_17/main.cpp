@@ -80,31 +80,25 @@ void timer_y(int value) {
 
 void timer_squ(int value) {
 
+
     if (keyStates['t']) {
-
+        models[0].modelMatrix = glm::rotate(models[0].modelMatrix, glm::radians(0.5f), glm::vec3(0.0, 1.0, 0.0));
     }
 
-    if (keyStates['f']) {
-
-    }
-
-    if (keyStates['s']) {
-
-    }
-
-    if (keyStates['b']) {
-
-    }
 
     glutPostRedisplay();  // 화면 다시 그리기 요청
     if (keyStates['t'] || keyStates['f'] || keyStates['s'] || keyStates['b'])
-        glutTimerFunc(16, timer_y, value);
+        glutTimerFunc(16, timer_squ, value);
 }
 
 void keyBoard(unsigned char key, int x, int y) {
 
     if (key == 'y' && !keyStates['y']) {
         glutTimerFunc(0, timer_y, 0);
+    }
+
+    if (key == 't' && !keyStates['t']) {
+        glutTimerFunc(0, timer_squ, 0);
     }
 
     keyStates[key] = !keyStates[key];
@@ -155,18 +149,22 @@ int main(int argc, char** argv) {
     make_shaderProgram();  // 쉐이더 프로그램 생성
         
     // 모델들을 로드하고 벡터에 추가
-    Model modelSqu, squarePyramid;
+    Model squarePyramid;
 
     // 정육면체
-    read_obj_file("box3.obj", modelSqu, "cube");
-    // 초기 회전 상태를 저장 (초기 회전 상태는 고정됨)
-    modelSqu.initialRotation = glm::mat4(1.0f);  // 초기 회전 행렬을 단위 행렬로 설정
-    modelSqu.modelMatrix = modelSqu.initialRotation;
-    modelSqu.modelMatrix = glm::scale(modelSqu.modelMatrix, glm::vec3(0.5, 0.5, 0.5));
-    modelSqu.translationOffset = glm::vec3(0.0f, 0.0f, 0.0f);
-    modelSqu.modelMatrix = glm::translate(modelSqu.modelMatrix, modelSqu.translationOffset);
-    modelSqu.colors = colors_m;
-    models.push_back(modelSqu);
+    for (int i = 1; i < 6; ++i) {
+        Model modelSqu;
+        read_obj_file("box" + std::to_string(i) + ".obj", modelSqu, "cube");
+        // 초기 회전 상태를 저장 (초기 회전 상태는 고정됨)
+        modelSqu.initialRotation = glm::mat4(1.0f);  // 초기 회전 행렬을 단위 행렬로 설정
+        modelSqu.modelMatrix = modelSqu.initialRotation;
+        modelSqu.modelMatrix = glm::scale(modelSqu.modelMatrix, glm::vec3(0.5, 0.5, 0.5));
+        modelSqu.translationOffset = glm::vec3(0.0f, 0.0f, 0.0f);
+        modelSqu.modelMatrix = glm::translate(modelSqu.modelMatrix, modelSqu.translationOffset);
+        modelSqu.colors = colors_m;
+        models.push_back(modelSqu);
+    }
+   
 
     read_obj_file("squarePyramid.obj", squarePyramid, "squarePyramid");
     squarePyramid.initialRotation = glm::mat4(1.0f);  // 초기 회전 행렬을 단위 행렬로 설정
