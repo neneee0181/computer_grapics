@@ -6,11 +6,16 @@
 #include <gl/glm/glm/gtc/matrix_transform.hpp>
 #include <gl/glm/glm/gtc/type_ptr.hpp>
 #include <vector>  // 표준 벡터 라이브러리 포함 (동적 배열을 사용하기 위해 필요)
+#include <random>
 
 #include "LoadObj.h"
 #include "shaderMaker.h"
 
 using namespace std;  // 네임스페이스 std 사용으로 코드 내에서 std:: 생략 가능
+
+random_device rd;
+mt19937 gen(rd());
+uniform_real_distribution<> dis_color(0.0, 1.0f);
 
 // 함수 선언부
 void InitBuffer();  // 버퍼 초기화 함수 선언
@@ -50,7 +55,6 @@ GLvoid Reshape(int w, int h) {
 }
 
 void timer(int value) {
-
     glutPostRedisplay();  // 화면 다시 그리기 요청
     glutTimerFunc(16, timer, 0);
 }
@@ -95,20 +99,29 @@ int main(int argc, char** argv) {
     make_shaderProgram();  // 쉐이더 프로그램 생성
         
     // 모델들을 로드하고 벡터에 추가
-    Model modelSqu, modelCone, modelSphere, modelCylinder;
+    Model modelSphere;
 
     // 정육면체
-    read_obj_file("box3.obj", modelSqu, "cube");
+    read_obj_file("sphere.obj", modelSphere, "sphere");
     // 초기 회전 상태를 저장 (초기 회전 상태는 고정됨)
-    modelSqu.initialRotation = glm::mat4(1.0f);  // 초기 회전 행렬을 단위 행렬로 설정
-    modelSqu.initialRotation = glm::rotate(modelSqu.initialRotation, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0)); // X축 회전
-    modelSqu.initialRotation = glm::rotate(modelSqu.initialRotation, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0)); // Y축 회전
-    modelSqu.modelMatrix = modelSqu.initialRotation;
-    modelSqu.modelMatrix = glm::scale(modelSqu.modelMatrix, glm::vec3(0.2, 0.2, 0.2));
-    modelSqu.translationOffset = glm::vec3(-3.0f, 0.0f, 0.0f);
-    modelSqu.modelMatrix = glm::translate(modelSqu.modelMatrix, modelSqu.translationOffset);
-    modelSqu.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
-    models.push_back(modelSqu);
+
+    for (int i = 0; i < 7; ++i) {
+        Model m = modelSphere;
+        m.initialRotation = glm::mat4(1.0f);
+        m.modelMatrix = m.initialRotation;
+        m.modelMatrix = glm::scale(m.modelMatrix, glm::vec3(0.2, 0.2, 0.2));
+        m.translationOffset = glm::vec3(0.0f, 0.0f, 0.0f);
+        m.modelMatrix = glm::translate(m.modelMatrix, m.translationOffset);
+        glm::vec3 s_color = { dis_color(gen), dis_color(gen), dis_color(gen) };
+
+        for (int i = 0; i < modelSphere.vertices.size(); ++i) {
+            m.colors.push_back(s_color);
+        }
+
+        models.push_back(m);
+    }
+   
+
 
     Model modelXLine, modelYLine, modelZLine;
     modelXLine.name = "xLine";
@@ -176,12 +189,13 @@ GLvoid drawScene() {
 
         GLint modelStatus = glGetUniformLocation(shaderProgramID, "modelStatus");
 
-        if (models[i].name == "cube" || models[i].name == "cone") {
+        if (models[i].name == "sphere") {
             GLint modelLoc = glGetUniformLocation(shaderProgramID, "model");
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
             // 면 그리기
             glUniform1i(modelStatus, 0);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            glLineWidth(1.0f);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
         }
         else if (models[i].name == "xLine" || models[i].name == "yLine" || models[i].name == "zLine") {
