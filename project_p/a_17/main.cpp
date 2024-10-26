@@ -104,6 +104,29 @@ void timer_squ_s(int value) {
     }
 
 }
+void timer_squ_b(int value) {
+
+    if (keyStates['b']) {
+        models[3].modelMatrix = glm::translate(models[3].modelMatrix, glm::vec3(-0.5, 0.0, 0.0));
+        models[3].modelMatrix = glm::scale(models[3].modelMatrix, glm::vec3(0.95, 0.95, 0.95));
+        models[3].modelMatrix = glm::translate(models[3].modelMatrix, glm::vec3(0.5, 0.0, 0.0));
+        
+        if (models[3].modelMatrix[3].x <= 0.2) {
+            glutPostRedisplay();
+            glutTimerFunc(16, timer_squ_b, value);
+        }
+    }
+    else {
+        models[3].modelMatrix = glm::translate(models[3].modelMatrix, glm::vec3(-0.5, 0.0, 0.0));
+        models[3].modelMatrix = glm::scale(models[3].modelMatrix, glm::vec3(1.05, 1.05, 1.05));
+        models[3].modelMatrix = glm::translate(models[3].modelMatrix, glm::vec3(0.5, 0.0, 0.0));
+
+        if (models[3].modelMatrix[3].x <= 0) {
+            glutPostRedisplay();
+            glutTimerFunc(16, timer_squ_b, value);
+        }
+    }
+}
 
 void timer_squ_t(int value) {
     if (keyStates['t']) {
@@ -147,6 +170,9 @@ void keyBoard(unsigned char key, int x, int y) {
 
     if (key == 's')
         glutTimerFunc(0, timer_squ_s, 0);
+
+    if (key == 'b')
+        glutTimerFunc(0, timer_squ_b, 0);
 
 
     for (const auto& pair : keyStates) {
