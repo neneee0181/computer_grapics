@@ -6,6 +6,7 @@
 #include <gl/glm/glm/gtc/matrix_transform.hpp>
 #include <gl/glm/glm/gtc/type_ptr.hpp>
 #include <vector>  // 표준 벡터 라이브러리 포함 (동적 배열을 사용하기 위해 필요)
+#include <unordered_map>
 
 #include "LoadObj.h"
 #include "shaderMaker.h"
@@ -21,6 +22,8 @@ GLvoid Reshape(int w, int h);  // 화면 크기가 변경될 때 호출되는 함수 선언
 vector<Model> models;
 vector<GLuint> vaos;
 vector<vector<GLuint>> vbos;
+
+unordered_map<unsigned char, bool> keyStates;
 
 // camera
 glm::vec3 cameraPos = glm::vec3(0.0, 0.0, 4.0);
@@ -70,6 +73,7 @@ void timer(int value) {
 }
 
 void keyBoard(unsigned char key, int x, int y) {
+    keyStates[key] = !keyStates[key];
     glutPostRedisplay();  // 화면 다시 그리기 요청
 }
 
@@ -190,14 +194,20 @@ GLvoid drawScene() {
     unsigned int projectionLocation = glGetUniformLocation(shaderProgramID, "projectionTransform");
     glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, &projection[0][0]);
 
-    glEnable(GL_DEPTH_TEST);
     // 각 모델을 그리기
     for (size_t i = 0; i < models.size(); ++i) {
+
+        glEnable(GL_CULL_FACE);
+        if (keyStates['h']) {
+            glCullFace(GL_BACK);
+            glFrontFace(GL_CCW);
+        }
+
         glBindVertexArray(vaos[i]);
 
         GLint modelStatus = glGetUniformLocation(shaderProgramID, "modelStatus");
 
-        if (models[i].name == "cube" || models[i].name == "squarePyramid") {
+        if (models[i].name == "cube" && keyStates['1'] || models[i].name == "squarePyramid" && keyStates['2']) {
             GLint modelLoc = glGetUniformLocation(shaderProgramID, "model");
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
             // 면 그리기
@@ -215,9 +225,9 @@ GLvoid drawScene() {
         }
 
         glBindVertexArray(0);
+        glDisable(GL_CULL_FACE);
     }
 
-    glDisable(GL_DEPTH_TEST);
 
     glutSwapBuffers();  // 더블 버퍼링 사용, 화면 갱신
 
