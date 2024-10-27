@@ -17,7 +17,7 @@ using namespace std;  // 네임스페이스 std 사용으로 코드 내에서 std:: 생략 가능
 
 random_device rd;
 mt19937 gen(rd());
-uniform_real_distribution<> dis_color(0.0, 1.0f);
+uniform_real_distribution<> dis_color(0.0f, 1.0f);
 
 // 함수 선언부
 void InitBuffer();  // 버퍼 초기화 함수 선언
@@ -85,10 +85,14 @@ void createOrbitVertices(float radius, glm::vec3 center, float angleY) {
 unordered_map<unsigned char, bool> keyStates;
 char key_result = ' ';
 int y_status = 0;
-
+float speed1 = 0.8f;
+float speed2 = 1.0f;
+float speed3 = 1.2f;
+float speed4 = 1.4f;
+float speed5 = 1.6f;
 void timer_y(int value) {
 
-    float speed = 0.8f;
+    //float speed = 0.8f;
 
     if (keyStates['y']) {
         for (int i = 0; i < models.size(); ++i) {
@@ -98,13 +102,13 @@ void timer_y(int value) {
             {
 
                 glm::mat4 orbit = glm::mat4(1.0f);
-                orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(speed1), glm::vec3(0.0, 1.0, 0.0));
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
                 
                 for (size_t j = 0; j < orbitVertices[i].size(); ++j) {
                     // 궤도 회전 적용
                     glm::mat4 lineO = glm::mat4(1.0f);
-                    lineO = glm::rotate(lineO, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
+                    lineO = glm::rotate(lineO, glm::radians(speed1), glm::vec3(0.0, 1.0, 0.0));
 
                     // vec3를 vec4로 변환하여 회전 적용
                     glm::vec4 rotatedPoint = lineO * glm::vec4(orbitVertices[i][j], 1.0f);
@@ -118,9 +122,9 @@ void timer_y(int value) {
             case 2:
             {
                 glm::mat4 orbit = glm::mat4(1.0f);
-                orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(speed1), glm::vec3(0.0, 1.0, 0.0));
                 orbit = glm::translate(orbit, glm::vec3(models[1].modelMatrix[3]));
-                orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(speed1), glm::vec3(0.0, 1.0, 0.0));
                 orbit = glm::translate(orbit, glm::vec3(-models[1].modelMatrix[3]));
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
                 break;
@@ -128,8 +132,8 @@ void timer_y(int value) {
             case 3:
             {
                 glm::mat4 orbit = glm::mat4(1.0f);
-                orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(1.0, 0.0, 0.0));
-                orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(speed3), glm::vec3(1.0, 0.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(speed3), glm::vec3(0.0, 1.0, 0.0));
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
                 
                 break;
@@ -137,11 +141,11 @@ void timer_y(int value) {
             case 4:
             {
                 glm::mat4 orbit = glm::mat4(1.0f);
-                orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(1.0, 0.0, 0.0));
-                orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(speed3), glm::vec3(1.0, 0.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(speed3), glm::vec3(0.0, 1.0, 0.0));
                 orbit = glm::translate(orbit, glm::vec3(models[3].modelMatrix[3]));
-                orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
-                orbit = glm::rotate(orbit, glm::radians(-speed), glm::vec3(1.0, 0.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(speed3), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(-speed3), glm::vec3(1.0, 0.0, 0.0));
                 orbit = glm::translate(orbit, glm::vec3(-models[3].modelMatrix[3]));
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
 
@@ -156,8 +160,8 @@ void timer_y(int value) {
                 glm::mat4 orbit = glm::mat4(1.0f);
 
                 // 공전 변환 적용 (회전)
-                orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(1.0, 0.0, 0.0));
-                orbit = glm::rotate(orbit, glm::radians(-speed), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(-speed1), glm::vec3(1.0, 0.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(speed1), glm::vec3(0.0, 1.0, 0.0));
 
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
                 
@@ -166,11 +170,11 @@ void timer_y(int value) {
             case 6:
             {
                 glm::mat4 orbit = glm::mat4(1.0f);
-                orbit = glm::rotate(orbit, glm::radians(-speed), glm::vec3(0.0, 1.0, 0.0));
-                orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(1.0, 0.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(-speed1), glm::vec3(1.0, 0.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(speed1), glm::vec3(0.0, 1.0, 0.0));
                 orbit = glm::translate(orbit, glm::vec3(models[5].modelMatrix[3]));
-                orbit = glm::rotate(orbit, glm::radians(-speed), glm::vec3(0.0, 1.0, 0.0));
-                orbit = glm::rotate(orbit, glm::radians(-speed), glm::vec3(1.0, 0.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(speed1 + 0.08f), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(speed1 + 0.08f), glm::vec3(1.0, 0.0, 0.0));
                 orbit = glm::translate(orbit, glm::vec3(-models[5].modelMatrix[3]));
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
                 for (size_t j = 0; j < orbitVertices[5].size(); ++j) {
@@ -319,7 +323,7 @@ int main(int argc, char** argv) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);  // 화면 모드 설정 (더블 버퍼링, RGBA 컬러 모드)
     glutInitWindowPosition(100, 100);  // 창의 시작 위치 설정
     glutInitWindowSize(width, height);  // 창의 크기 설정
-    glutCreateWindow("template");  // 창 생성 및 제목 설정
+    glutCreateWindow("18번");  // 창 생성 및 제목 설정
 
     // GLEW 초기화
     glewExperimental = GL_TRUE;  // GLEW 실험적 기능 활성화
@@ -442,9 +446,9 @@ GLvoid drawScene() {
     // 카메라
     cameraPos = glm::vec3(0.0, 0.0, 5.5);
     glm::mat4 view = glm::mat4(1.0f);
-    /*glm::mat4 rotationMatrix_x = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 rotationMatrix_x = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 rotationMatrix_y = glm::rotate(glm::mat4(1.0f), glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    cameraPos = glm::vec3(rotationMatrix_x * rotationMatrix_y * glm::vec4(cameraPos, 1.0f));*/
+    cameraPos = glm::vec3(rotationMatrix_x * rotationMatrix_y * glm::vec4(cameraPos, 1.0f));
     view = glm::lookAt(
         cameraPos,  //--- 카메라위치
         cameraDirection,  //--- 카메라바라보는방향
