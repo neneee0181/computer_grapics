@@ -125,6 +125,27 @@ void timer_y(int value) {
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
                 break;
             }
+            case 3:
+            {
+                glm::mat4 orbit = glm::mat4(1.0f);
+                orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(1.0, 0.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
+
+                models[i].modelMatrix = orbit * models[i].modelMatrix;
+
+                for (size_t j = 0; j < orbitVertices[3].size(); ++j) {
+
+                    glm::mat4 lineO = glm::mat4(1.0f);
+                    lineO = glm::rotate(lineO, glm::radians(speed), glm::vec3(1.0, 0.0, 0.0));
+                    lineO = glm::rotate(lineO, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
+
+                    glm::vec4 rotatedPoint = lineO * glm::vec4(orbitVertices[3][j], 1.0f);
+
+                    orbitVertices[3][j] = glm::vec3(rotatedPoint);
+                }
+
+                break;
+            }
             default:
                 break;
             }
@@ -132,10 +153,12 @@ void timer_y(int value) {
     }
 
     // VBO 업데이트
-    glBindBuffer(GL_ARRAY_BUFFER, orbitVBO[1]);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, orbitVertices[1].size() * sizeof(glm::vec3), orbitVertices[1].data());
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
+    for (int i = 0; i < 6; ++i) {
+        glBindBuffer(GL_ARRAY_BUFFER, orbitVBO[i]);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, orbitVertices[i].size() * sizeof(glm::vec3), orbitVertices[i].data());
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+  
     glutPostRedisplay();  // 화면 다시 그리기 요청
     if (y_status == 1) {
         glutTimerFunc(16, timer_y, y_status);
@@ -302,8 +325,8 @@ int main(int argc, char** argv) {
         case 3:
             m.modelMatrix = glm::translate(m.modelMatrix, glm::vec3(1.5f, -1.5f, 0.0f));
             m.modelMatrix = glm::scale(m.modelMatrix, glm::vec3(0.2, 0.2, 0.2));
-            m.modelMatrix = glm::rotate(m.modelMatrix, glm::radians(-45.0f), glm::vec3(0.0, 1.0, 0.0));
-            m.modelMatrix = glm::rotate(m.modelMatrix, glm::radians(45.0f), glm::vec3(1.0, 0.0, 0.0));
+            //m.modelMatrix = glm::rotate(m.modelMatrix, glm::radians(45.0f), glm::vec3(0.0, 1.0, 0.0));
+            m.modelMatrix = glm::rotate(m.modelMatrix, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
             break;
         case 4:
             m.modelMatrix = glm::translate(m.modelMatrix, glm::vec3(1.5f, -1.5f, 0.0f));
@@ -385,9 +408,9 @@ GLvoid drawScene() {
     // 카메라
     cameraPos = glm::vec3(0.0, 0.0, 5.5);
     glm::mat4 view = glm::mat4(1.0f);
-    glm::mat4 rotationMatrix_x = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    /*glm::mat4 rotationMatrix_x = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 rotationMatrix_y = glm::rotate(glm::mat4(1.0f), glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    cameraPos = glm::vec3(rotationMatrix_x * rotationMatrix_y * glm::vec4(cameraPos, 1.0f));
+    cameraPos = glm::vec3(rotationMatrix_x * rotationMatrix_y * glm::vec4(cameraPos, 1.0f));*/
     view = glm::lookAt(
         cameraPos,  //--- 카메라위치
         cameraDirection,  //--- 카메라바라보는방향
