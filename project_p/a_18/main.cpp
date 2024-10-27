@@ -7,6 +7,8 @@
 #include <gl/glm/glm/gtc/type_ptr.hpp>
 #include <vector>  // 표준 벡터 라이브러리 포함 (동적 배열을 사용하기 위해 필요)
 #include <random>
+#include <unordered_map>
+
 
 #include "LoadObj.h"
 #include "shaderMaker.h"
@@ -54,12 +56,25 @@ GLvoid Reshape(int w, int h) {
     height = h;
 }
 
+unordered_map<unsigned char, bool> keyStates;
+char key_result = ' ';
+
 void timer(int value) {
+
     glutPostRedisplay();  // 화면 다시 그리기 요청
     glutTimerFunc(16, timer, 0);
 }
 
 void keyBoard(unsigned char key, int x, int y) {
+
+    keyStates[key] = true;
+
+    if (key == 'm')
+        keyStates['M'] = false;
+    else if (key == 'M')
+        keyStates['m'] = false;
+
+
     glutPostRedisplay();  // 화면 다시 그리기 요청
 }
 
@@ -109,9 +124,45 @@ int main(int argc, char** argv) {
         Model m = modelSphere;
         m.initialRotation = glm::mat4(1.0f);
         m.modelMatrix = m.initialRotation;
-        m.modelMatrix = glm::scale(m.modelMatrix, glm::vec3(0.2, 0.2, 0.2));
-        m.translationOffset = glm::vec3(0.0f, 0.0f, 0.0f);
-        m.modelMatrix = glm::translate(m.modelMatrix, m.translationOffset);
+        switch (i)
+        {
+        case 0:
+            m.modelMatrix = glm::scale(m.modelMatrix, glm::vec3(0.4, 0.4, 0.4));
+            m.translationOffset = glm::vec3(0.0f, 0.0f, 0.0f);
+            break;
+        case 1:
+            m.modelMatrix = glm::translate(m.modelMatrix, glm::vec3(2.0f, 0.0f, 0.0f));
+            m.modelMatrix = glm::rotate(m.modelMatrix, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+            m.modelMatrix = glm::scale(m.modelMatrix, glm::vec3(0.2, 0.2, 0.2));
+            break;
+        case 2:
+            m.modelMatrix = glm::translate(m.modelMatrix, glm::vec3(1.5f, 0.0f, 0.0f));
+            m.modelMatrix = glm::scale(m.modelMatrix, glm::vec3(0.1, 0.1, 0.1));
+            break;
+        case 3:
+            m.modelMatrix = glm::translate(m.modelMatrix, glm::vec3(1.5f, -1.5f, 0.0f));
+            m.modelMatrix = glm::scale(m.modelMatrix, glm::vec3(0.2, 0.2, 0.2));
+            m.modelMatrix = glm::rotate(m.modelMatrix, glm::radians(-45.0f), glm::vec3(0.0, 1.0, 0.0));
+            m.modelMatrix = glm::rotate(m.modelMatrix, glm::radians(45.0f), glm::vec3(1.0, 0.0, 0.0));
+            break;
+        case 4:
+            m.modelMatrix = glm::translate(m.modelMatrix, glm::vec3(1.2f, -1.2f, 0.0f));
+            m.modelMatrix = glm::scale(m.modelMatrix, glm::vec3(0.1, 0.1, 0.1));
+            break;
+        case 5:
+            m.modelMatrix = glm::translate(m.modelMatrix, glm::vec3(-1.5f, -1.5f, 0.0f));
+            m.modelMatrix = glm::scale(m.modelMatrix, glm::vec3(0.2, 0.2, 0.2));
+            m.modelMatrix = glm::rotate(m.modelMatrix, glm::radians(-45.0f), glm::vec3(1.0, 0.0, 0.0));
+            m.modelMatrix = glm::rotate(m.modelMatrix, glm::radians(45.0f), glm::vec3(0.0, 1.0, 0.0));
+            break;
+        case 6:
+            m.modelMatrix = glm::translate(m.modelMatrix, glm::vec3(-1.2f, -1.2f, 0.0f));
+            m.modelMatrix = glm::scale(m.modelMatrix, glm::vec3(0.1, 0.1, 0.1));
+            break;
+        default:
+            break;
+        }
+
         glm::vec3 s_color = { dis_color(gen), dis_color(gen), dis_color(gen) };
 
         for (int i = 0; i < modelSphere.vertices.size(); ++i) {
@@ -120,8 +171,6 @@ int main(int argc, char** argv) {
 
         models.push_back(m);
     }
-   
-
 
     Model modelXLine, modelYLine, modelZLine;
     modelXLine.name = "xLine";
@@ -163,11 +212,11 @@ GLvoid drawScene() {
     glUseProgram(shaderProgramID);  // 쉐이더 프로그램 사용
 
     // 카메라
-    cameraPos = glm::vec3(0.0, 0.0, 3.0);
+    cameraPos = glm::vec3(0.0, 0.0, 5.0);
     glm::mat4 view = glm::mat4(1.0f);
-    glm::mat4 rotationMatrix_x = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    /*glm::mat4 rotationMatrix_x = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 rotationMatrix_y = glm::rotate(glm::mat4(1.0f), glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    cameraPos = glm::vec3(rotationMatrix_x * rotationMatrix_y * glm::vec4(cameraPos, 1.0f));
+    cameraPos = glm::vec3(rotationMatrix_x * rotationMatrix_y * glm::vec4(cameraPos, 1.0f));*/
     view = glm::lookAt(
         cameraPos,  //--- 카메라위치
         cameraDirection,  //--- 카메라바라보는방향
@@ -195,7 +244,11 @@ GLvoid drawScene() {
             // 면 그리기
             glUniform1i(modelStatus, 0);
             glLineWidth(1.0f);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            if (keyStates['m'])
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            else if (keyStates['M'])
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
             glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
         }
         else if (models[i].name == "xLine" || models[i].name == "yLine" || models[i].name == "zLine") {
