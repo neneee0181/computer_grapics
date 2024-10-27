@@ -87,11 +87,27 @@ void createOrbitVertices(float radius, glm::vec3 center, float angleY) {
 unordered_map<unsigned char, bool> keyStates;
 char key_result = ' ';
 int y_status = 0;
+int z_status = 0;
 float speed1 = 0.8f;
 float speed2 = 1.0f;
 float speed3 = 1.2f;
 float speed4 = 1.4f;
 float speed5 = 1.6f;
+
+void timer_z(int value) {
+    if (keyStates['y']) {
+        for (int i = 0; i < models.size(); ++i) {
+           
+        }
+    }
+
+
+    glutPostRedisplay();  // 화면 다시 그리기 요청
+    if (z_status == 1) {
+        glutTimerFunc(16, timer_z, z_status);
+    }
+}
+
 void timer_y(int value) {
 
     //float speed = 0.8f;
@@ -317,6 +333,21 @@ void keyBoard(unsigned char key, int x, int y) {
         if (y_status == 0) {
             glutTimerFunc(0, timer_y, y_status);
             y_status = 1;
+        }
+    }
+
+    if (key == 'z') {
+        y_status = 0;
+        if (z_status == 0) {
+            glutTimerFunc(0, timer_z, z_status);
+            z_status = 1;
+        }
+    }
+    else if (key == 'z') {
+        y_status = 0;
+        if (z_status == 0) {
+            glutTimerFunc(0, timer_z, z_status);
+            z_status = 1;
         }
     }
 
