@@ -162,12 +162,13 @@ int main(int argc, char** argv) {
             break;
         case 1:
             m.modelMatrix = glm::translate(m.modelMatrix, glm::vec3(2.0f, 0.0f, 0.0f));
-            m.modelMatrix = glm::rotate(m.modelMatrix, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
             m.modelMatrix = glm::scale(m.modelMatrix, glm::vec3(0.2, 0.2, 0.2));
+            m.modelMatrix = glm::rotate(m.modelMatrix, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
             break;
         case 2:
             m.modelMatrix = glm::translate(m.modelMatrix, glm::vec3(1.5f, 0.0f, 0.0f));
             m.modelMatrix = glm::scale(m.modelMatrix, glm::vec3(0.1, 0.1, 0.1));
+            //m.modelMatrix = glm::rotate(m.modelMatrix, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
             break;
         case 3:
             m.modelMatrix = glm::translate(m.modelMatrix, glm::vec3(1.5f, -1.5f, 0.0f));
@@ -176,8 +177,10 @@ int main(int argc, char** argv) {
             m.modelMatrix = glm::rotate(m.modelMatrix, glm::radians(45.0f), glm::vec3(1.0, 0.0, 0.0));
             break;
         case 4:
-            m.modelMatrix = glm::translate(m.modelMatrix, glm::vec3(1.2f, -1.2f, 0.0f));
+            m.modelMatrix = glm::translate(m.modelMatrix, glm::vec3(1.5f, -1.5f, 0.0f));
             m.modelMatrix = glm::scale(m.modelMatrix, glm::vec3(0.1, 0.1, 0.1));
+            m.modelMatrix = glm::rotate(m.modelMatrix, glm::radians(-45.0f), glm::vec3(1.0, 0.0, 0.0));
+            m.modelMatrix = glm::translate(m.modelMatrix, glm::vec3(5.0f, 0, 0.0f));
             break;
         case 5:
             m.modelMatrix = glm::translate(m.modelMatrix, glm::vec3(-1.5f, -1.5f, 0.0f));
@@ -186,8 +189,10 @@ int main(int argc, char** argv) {
             m.modelMatrix = glm::rotate(m.modelMatrix, glm::radians(45.0f), glm::vec3(0.0, 1.0, 0.0));
             break;
         case 6:
-            m.modelMatrix = glm::translate(m.modelMatrix, glm::vec3(-1.2f, -1.2f, 0.0f));
+            m.modelMatrix = glm::translate(m.modelMatrix, glm::vec3(-1.5f, -1.5f, 0.0f));
+            m.modelMatrix = glm::rotate(m.modelMatrix, glm::radians(45.0f), glm::vec3(1.0, 0.0, 0.0));
             m.modelMatrix = glm::scale(m.modelMatrix, glm::vec3(0.1, 0.1, 0.1));
+            m.modelMatrix = glm::translate(m.modelMatrix, glm::vec3(-5.0f, 0, 0.0f));
             break;
         default:
             break;
@@ -225,7 +230,9 @@ int main(int argc, char** argv) {
     createOrbitVertices(2.0, glm::vec3(0.0, 0.0, 0.0), 0.0f);
     createOrbitVertices(0.5, glm::vec3(models[1].modelMatrix[3]), 0.0f);
     createOrbitVertices(2.12f, glm::vec3(0.0, 0.0, 0.0), -45.0f);
+    createOrbitVertices(0.5, glm::vec3(models[3].modelMatrix[3]), 0.0f);
     createOrbitVertices(2.12f, glm::vec3(0.0, 0.0, 0.0), 45.0f);
+    createOrbitVertices(0.5, glm::vec3(models[5].modelMatrix[3]), 0.0f);
 
     InitBuffer();  // 버퍼 초기화
 
@@ -249,9 +256,9 @@ GLvoid drawScene() {
     // 카메라
     cameraPos = glm::vec3(0.0, 0.0, 5.5);
     glm::mat4 view = glm::mat4(1.0f);
-    glm::mat4 rotationMatrix_x = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    /*glm::mat4 rotationMatrix_x = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 rotationMatrix_y = glm::rotate(glm::mat4(1.0f), glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    cameraPos = glm::vec3(rotationMatrix_x * rotationMatrix_y * glm::vec4(cameraPos, 1.0f));
+    cameraPos = glm::vec3(rotationMatrix_x * rotationMatrix_y * glm::vec4(cameraPos, 1.0f));*/
     view = glm::lookAt(
         cameraPos,  //--- 카메라위치
         cameraDirection,  //--- 카메라바라보는방향
