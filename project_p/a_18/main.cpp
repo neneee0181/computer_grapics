@@ -191,7 +191,98 @@ void timer_y(int value) {
         }
     }
     else {
-        y_status = 0;
+        for (int i = 0; i < models.size(); ++i) {
+            switch (i)
+            {
+            case 1:
+            {
+
+                glm::mat4 orbit = glm::mat4(1.0f);
+                orbit = glm::rotate(orbit, glm::radians(-speed1), glm::vec3(0.0, 1.0, 0.0));
+                models[i].modelMatrix = orbit * models[i].modelMatrix;
+
+                for (size_t j = 0; j < orbitVertices[i].size(); ++j) {
+                    // 궤도 회전 적용
+                    glm::mat4 lineO = glm::mat4(1.0f);
+                    lineO = glm::rotate(lineO, glm::radians(-speed1), glm::vec3(0.0, 1.0, 0.0));
+
+                    // vec3를 vec4로 변환하여 회전 적용
+                    glm::vec4 rotatedPoint = lineO * glm::vec4(orbitVertices[i][j], 1.0f);
+
+                    // 결과를 다시 vec3로 변환하여 저장
+                    orbitVertices[i][j] = glm::vec3(rotatedPoint);
+                }
+
+                break;
+            }
+            case 2:
+            {
+                glm::mat4 orbit = glm::mat4(1.0f);
+                orbit = glm::rotate(orbit, glm::radians(-speed1), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::translate(orbit, glm::vec3(models[1].modelMatrix[3]));
+                orbit = glm::rotate(orbit, glm::radians(-speed1), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::translate(orbit, glm::vec3(-models[1].modelMatrix[3]));
+                models[i].modelMatrix = orbit * models[i].modelMatrix;
+                break;
+            }
+            case 3:
+            {
+                glm::mat4 orbit = glm::mat4(1.0f);
+                orbit = glm::rotate(orbit, glm::radians(-speed3), glm::vec3(1.0, 0.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(-speed3), glm::vec3(0.0, 1.0, 0.0));
+                models[i].modelMatrix = orbit * models[i].modelMatrix;
+
+                break;
+            }
+            case 4:
+            {
+                glm::mat4 orbit = glm::mat4(1.0f);
+                orbit = glm::rotate(orbit, glm::radians(-speed3), glm::vec3(1.0, 0.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(-speed3), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::translate(orbit, glm::vec3(models[3].modelMatrix[3]));
+                orbit = glm::rotate(orbit, glm::radians(-speed3), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(speed3), glm::vec3(1.0, 0.0, 0.0));
+                orbit = glm::translate(orbit, glm::vec3(-models[3].modelMatrix[3]));
+                models[i].modelMatrix = orbit * models[i].modelMatrix;
+
+                for (size_t j = 0; j < orbitVertices[3].size(); ++j) {
+                    glm::vec4 rotatedPoint = orbit * glm::vec4(orbitVertices[3][j], 1.0f);
+                    orbitVertices[3][j] = glm::vec3(rotatedPoint);
+                }
+                break;
+            }
+            case 5:
+            {
+                glm::mat4 orbit = glm::mat4(1.0f);
+
+                // 공전 변환 적용 (회전)
+                orbit = glm::rotate(orbit, glm::radians(speed1), glm::vec3(1.0, 0.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(-speed1), glm::vec3(0.0, 1.0, 0.0));
+
+                models[i].modelMatrix = orbit * models[i].modelMatrix;
+
+                break;
+            }
+            case 6:
+            {
+                glm::mat4 orbit = glm::mat4(1.0f);
+                orbit = glm::rotate(orbit, glm::radians(speed1), glm::vec3(1.0, 0.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(-speed1), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::translate(orbit, glm::vec3(models[5].modelMatrix[3]));
+                orbit = glm::rotate(orbit, glm::radians(-speed1 + 0.08f), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(-speed1 + 0.08f), glm::vec3(1.0, 0.0, 0.0));
+                orbit = glm::translate(orbit, glm::vec3(-models[5].modelMatrix[3]));
+                models[i].modelMatrix = orbit * models[i].modelMatrix;
+                for (size_t j = 0; j < orbitVertices[5].size(); ++j) {
+                    glm::vec4 rotatedPoint = orbit * glm::vec4(orbitVertices[5][j], 1.0f);
+                    orbitVertices[5][j] = glm::vec3(rotatedPoint);
+                }
+                break;
+            }
+            default:
+                break;
+            }
+        }
     }
 
     // VBO 업데이트
@@ -239,77 +330,55 @@ void keyBoard(unsigned char key, int x, int y) {
         projection = glm::translate(projection, glm::vec3(0.0, 0.0, -0.5));
     }
 
+        // ----------
+        float speed = 0.1f;
+        glm::mat4 orbitTransform = glm::mat4(1.0f);
 
-    // ----------
-    float speed = 0.1f;
-    switch (key)
-    {
-    case 'w':
-    {
-        for (auto& model : models) {
-            glm::mat4 orbitTransform = glm::mat4(1.0f);
+        switch (key)
+        {
+        case 'w':
+        {
+            y_status = 0;
             orbitTransform = glm::translate(orbitTransform, glm::vec3(speed, 0.0, 0.0));
-
-            model.modelMatrix = orbitTransform * model.modelMatrix;
+            break;
         }
-        break;
-    }
-    case 'a':
-    {
-        for (auto& model : models) {
-            glm::mat4 orbitTransform = glm::mat4(1.0f);
+        case 'a':
+        {
+            y_status = 0;
             orbitTransform = glm::translate(orbitTransform, glm::vec3(0.0, -speed, 0.0));
-
-            model.modelMatrix = orbitTransform * model.modelMatrix;
+           break;
         }
-        break;
-    }
-    case 's':
-    {
-        for (auto& model : models) {
-            glm::mat4 orbitTransform = glm::mat4(1.0f);
+        case 's':
+        {
+            y_status = 0;
             orbitTransform = glm::translate(orbitTransform, glm::vec3(-speed, 0.0, 0.0));
-
-            model.modelMatrix = orbitTransform * model.modelMatrix;
+            break;
         }
-        break;
-    }
-    case 'd':
-    {
-        for (auto& model : models) {
-            glm::mat4 orbitTransform = glm::mat4(1.0f);
+        case 'd':
+        {
+            y_status = 0;
             orbitTransform = glm::translate(orbitTransform, glm::vec3(0.0, speed, 0.0));
-
-            model.modelMatrix = orbitTransform * model.modelMatrix;
+            break;
         }
-        break;
-    }
-    case '+':
-    {
-        for (auto& model : models) {
-            glm::mat4 orbitTransform = glm::mat4(1.0f);
+        case '+':
+        {
+            y_status = 0;
             orbitTransform = glm::translate(orbitTransform, glm::vec3(0.0, 0.0, speed));
-
-            model.modelMatrix = orbitTransform * model.modelMatrix;
+            break;
         }
-        break;
-    }
-    case '-':
-    {
-        for (auto& model : models) {
-            glm::mat4 orbitTransform = glm::mat4(1.0f);
+        case '-':
+        {
+            y_status = 0;
             orbitTransform = glm::translate(orbitTransform, glm::vec3(0.0, 0.0, -speed));
-
+            break;
+        }
+        default:
+            break;
+        }
+        for (auto& model : models) {
             model.modelMatrix = orbitTransform * model.modelMatrix;
         }
-        break;
-    }
-    default:
-        break;
-    }
-
-
-    glutPostRedisplay();  // 화면 다시 그리기 요청
+        glutPostRedisplay();  // 화면 다시 그리기 요청
 }
 
 // 마우스 입력을 처리하는 함수
@@ -363,7 +432,6 @@ int main(int argc, char** argv) {
         {
         case 0:
             m.modelMatrix = glm::scale(m.modelMatrix, glm::vec3(0.4, 0.4, 0.4));
-            m.translationOffset = glm::vec3(0.0f, 0.0f, 0.0f);
             break;
         case 1:
             m.modelMatrix = glm::translate(m.modelMatrix, glm::vec3(2.0f, 0.0f, 0.0f));
@@ -399,6 +467,8 @@ int main(int argc, char** argv) {
         default:
             break;
         }
+
+        m.translationOffset = m.modelMatrix;
 
         glm::vec3 s_color = { dis_color(gen), dis_color(gen), dis_color(gen) };
 
