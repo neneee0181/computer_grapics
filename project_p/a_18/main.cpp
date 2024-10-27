@@ -128,15 +128,17 @@ void timer_y(int value) {
             case 3:
             {
                 glm::mat4 orbit = glm::mat4(1.0f);
+
+                // 공전 변환 적용 (회전)
                 orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(1.0, 0.0, 0.0));
                 orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
+
+                // 1. 모델 매트릭스에 공전 적용
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
 
-                glm::mat4 lineO = glm::mat4(1.0f);
-                lineO = glm::rotate(lineO, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
-                lineO = glm::rotate(lineO, glm::radians(speed), glm::vec3(1.0, 0.0, 0.0));
+                // 2. 궤도 선에도 같은 변환 적용
                 for (size_t j = 0; j < orbitVertices[3].size(); ++j) {
-                    glm::vec4 rotatedPoint = lineO * glm::vec4(orbitVertices[3][j], 1.0f);
+                    glm::vec4 rotatedPoint = orbit * glm::vec4(orbitVertices[3][j], 1.0f);
                     orbitVertices[3][j] = glm::vec3(rotatedPoint);
                 }
 
@@ -151,6 +153,36 @@ void timer_y(int value) {
                 orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
                 orbit = glm::rotate(orbit, glm::radians(-speed), glm::vec3(1.0, 0.0, 0.0));
                 orbit = glm::translate(orbit, glm::vec3(-models[3].modelMatrix[3]));
+                models[i].modelMatrix = orbit * models[i].modelMatrix;
+                break;
+            }
+            case 5:
+            {
+                glm::mat4 orbit = glm::mat4(1.0f);
+
+                // 공전 변환 적용 (회전)
+                orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(1.0, 0.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(-speed), glm::vec3(0.0, 1.0, 0.0));
+
+                // 1. 모델 매트릭스에 공전 적용
+                models[i].modelMatrix = orbit * models[i].modelMatrix;
+
+                // 2. 궤도 선에도 같은 변환 적용
+                for (size_t j = 0; j < orbitVertices[3].size(); ++j) {
+                    glm::vec4 rotatedPoint = orbit * glm::vec4(orbitVertices[5][j], 1.0f);
+                    orbitVertices[5][j] = glm::vec3(rotatedPoint);
+                }
+                break;
+            }
+            case 6:
+            {
+                glm::mat4 orbit = glm::mat4(1.0f);
+                orbit = glm::rotate(orbit, glm::radians(-speed), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(1.0, 0.0, 0.0));
+                orbit = glm::translate(orbit, glm::vec3(models[5].modelMatrix[3]));
+                orbit = glm::rotate(orbit, glm::radians(-speed), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(-speed), glm::vec3(1.0, 0.0, 0.0));
+                orbit = glm::translate(orbit, glm::vec3(-models[5].modelMatrix[3]));
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
                 break;
             }
@@ -344,8 +376,7 @@ int main(int argc, char** argv) {
         case 5:
             m.modelMatrix = glm::translate(m.modelMatrix, glm::vec3(-1.5f, -1.5f, 0.0f));
             m.modelMatrix = glm::scale(m.modelMatrix, glm::vec3(0.2, 0.2, 0.2));
-            m.modelMatrix = glm::rotate(m.modelMatrix, glm::radians(-45.0f), glm::vec3(1.0, 0.0, 0.0));
-            m.modelMatrix = glm::rotate(m.modelMatrix, glm::radians(45.0f), glm::vec3(0.0, 1.0, 0.0));
+            m.modelMatrix = glm::rotate(m.modelMatrix, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
             break;
         case 6:
             m.modelMatrix = glm::translate(m.modelMatrix, glm::vec3(-1.5f, -1.5f, 0.0f));
