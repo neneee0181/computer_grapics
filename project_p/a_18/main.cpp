@@ -132,11 +132,6 @@ void timer_y(int value) {
                 orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
                 
-                for (size_t j = 0; j < orbitVertices[3].size(); ++j) {
-                    glm::vec4 rotatedPoint = orbit * glm::vec4(orbitVertices[3][j], 1.0f);
-                    orbitVertices[3][j] = glm::vec3(rotatedPoint);
-                }
-
                 break;
             }
             case 4:
@@ -149,6 +144,11 @@ void timer_y(int value) {
                 orbit = glm::rotate(orbit, glm::radians(-speed), glm::vec3(1.0, 0.0, 0.0));
                 orbit = glm::translate(orbit, glm::vec3(-models[3].modelMatrix[3]));
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
+
+                for (size_t j = 0; j < orbitVertices[3].size(); ++j) {
+                    glm::vec4 rotatedPoint = orbit * glm::vec4(orbitVertices[3][j], 1.0f);
+                    orbitVertices[3][j] = glm::vec3(rotatedPoint);
+                }
                 break;
             }
             case 5:
@@ -159,14 +159,8 @@ void timer_y(int value) {
                 orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(1.0, 0.0, 0.0));
                 orbit = glm::rotate(orbit, glm::radians(-speed), glm::vec3(0.0, 1.0, 0.0));
 
-                // 1. 모델 매트릭스에 공전 적용
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
-
-                // 2. 궤도 선에도 같은 변환 적용
-                for (size_t j = 0; j < orbitVertices[5].size(); ++j) {
-                    glm::vec4 rotatedPoint = orbit * glm::vec4(orbitVertices[5][j], 1.0f);
-                    orbitVertices[5][j] = glm::vec3(rotatedPoint);
-                }
+                
                 break;
             }
             case 6:
@@ -179,6 +173,10 @@ void timer_y(int value) {
                 orbit = glm::rotate(orbit, glm::radians(-speed), glm::vec3(1.0, 0.0, 0.0));
                 orbit = glm::translate(orbit, glm::vec3(-models[5].modelMatrix[3]));
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
+                for (size_t j = 0; j < orbitVertices[5].size(); ++j) {
+                    glm::vec4 rotatedPoint = orbit * glm::vec4(orbitVertices[5][j], 1.0f);
+                    orbitVertices[5][j] = glm::vec3(rotatedPoint);
+                }
                 break;
             }
             default:
@@ -418,9 +416,9 @@ int main(int argc, char** argv) {
     createOrbitVertices(2.0, glm::vec3(0.0, 0.0, 0.0), 0.0f);
     createOrbitVertices(0.5, glm::vec3(models[1].modelMatrix[3]), 0.0f);
     createOrbitVertices(2.12f, glm::vec3(0.0, 0.0, 0.0), -45.0f);
-    createOrbitVertices(0.5, glm::vec3(models[3].modelMatrix[3]), -45.0f);
+    createOrbitVertices(0.5, glm::vec3(models[3].modelMatrix[3]), 0.0f);
     createOrbitVertices(2.12f, glm::vec3(0.0, 0.0, 0.0), 45.0f);
-    createOrbitVertices(0.5, glm::vec3(models[5].modelMatrix[3]), 45.0f);
+    createOrbitVertices(0.5, glm::vec3(models[5].modelMatrix[3]), 0.0f);
 
     InitBuffer();  // 버퍼 초기화
 
