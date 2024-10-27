@@ -120,7 +120,7 @@ void timer_y(int value) {
                 glm::mat4 orbit = glm::mat4(1.0f);
                 orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
                 orbit = glm::translate(orbit, glm::vec3(models[1].modelMatrix[3]));
-                orbit = glm::rotate(orbit, glm::radians(speed+0.02f), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
                 orbit = glm::translate(orbit, glm::vec3(-models[1].modelMatrix[3]));
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
                 break;
@@ -130,20 +130,28 @@ void timer_y(int value) {
                 glm::mat4 orbit = glm::mat4(1.0f);
                 orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(1.0, 0.0, 0.0));
                 orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
-
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
 
+                glm::mat4 lineO = glm::mat4(1.0f);
+                lineO = glm::rotate(lineO, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
+                lineO = glm::rotate(lineO, glm::radians(speed), glm::vec3(1.0, 0.0, 0.0));
                 for (size_t j = 0; j < orbitVertices[3].size(); ++j) {
-
-                    glm::mat4 lineO = glm::mat4(1.0f);
-                    lineO = glm::rotate(lineO, glm::radians(speed), glm::vec3(1.0, 0.0, 0.0));
-                    lineO = glm::rotate(lineO, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
-
                     glm::vec4 rotatedPoint = lineO * glm::vec4(orbitVertices[3][j], 1.0f);
-
                     orbitVertices[3][j] = glm::vec3(rotatedPoint);
                 }
 
+                break;
+            }
+            case 4:
+            {
+                glm::mat4 orbit = glm::mat4(1.0f);
+                orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(1.0, 0.0, 0.0));
+                orbit = glm::translate(orbit, glm::vec3(models[3].modelMatrix[3]));
+                orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::rotate(orbit, glm::radians(-speed), glm::vec3(1.0, 0.0, 0.0));
+                orbit = glm::translate(orbit, glm::vec3(-models[3].modelMatrix[3]));
+                models[i].modelMatrix = orbit * models[i].modelMatrix;
                 break;
             }
             default:
@@ -325,7 +333,6 @@ int main(int argc, char** argv) {
         case 3:
             m.modelMatrix = glm::translate(m.modelMatrix, glm::vec3(1.5f, -1.5f, 0.0f));
             m.modelMatrix = glm::scale(m.modelMatrix, glm::vec3(0.2, 0.2, 0.2));
-            //m.modelMatrix = glm::rotate(m.modelMatrix, glm::radians(45.0f), glm::vec3(0.0, 1.0, 0.0));
             m.modelMatrix = glm::rotate(m.modelMatrix, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
             break;
         case 4:
