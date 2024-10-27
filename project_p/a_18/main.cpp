@@ -87,11 +87,38 @@ void createOrbitVertices(float radius, glm::vec3 center, float angleY) {
 
 unordered_map<unsigned char, bool> keyStates;
 char key_result = ' ';
+int y_status = 0;
 
-void timer(int value) {
+void timer_y(int value) {
+
+    float speed = 0.8f;
+
+    if (keyStates['y']) {
+        for (int i = 0; i < models.size(); ++i) {
+            switch (i)
+            {
+            case 1:
+            {
+                // 원점으로 이동
+                glm::mat4 orbitTransform = glm::mat4(1.0f);
+
+                // 회전 적용
+                orbitTransform = glm::rotate(orbitTransform, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
+
+                // 최종적으로 모델 매트릭스에 적용
+                models[i].modelMatrix = orbitTransform * models[i].modelMatrix;
+                break;
+            }
+            default:
+                break;
+            }
+        }
+    }
 
     glutPostRedisplay();  // 화면 다시 그리기 요청
-    glutTimerFunc(16, timer, 0);
+    if (y_status == 1) {
+        glutTimerFunc(16, timer_y, y_status);
+    }
 }
 
 void keyBoard(unsigned char key, int x, int y) {
@@ -102,6 +129,19 @@ void keyBoard(unsigned char key, int x, int y) {
         keyStates['M'] = false;
     else if (key == 'M')
         keyStates['m'] = false;
+
+    if (key == 'y') {
+        if (y_status == 0) {
+            glutTimerFunc(0, timer_y, y_status);
+            y_status = 1;
+        }
+    }
+    else if (key == 'Y') {
+        if (y_status == 0) {
+            glutTimerFunc(0, timer_y, y_status);
+            y_status = 1;
+        }
+    }
 
 
     // ----------
@@ -237,7 +277,6 @@ int main(int argc, char** argv) {
         case 2:
             m.modelMatrix = glm::translate(m.modelMatrix, glm::vec3(1.5f, 0.0f, 0.0f));
             m.modelMatrix = glm::scale(m.modelMatrix, glm::vec3(0.1, 0.1, 0.1));
-            //m.modelMatrix = glm::rotate(m.modelMatrix, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
             break;
         case 3:
             m.modelMatrix = glm::translate(m.modelMatrix, glm::vec3(1.5f, -1.5f, 0.0f));
