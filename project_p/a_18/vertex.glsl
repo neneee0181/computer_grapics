@@ -18,5 +18,8 @@ void main() {
     }else if(modelStatus == 1){
         gl_Position = projectionTransform * viewTransform * Line * vec4(in_Position, 1.0);
         out_Color = in_Color;   // x,y,z รเ
+    }else if(modelStatus == 2){
+        gl_Position = projectionTransform * viewTransform * Line * vec4(in_Position, 1.0);
+        out_Color = vec3(0.5, 0.5, 0.5);
     }
 }

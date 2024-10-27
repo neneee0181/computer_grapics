@@ -28,6 +28,7 @@ GLvoid Reshape(int w, int h);  // 화면 크기가 변경될 때 호출되는 함수 선언
 vector<Model> models;
 vector<GLuint> vaos;
 vector<vector<GLuint>> vbos;
+GLuint orbitVAO[6], orbitVBO[6];
 
 // camera
 glm::vec3 cameraPos = glm::vec3(0.0, 0.0, 4.0);
@@ -54,6 +55,34 @@ GLvoid Reshape(int w, int h) {
     glViewport(0, 0, w, h);  // 뷰포트 크기 설정
     width = w;
     height = h;
+}
+
+std::vector<std::vector<glm::vec3>> orbitVertices;
+int orbitSegments = 100; // 궤도 선을 위한 세그먼트 수
+
+void createOrbitVertices(float radius, glm::vec3 center, float angleY) {
+    std::vector<glm::vec3> singleOrbit;
+
+    // Y축을 기준으로 angleY만큼 회전하는 행렬을 생성
+    glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(angleY), glm::vec3(0.0f, 0.0f, 1.0f));
+
+    for (int i = 0; i <= orbitSegments; ++i) {
+        float angle = glm::radians((360.0f / orbitSegments) * i);
+
+        // XZ 평면에 원을 생성
+        glm::vec4 point = glm::vec4(radius * cos(angle), 0.0f, radius * sin(angle), 1.0f);
+
+        // 회전 행렬 적용
+        point = rotationMatrix * point;
+
+        // 디버그: 회전된 좌표를 출력
+        std::cout << "Rotated point: " << point.x << ", " << point.y << ", " << point.z << std::endl;
+
+        // 중심점 이동 적용
+        singleOrbit.push_back(glm::vec3(point) + center);
+    }
+
+    orbitVertices.push_back(singleOrbit);
 }
 
 unordered_map<unsigned char, bool> keyStates;
@@ -88,6 +117,7 @@ void mouse(int button, int state, int x, int y) {
 void rotation_xyz(Model& model, float radians, glm::vec3 xyz) {
     model.modelMatrix = glm::rotate(model.modelMatrix, glm::radians(radians), xyz);
 }
+
 
 // 메인 함수
 int main(int argc, char** argv) {
@@ -192,6 +222,11 @@ int main(int argc, char** argv) {
     models.push_back(modelYLine);
     models.push_back(modelZLine);
 
+    createOrbitVertices(2.0, glm::vec3(0.0, 0.0, 0.0), 0.0f);
+    createOrbitVertices(0.5, glm::vec3(models[1].modelMatrix[3]), 0.0f);
+    createOrbitVertices(2.12f, glm::vec3(0.0, 0.0, 0.0), -45.0f);
+    createOrbitVertices(2.12f, glm::vec3(0.0, 0.0, 0.0), 45.0f);
+
     InitBuffer();  // 버퍼 초기화
 
     // 콜백 함수 등록
@@ -212,11 +247,11 @@ GLvoid drawScene() {
     glUseProgram(shaderProgramID);  // 쉐이더 프로그램 사용
 
     // 카메라
-    cameraPos = glm::vec3(0.0, 0.0, 5.0);
+    cameraPos = glm::vec3(0.0, 0.0, 5.5);
     glm::mat4 view = glm::mat4(1.0f);
-    /*glm::mat4 rotationMatrix_x = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 rotationMatrix_x = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 rotationMatrix_y = glm::rotate(glm::mat4(1.0f), glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    cameraPos = glm::vec3(rotationMatrix_x * rotationMatrix_y * glm::vec4(cameraPos, 1.0f));*/
+    cameraPos = glm::vec3(rotationMatrix_x * rotationMatrix_y * glm::vec4(cameraPos, 1.0f));
     view = glm::lookAt(
         cameraPos,  //--- 카메라위치
         cameraDirection,  //--- 카메라바라보는방향
@@ -232,11 +267,11 @@ GLvoid drawScene() {
     glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, &projection[0][0]);
 
     glEnable(GL_DEPTH_TEST);
+    GLint modelStatus = glGetUniformLocation(shaderProgramID, "modelStatus");
+
     // 각 모델을 그리기
     for (size_t i = 0; i < models.size(); ++i) {
         glBindVertexArray(vaos[i]);
-
-        GLint modelStatus = glGetUniformLocation(shaderProgramID, "modelStatus");
 
         if (models[i].name == "sphere") {
             GLint modelLoc = glGetUniformLocation(shaderProgramID, "model");
@@ -262,6 +297,16 @@ GLvoid drawScene() {
         glBindVertexArray(0);
     }
 
+
+    //-------------------------------------------------
+    for (int i = 0; i < orbitVertices.size(); ++i) {
+        glBindVertexArray(orbitVAO[i]);
+        glUniform1i(modelStatus, 2);
+        glLineWidth(1.5f);
+        glDrawArrays(GL_LINE_STRIP, 0, orbitVertices[i].size());
+        glBindVertexArray(0);
+    }
+
     glDisable(GL_DEPTH_TEST);
 
     glutSwapBuffers();  // 더블 버퍼링 사용, 화면 갱신
@@ -275,6 +320,26 @@ GLvoid drawScene() {
 
 // 버퍼 초기화 함수
 void InitBuffer() {
+
+    for (int i = 0; i < orbitVertices.size(); ++i) {
+        glGenVertexArrays(1, &orbitVAO[i]);
+        glGenBuffers(1, &orbitVBO[i]);
+
+        glBindVertexArray(orbitVAO[i]);
+
+        // glm::vec4 -> glm::vec3 변환
+        std::vector<glm::vec3> vertexData;
+        for (const auto& vec4Point : orbitVertices[i]) {
+            vertexData.push_back(glm::vec3(vec4Point));  // vec4의 xyz 부분만 가져옴
+        }
+
+        glBindBuffer(GL_ARRAY_BUFFER, orbitVBO[i]);
+        glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(glm::vec3), vertexData.data(), GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);  // 위치 정보
+        glEnableVertexAttribArray(0);
+
+        glBindVertexArray(0);
+    }
 
     // 각 모델에 대한 VAO, VBO, EBO 설정
     vaos.resize(models.size());
