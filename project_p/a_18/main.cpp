@@ -104,6 +104,75 @@ void keyBoard(unsigned char key, int x, int y) {
         keyStates['m'] = false;
 
 
+    // ----------
+    float speed = 0.1f;
+    switch (key)
+    {
+    case 'w':
+    {
+        for (auto& model : models) {
+            glm::mat4 orbitTransform = glm::mat4(1.0f);
+            orbitTransform = glm::translate(orbitTransform, glm::vec3(speed, 0.0, 0.0));
+
+            model.modelMatrix = orbitTransform * model.modelMatrix;
+        }
+        break;
+    }
+    case 'a':
+    {
+        for (auto& model : models) {
+            glm::mat4 orbitTransform = glm::mat4(1.0f);
+            orbitTransform = glm::translate(orbitTransform, glm::vec3(0.0, -speed, 0.0));
+
+            model.modelMatrix = orbitTransform * model.modelMatrix;
+        }
+        break;
+    }
+    case 's':
+    {
+        for (auto& model : models) {
+            glm::mat4 orbitTransform = glm::mat4(1.0f);
+            orbitTransform = glm::translate(orbitTransform, glm::vec3(-speed, 0.0, 0.0));
+
+            model.modelMatrix = orbitTransform * model.modelMatrix;
+        }
+        break;
+    }
+    case 'd':
+    {
+        for (auto& model : models) {
+            glm::mat4 orbitTransform = glm::mat4(1.0f);
+            orbitTransform = glm::translate(orbitTransform, glm::vec3(0.0, speed, 0.0));
+
+            model.modelMatrix = orbitTransform * model.modelMatrix;
+        }
+        break;
+    }
+    case '+':
+    {
+        for (auto& model : models) {
+            glm::mat4 orbitTransform = glm::mat4(1.0f);
+            orbitTransform = glm::translate(orbitTransform, glm::vec3(0.0, 0.0, speed));
+
+            model.modelMatrix = orbitTransform * model.modelMatrix;
+        }
+        break;
+    }
+    case '-':
+    {
+        for (auto& model : models) {
+            glm::mat4 orbitTransform = glm::mat4(1.0f);
+            orbitTransform = glm::translate(orbitTransform, glm::vec3(0.0, 0.0, -speed));
+
+            model.modelMatrix = orbitTransform * model.modelMatrix;
+        }
+        break;
+    }
+    default:
+        break;
+    }
+
+
     glutPostRedisplay();  // 화면 다시 그리기 요청
 }
 
@@ -256,9 +325,9 @@ GLvoid drawScene() {
     // 카메라
     cameraPos = glm::vec3(0.0, 0.0, 5.5);
     glm::mat4 view = glm::mat4(1.0f);
-    /*glm::mat4 rotationMatrix_x = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 rotationMatrix_x = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 rotationMatrix_y = glm::rotate(glm::mat4(1.0f), glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    cameraPos = glm::vec3(rotationMatrix_x * rotationMatrix_y * glm::vec4(cameraPos, 1.0f));*/
+    cameraPos = glm::vec3(rotationMatrix_x * rotationMatrix_y * glm::vec4(cameraPos, 1.0f));
     view = glm::lookAt(
         cameraPos,  //--- 카메라위치
         cameraDirection,  //--- 카메라바라보는방향
