@@ -75,9 +75,6 @@ void createOrbitVertices(float radius, glm::vec3 center, float angleY) {
         // 회전 행렬 적용
         point = rotationMatrix * point;
 
-        // 디버그: 회전된 좌표를 출력
-        std::cout << "Rotated point: " << point.x << ", " << point.y << ", " << point.z << std::endl;
-
         // 중심점 이동 적용
         singleOrbit.push_back(glm::vec3(point) + center);
     }
@@ -99,14 +96,33 @@ void timer_y(int value) {
             {
             case 1:
             {
-                // 원점으로 이동
-                glm::mat4 orbitTransform = glm::mat4(1.0f);
 
-                // 회전 적용
-                orbitTransform = glm::rotate(orbitTransform, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
+                glm::mat4 orbit = glm::mat4(1.0f);
+                orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
+                models[i].modelMatrix = orbit * models[i].modelMatrix;
+                
+                for (size_t j = 0; j < orbitVertices[i].size(); ++j) {
+                    // 궤도 회전 적용
+                    glm::mat4 lineO = glm::mat4(1.0f);
+                    lineO = glm::rotate(lineO, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
 
-                // 최종적으로 모델 매트릭스에 적용
-                models[i].modelMatrix = orbitTransform * models[i].modelMatrix;
+                    // vec3를 vec4로 변환하여 회전 적용
+                    glm::vec4 rotatedPoint = lineO * glm::vec4(orbitVertices[i][j], 1.0f);
+                    
+                    // 결과를 다시 vec3로 변환하여 저장
+                    orbitVertices[i][j] = glm::vec3(rotatedPoint);
+                }
+
+                break;
+            }
+            case 2:
+            {
+                glm::mat4 orbit = glm::mat4(1.0f);
+                orbit = glm::rotate(orbit, glm::radians(speed), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::translate(orbit, glm::vec3(models[1].modelMatrix[3]));
+                orbit = glm::rotate(orbit, glm::radians(speed+0.02f), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::translate(orbit, glm::vec3(-models[1].modelMatrix[3]));
+                models[i].modelMatrix = orbit * models[i].modelMatrix;
                 break;
             }
             default:
@@ -114,6 +130,11 @@ void timer_y(int value) {
             }
         }
     }
+
+    // VBO 업데이트
+    glBindBuffer(GL_ARRAY_BUFFER, orbitVBO[1]);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, orbitVertices[1].size() * sizeof(glm::vec3), orbitVertices[1].data());
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     glutPostRedisplay();  // 화면 다시 그리기 요청
     if (y_status == 1) {
