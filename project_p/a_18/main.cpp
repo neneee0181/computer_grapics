@@ -406,7 +406,7 @@ void keyBoard(unsigned char key, int x, int y) {
             break;
         }
         for (auto& model : models) {
-            model.translationMatrix = orbitTransform * model.translationMatrix;
+            model.modelMatrix = orbitTransform * model.modelMatrix;
         }
         glutPostRedisplay();  // 화면 다시 그리기 요청
 }
