@@ -94,10 +94,33 @@ float speed4 = 1.4f;
 float speed5 = 1.6f;
 
 void timer_z(int value) {
-    if (keyStates['y']) {
+    if (keyStates['z']) {
         for (int i = 0; i < models.size(); ++i) {
+            if (i == 0)
+                continue;
+            glm::mat4 orbit = glm::mat4(1.0f);
+            orbit = glm::rotate(orbit, glm::radians(speed5), glm::vec3(0.0, 1.0, 0.0));
+            models[i].modelMatrix = models[i].modelMatrix * orbit;
 
+            
+            glm::mat4 lineO = glm::mat4(1.0f);
+            lineO = glm::translate(lineO, glm::vec3(models[i].modelMatrix[3]));
+            lineO = glm::rotate(lineO, glm::radians(speed5), glm::vec3(0.0, 0.0, 1.0));
+            lineO = glm::translate(lineO, glm::vec3(-models[i].modelMatrix[3]));
+            if (i == 2 || i == 4 || i == 6) {
+                models[i].modelMatrix = lineO * models[i].modelMatrix;
+            }
+            if (i == 1 || i == 3 || i == 5) {
+                for (size_t j = 0; j < orbitVertices[i].size(); ++j) {
+                    glm::vec4 rotatedPoint = lineO * glm::vec4(orbitVertices[i][j], 1.0f);
+                    orbitVertices[i][j] = glm::vec3(rotatedPoint);
+                }
+            }
         }
+
+    }
+    else {
+
     }
 
 
@@ -354,14 +377,12 @@ void keyBoard(unsigned char key, int x, int y) {
     }
 
     if (key == 'z') {
-        y_status = 0;
         if (z_status == 0) {
             glutTimerFunc(0, timer_z, z_status);
             z_status = 1;
         }
     }
     else if (key == 'z') {
-        y_status = 0;
         if (z_status == 0) {
             glutTimerFunc(0, timer_z, z_status);
             z_status = 1;
