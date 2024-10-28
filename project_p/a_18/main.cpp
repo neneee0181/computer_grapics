@@ -92,7 +92,9 @@ float speed2 = 1.0f;
 float speed3 = 1.2f;
 float speed4 = 1.4f;
 float speed5 = 1.6f;
-
+// 애니메이션 속도 조절을 위한 변수 (속도는 상황에 맞게 조정 가능)
+float orbitSpeed = 0.3f; // 0.1 정도의 작은 값을 사용하여 느리게 움직임
+static float orbitIndex = 0.0f;
 void timer_z(int value) {
     if (keyStates['z']) {
         for (int i = 0; i < models.size(); ++i) {
@@ -102,25 +104,86 @@ void timer_z(int value) {
             orbit = glm::rotate(orbit, glm::radians(speed5), glm::vec3(0.0, 1.0, 0.0));
             models[i].modelMatrix = models[i].modelMatrix * orbit;
 
-            
             glm::mat4 lineO = glm::mat4(1.0f);
             lineO = glm::translate(lineO, glm::vec3(models[i].modelMatrix[3]));
-            lineO = glm::rotate(lineO, glm::radians(speed5), glm::vec3(0.0, 0.0, 1.0));
+            lineO = glm::rotate(lineO, glm::radians(-speed5), glm::vec3(1.0, 0.0, 0.0));
             lineO = glm::translate(lineO, glm::vec3(-models[i].modelMatrix[3]));
-            if (i == 2 || i == 4 || i == 6) {
-                models[i].modelMatrix = lineO * models[i].modelMatrix;
-            }
+
             if (i == 1 || i == 3 || i == 5) {
                 for (size_t j = 0; j < orbitVertices[i].size(); ++j) {
                     glm::vec4 rotatedPoint = lineO * glm::vec4(orbitVertices[i][j], 1.0f);
                     orbitVertices[i][j] = glm::vec3(rotatedPoint);
                 }
             }
+
+            if (i == 2 || i == 4 || i == 6) {
+                // 인덱스가 벡터 범위를 넘지 않도록 orbitVertices[i-1].size()로 감싸줍니다.
+                size_t currentIndex = static_cast<size_t>(orbitIndex) % orbitVertices[i - 1].size();
+                glm::vec3 orbitCenter = glm::vec3(orbitVertices[i - 1][currentIndex]);
+
+                glm::mat4 ss = glm::mat4(1.0f);
+                ss = glm::translate(ss, orbitCenter);
+
+                glm::vec3 scale;
+
+                // X, Y, Z 축 벡터의 길이를 계산
+                scale.x = glm::length(glm::vec3(models[i].modelMatrix[0])); // X축 벡터의 길이
+                scale.y = glm::length(glm::vec3(models[i].modelMatrix[1])); // Y축 벡터의 길이
+                scale.z = glm::length(glm::vec3(models[i].modelMatrix[2])); // Z축 벡터의 길이
+
+                ss = glm::scale(ss, scale);
+                models[i].modelMatrix = ss;
+
+                // 애니메이션 속도에 맞춰 orbitIndex를 증가시킵니다.
+                orbitIndex += orbitSpeed;
+
+            }
         }
 
     }
     else {
+        for (int i = 0; i < models.size(); ++i) {
+            if (i == 0)
+                continue;
+            glm::mat4 orbit = glm::mat4(1.0f);
+            orbit = glm::rotate(orbit, glm::radians(speed5), glm::vec3(0.0, 1.0, 0.0));
+            models[i].modelMatrix = models[i].modelMatrix * orbit;
 
+            glm::mat4 lineO = glm::mat4(1.0f);
+            lineO = glm::translate(lineO, glm::vec3(models[i].modelMatrix[3]));
+            lineO = glm::rotate(lineO, glm::radians(speed5), glm::vec3(1.0, 0.0, 0.0));
+            lineO = glm::translate(lineO, glm::vec3(-models[i].modelMatrix[3]));
+
+            if (i == 1 || i == 3 || i == 5) {
+                for (size_t j = 0; j < orbitVertices[i].size(); ++j) {
+                    glm::vec4 rotatedPoint = lineO * glm::vec4(orbitVertices[i][j], 1.0f);
+                    orbitVertices[i][j] = glm::vec3(rotatedPoint);
+                }
+            }
+
+            if (i == 2 || i == 4 || i == 6) {
+                // 인덱스가 벡터 범위를 넘지 않도록 orbitVertices[i-1].size()로 감싸줍니다.
+                size_t currentIndex = static_cast<size_t>(orbitIndex) % orbitVertices[i - 1].size();
+                glm::vec3 orbitCenter = glm::vec3(orbitVertices[i - 1][currentIndex]);
+
+                glm::mat4 ss = glm::mat4(1.0f);
+                ss = glm::translate(ss, orbitCenter);
+
+                glm::vec3 scale;
+
+                // X, Y, Z 축 벡터의 길이를 계산
+                scale.x = glm::length(glm::vec3(models[i].modelMatrix[0])); // X축 벡터의 길이
+                scale.y = glm::length(glm::vec3(models[i].modelMatrix[1])); // Y축 벡터의 길이
+                scale.z = glm::length(glm::vec3(models[i].modelMatrix[2])); // Z축 벡터의 길이
+
+                ss = glm::scale(ss, scale);
+                models[i].modelMatrix = ss;
+
+                // 애니메이션 속도에 맞춰 orbitIndex를 증가시킵니다.
+                orbitIndex += orbitSpeed;
+
+            }
+        }
     }
 
 
