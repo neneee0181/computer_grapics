@@ -96,7 +96,7 @@ float speed5 = 1.6f;
 void timer_z(int value) {
     if (keyStates['y']) {
         for (int i = 0; i < models.size(); ++i) {
-           
+
         }
     }
 
@@ -119,17 +119,16 @@ void timer_y(int value) {
             {
 
                 glm::mat4 orbit = glm::mat4(1.0f);
+                orbit = glm::translate(orbit, glm::vec3(models[0].modelMatrix[3]));
                 orbit = glm::rotate(orbit, glm::radians(speed1), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::translate(orbit, glm::vec3(-models[0].modelMatrix[3]));
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
-                
+
                 for (size_t j = 0; j < orbitVertices[i].size(); ++j) {
-                    // 궤도 회전 적용
-                    glm::mat4 lineO = glm::mat4(1.0f);
-                    lineO = glm::rotate(lineO, glm::radians(speed1), glm::vec3(0.0, 1.0, 0.0));
 
                     // vec3를 vec4로 변환하여 회전 적용
-                    glm::vec4 rotatedPoint = lineO * glm::vec4(orbitVertices[i][j], 1.0f);
-                    
+                    glm::vec4 rotatedPoint = orbit * glm::vec4(orbitVertices[i][j], 1.0f);
+
                     // 결과를 다시 vec3로 변환하여 저장
                     orbitVertices[i][j] = glm::vec3(rotatedPoint);
                 }
@@ -139,7 +138,9 @@ void timer_y(int value) {
             case 2:
             {
                 glm::mat4 orbit = glm::mat4(1.0f);
+                orbit = glm::translate(orbit, glm::vec3(models[0].modelMatrix[3]));
                 orbit = glm::rotate(orbit, glm::radians(speed1), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::translate(orbit, glm::vec3(-models[0].modelMatrix[3]));
                 orbit = glm::translate(orbit, glm::vec3(models[1].modelMatrix[3]));
                 orbit = glm::rotate(orbit, glm::radians(speed1), glm::vec3(0.0, 1.0, 0.0));
                 orbit = glm::translate(orbit, glm::vec3(-models[1].modelMatrix[3]));
@@ -149,17 +150,21 @@ void timer_y(int value) {
             case 3:
             {
                 glm::mat4 orbit = glm::mat4(1.0f);
+                orbit = glm::translate(orbit, glm::vec3(models[0].modelMatrix[3]));
                 orbit = glm::rotate(orbit, glm::radians(speed3), glm::vec3(1.0, 0.0, 0.0));
                 orbit = glm::rotate(orbit, glm::radians(speed3), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::translate(orbit, glm::vec3(-models[0].modelMatrix[3]));
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
-                
+
                 break;
             }
             case 4:
             {
                 glm::mat4 orbit = glm::mat4(1.0f);
+                orbit = glm::translate(orbit, glm::vec3(models[0].modelMatrix[3]));
                 orbit = glm::rotate(orbit, glm::radians(speed3), glm::vec3(1.0, 0.0, 0.0));
                 orbit = glm::rotate(orbit, glm::radians(speed3), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::translate(orbit, glm::vec3(-models[0].modelMatrix[3]));
                 orbit = glm::translate(orbit, glm::vec3(models[3].modelMatrix[3]));
                 orbit = glm::rotate(orbit, glm::radians(speed3), glm::vec3(0.0, 1.0, 0.0));
                 orbit = glm::rotate(orbit, glm::radians(-speed3), glm::vec3(1.0, 0.0, 0.0));
@@ -177,23 +182,27 @@ void timer_y(int value) {
                 glm::mat4 orbit = glm::mat4(1.0f);
 
                 // 공전 변환 적용 (회전)
+                orbit = glm::translate(orbit, glm::vec3(models[0].modelMatrix[3]));
                 orbit = glm::rotate(orbit, glm::radians(-speed1), glm::vec3(1.0, 0.0, 0.0));
                 orbit = glm::rotate(orbit, glm::radians(speed1), glm::vec3(0.0, 1.0, 0.0));
-
+                orbit = glm::translate(orbit, glm::vec3(-models[0].modelMatrix[3]));
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
-                
+
                 break;
             }
             case 6:
             {
                 glm::mat4 orbit = glm::mat4(1.0f);
+                orbit = glm::translate(orbit, glm::vec3(models[0].modelMatrix[3]));
                 orbit = glm::rotate(orbit, glm::radians(-speed1), glm::vec3(1.0, 0.0, 0.0));
                 orbit = glm::rotate(orbit, glm::radians(speed1), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::translate(orbit, glm::vec3(-models[0].modelMatrix[3]));
                 orbit = glm::translate(orbit, glm::vec3(models[5].modelMatrix[3]));
                 orbit = glm::rotate(orbit, glm::radians(speed1 + 0.08f), glm::vec3(0.0, 1.0, 0.0));
                 orbit = glm::rotate(orbit, glm::radians(speed1 + 0.08f), glm::vec3(1.0, 0.0, 0.0));
                 orbit = glm::translate(orbit, glm::vec3(-models[5].modelMatrix[3]));
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
+
                 for (size_t j = 0; j < orbitVertices[5].size(); ++j) {
                     glm::vec4 rotatedPoint = orbit * glm::vec4(orbitVertices[5][j], 1.0f);
                     orbitVertices[5][j] = glm::vec3(rotatedPoint);
@@ -213,16 +222,15 @@ void timer_y(int value) {
             {
 
                 glm::mat4 orbit = glm::mat4(1.0f);
+                orbit = glm::translate(orbit, glm::vec3(models[0].modelMatrix[3]));
                 orbit = glm::rotate(orbit, glm::radians(-speed1), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::translate(orbit, glm::vec3(-models[0].modelMatrix[3]));
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
 
                 for (size_t j = 0; j < orbitVertices[i].size(); ++j) {
-                    // 궤도 회전 적용
-                    glm::mat4 lineO = glm::mat4(1.0f);
-                    lineO = glm::rotate(lineO, glm::radians(-speed1), glm::vec3(0.0, 1.0, 0.0));
 
                     // vec3를 vec4로 변환하여 회전 적용
-                    glm::vec4 rotatedPoint = lineO * glm::vec4(orbitVertices[i][j], 1.0f);
+                    glm::vec4 rotatedPoint = orbit * glm::vec4(orbitVertices[i][j], 1.0f);
 
                     // 결과를 다시 vec3로 변환하여 저장
                     orbitVertices[i][j] = glm::vec3(rotatedPoint);
@@ -233,7 +241,9 @@ void timer_y(int value) {
             case 2:
             {
                 glm::mat4 orbit = glm::mat4(1.0f);
+                orbit = glm::translate(orbit, glm::vec3(models[0].modelMatrix[3]));
                 orbit = glm::rotate(orbit, glm::radians(-speed1), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::translate(orbit, glm::vec3(-models[0].modelMatrix[3]));
                 orbit = glm::translate(orbit, glm::vec3(models[1].modelMatrix[3]));
                 orbit = glm::rotate(orbit, glm::radians(-speed1), glm::vec3(0.0, 1.0, 0.0));
                 orbit = glm::translate(orbit, glm::vec3(-models[1].modelMatrix[3]));
@@ -243,8 +253,10 @@ void timer_y(int value) {
             case 3:
             {
                 glm::mat4 orbit = glm::mat4(1.0f);
+                orbit = glm::translate(orbit, glm::vec3(models[0].modelMatrix[3]));
                 orbit = glm::rotate(orbit, glm::radians(-speed3), glm::vec3(1.0, 0.0, 0.0));
                 orbit = glm::rotate(orbit, glm::radians(-speed3), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::translate(orbit, glm::vec3(-models[0].modelMatrix[3]));
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
 
                 break;
@@ -252,8 +264,10 @@ void timer_y(int value) {
             case 4:
             {
                 glm::mat4 orbit = glm::mat4(1.0f);
+                orbit = glm::translate(orbit, glm::vec3(models[0].modelMatrix[3]));
                 orbit = glm::rotate(orbit, glm::radians(-speed3), glm::vec3(1.0, 0.0, 0.0));
                 orbit = glm::rotate(orbit, glm::radians(-speed3), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::translate(orbit, glm::vec3(-models[0].modelMatrix[3]));
                 orbit = glm::translate(orbit, glm::vec3(models[3].modelMatrix[3]));
                 orbit = glm::rotate(orbit, glm::radians(-speed3), glm::vec3(0.0, 1.0, 0.0));
                 orbit = glm::rotate(orbit, glm::radians(speed3), glm::vec3(1.0, 0.0, 0.0));
@@ -271,9 +285,10 @@ void timer_y(int value) {
                 glm::mat4 orbit = glm::mat4(1.0f);
 
                 // 공전 변환 적용 (회전)
+                orbit = glm::translate(orbit, glm::vec3(models[0].modelMatrix[3]));
                 orbit = glm::rotate(orbit, glm::radians(speed1), glm::vec3(1.0, 0.0, 0.0));
                 orbit = glm::rotate(orbit, glm::radians(-speed1), glm::vec3(0.0, 1.0, 0.0));
-
+                orbit = glm::translate(orbit, glm::vec3(-models[0].modelMatrix[3]));
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
 
                 break;
@@ -281,13 +296,16 @@ void timer_y(int value) {
             case 6:
             {
                 glm::mat4 orbit = glm::mat4(1.0f);
+                orbit = glm::translate(orbit, glm::vec3(models[0].modelMatrix[3]));
                 orbit = glm::rotate(orbit, glm::radians(speed1), glm::vec3(1.0, 0.0, 0.0));
                 orbit = glm::rotate(orbit, glm::radians(-speed1), glm::vec3(0.0, 1.0, 0.0));
+                orbit = glm::translate(orbit, glm::vec3(-models[0].modelMatrix[3]));
                 orbit = glm::translate(orbit, glm::vec3(models[5].modelMatrix[3]));
                 orbit = glm::rotate(orbit, glm::radians(-speed1 + 0.08f), glm::vec3(0.0, 1.0, 0.0));
                 orbit = glm::rotate(orbit, glm::radians(-speed1 + 0.08f), glm::vec3(1.0, 0.0, 0.0));
                 orbit = glm::translate(orbit, glm::vec3(-models[5].modelMatrix[3]));
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
+
                 for (size_t j = 0; j < orbitVertices[5].size(); ++j) {
                     glm::vec4 rotatedPoint = orbit * glm::vec4(orbitVertices[5][j], 1.0f);
                     orbitVertices[5][j] = glm::vec3(rotatedPoint);
@@ -306,7 +324,7 @@ void timer_y(int value) {
         glBufferSubData(GL_ARRAY_BUFFER, 0, orbitVertices[i].size() * sizeof(glm::vec3), orbitVertices[i].data());
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
-  
+
     glutPostRedisplay();  // 화면 다시 그리기 요청
     if (y_status == 1) {
         glutTimerFunc(16, timer_y, y_status);
@@ -354,61 +372,72 @@ void keyBoard(unsigned char key, int x, int y) {
         projection = glm::mat4(1.0f);
         projection = glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, -100.0f, 100.0f);
     }
-    else if(key == 'P') {
+    else if (key == 'P') {
         projection = glm::mat4(1.0f);
         projection = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / static_cast<float>(height), 0.1f, 50.0f);
         projection = glm::translate(projection, glm::vec3(0.0, 0.0, -0.5));
     }
 
-        // ----------
-        float speed = 0.1f;
-        glm::mat4 orbitTransform = glm::mat4(1.0f);
+    // ----------
+    float speed = 0.1f;
+    glm::mat4 orbitTransform = glm::mat4(1.0f);
 
-        switch (key)
-        {
-        case 'w':
-        {
-            y_status = 0;
-            orbitTransform = glm::translate(orbitTransform, glm::vec3(speed, 0.0, 0.0));
-            break;
+    switch (key)
+    {
+    case 'w':
+    {
+        orbitTransform = glm::translate(orbitTransform, glm::vec3(speed, 0.0, 0.0));
+        break;
+    }
+    case 'a':
+    {
+        orbitTransform = glm::translate(orbitTransform, glm::vec3(0.0, -speed, 0.0));
+        break;
+    }
+    case 's':
+    {
+        orbitTransform = glm::translate(orbitTransform, glm::vec3(-speed, 0.0, 0.0));
+        break;
+    }
+    case 'd':
+    {
+        orbitTransform = glm::translate(orbitTransform, glm::vec3(0.0, speed, 0.0));
+        break;
+    }
+    case '+':
+    {
+        orbitTransform = glm::translate(orbitTransform, glm::vec3(0.0, 0.0, speed));
+        break;
+    }
+    case '-':
+    {
+        orbitTransform = glm::translate(orbitTransform, glm::vec3(0.0, 0.0, -speed));
+        break;
+    }
+    default:
+        break;
+    }
+
+    for (auto& model : models) {
+        model.modelMatrix = orbitTransform * model.modelMatrix;
+    }
+
+   for (int i = 0; i < orbitVertices.size(); ++i) {
+        for (int j = 0; j < orbitVertices[i].size(); ++j) {
+
+            glm::vec4 rotatedPoint = orbitTransform * glm::vec4(orbitVertices[i][j], 1.0f);
+            orbitVertices[i][j] = glm::vec3(rotatedPoint);
+
         }
-        case 'a':
-        {
-            y_status = 0;
-            orbitTransform = glm::translate(orbitTransform, glm::vec3(0.0, -speed, 0.0));
-           break;
-        }
-        case 's':
-        {
-            y_status = 0;
-            orbitTransform = glm::translate(orbitTransform, glm::vec3(-speed, 0.0, 0.0));
-            break;
-        }
-        case 'd':
-        {
-            y_status = 0;
-            orbitTransform = glm::translate(orbitTransform, glm::vec3(0.0, speed, 0.0));
-            break;
-        }
-        case '+':
-        {
-            y_status = 0;
-            orbitTransform = glm::translate(orbitTransform, glm::vec3(0.0, 0.0, speed));
-            break;
-        }
-        case '-':
-        {
-            y_status = 0;
-            orbitTransform = glm::translate(orbitTransform, glm::vec3(0.0, 0.0, -speed));
-            break;
-        }
-        default:
-            break;
-        }
-        for (auto& model : models) {
-            model.modelMatrix = orbitTransform * model.modelMatrix;
-        }
-        glutPostRedisplay();  // 화면 다시 그리기 요청
+        // 변경된 orbitVertices 데이터를 VBO에 업로드
+        glBindBuffer(GL_ARRAY_BUFFER, orbitVBO[i]);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, orbitVertices[i].size() * sizeof(glm::vec3), orbitVertices[i].data());
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+
+
+
+    glutPostRedisplay();  // 화면 다시 그리기 요청
 }
 
 // 마우스 입력을 처리하는 함수
@@ -446,7 +475,7 @@ int main(int argc, char** argv) {
         cout << "GLEW Initialized\n";  // 초기화 성공 시 메시지 출력
 
     make_shaderProgram();  // 쉐이더 프로그램 생성
-        
+
     // 모델들을 로드하고 벡터에 추가
     Model modelSphere;
 
@@ -456,8 +485,7 @@ int main(int argc, char** argv) {
 
     for (int i = 0; i < 7; ++i) {
         Model m = modelSphere;
-        m.initialRotation = glm::mat4(1.0f);
-        m.modelMatrix = m.initialRotation;
+        m.modelMatrix = glm::mat4(1.0f);
         switch (i)
         {
         case 0:
@@ -497,8 +525,6 @@ int main(int argc, char** argv) {
         default:
             break;
         }
-
-        m.translationOffset = m.modelMatrix;
 
         glm::vec3 s_color = { dis_color(gen), dis_color(gen), dis_color(gen) };
 
@@ -593,13 +619,6 @@ GLvoid drawScene() {
 
             glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
         }
-        else if (models[i].name == "xLine" || models[i].name == "yLine" || models[i].name == "zLine") {
-            GLint lineLoc = glGetUniformLocation(shaderProgramID, "Line");
-            glUniformMatrix4fv(lineLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
-            glUniform1i(modelStatus, 1);
-            glLineWidth(1.5f);
-            glDrawArrays(GL_LINES, 0, 2);
-        }
 
         glBindVertexArray(0);
     }
@@ -608,6 +627,14 @@ GLvoid drawScene() {
     //-------------------------------------------------
     for (int i = 0; i < orbitVertices.size(); ++i) {
         glBindVertexArray(orbitVAO[i]);
+
+        // Line 행렬을 가져와서 현재 궤도 위치로 변환 설정
+        GLint lineLoc = glGetUniformLocation(shaderProgramID, "model");
+
+        // 모델 행렬 대신, 궤도의 중심을 Line 행렬로 전달합니다.
+        glm::mat4 lineTransform = glm::mat4(1.0f);  // 필요한 경우 중심 이동이나 회전 적용 가능
+        glUniformMatrix4fv(lineLoc, 1, GL_FALSE, glm::value_ptr(lineTransform));
+
         glUniform1i(modelStatus, 2);
         glLineWidth(1.5f);
         glDrawArrays(GL_LINE_STRIP, 0, orbitVertices[i].size());
