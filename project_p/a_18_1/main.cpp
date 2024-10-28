@@ -125,13 +125,9 @@ void timer_y(int value) {
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
 
                 for (size_t j = 0; j < orbitVertices[i].size(); ++j) {
-                    // 궤도 회전 적용
-                    glm::mat4 lineO = glm::mat4(1.0f);
-
-                    lineO = glm::rotate(lineO, glm::radians(speed1), glm::vec3(0.0, 1.0, 0.0));
 
                     // vec3를 vec4로 변환하여 회전 적용
-                    glm::vec4 rotatedPoint = lineO * glm::vec4(orbitVertices[i][j], 1.0f);
+                    glm::vec4 rotatedPoint = orbit * glm::vec4(orbitVertices[i][j], 1.0f);
 
                     // 결과를 다시 vec3로 변환하여 저장
                     orbitVertices[i][j] = glm::vec3(rotatedPoint);
@@ -175,13 +171,8 @@ void timer_y(int value) {
                 orbit = glm::translate(orbit, glm::vec3(-models[3].modelMatrix[3]));
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
 
-                glm::mat4 lineO = glm::mat4(1.0f);
-                //lineO = glm::translate(lineO, glm::vec3(models[0].modelMatrix[3]));
-                lineO = glm::rotate(lineO, glm::radians(speed3), glm::vec3(1.0, 0.0, 0.0));
-                lineO = glm::rotate(lineO, glm::radians(speed3), glm::vec3(0.0, 1.0, 0.0));
-                //lineO = glm::translate(lineO, glm::vec3(-models[0].modelMatrix[3]));
                 for (size_t j = 0; j < orbitVertices[3].size(); ++j) {
-                    glm::vec4 rotatedPoint = lineO * glm::vec4(orbitVertices[3][j], 1.0f);
+                    glm::vec4 rotatedPoint = orbit * glm::vec4(orbitVertices[3][j], 1.0f);
                     orbitVertices[3][j] = glm::vec3(rotatedPoint);
                 }
                 break;
@@ -212,11 +203,8 @@ void timer_y(int value) {
                 orbit = glm::translate(orbit, glm::vec3(-models[5].modelMatrix[3]));
                 models[i].modelMatrix = orbit * models[i].modelMatrix;
 
-                glm::mat4 lineO = glm::mat4(1.0f);
-                lineO = glm::rotate(lineO, glm::radians(-speed1), glm::vec3(1.0, 0.0, 0.0));
-                lineO = glm::rotate(lineO, glm::radians(speed1), glm::vec3(0.0, 1.0, 0.0));
                 for (size_t j = 0; j < orbitVertices[5].size(); ++j) {
-                    glm::vec4 rotatedPoint = lineO * glm::vec4(orbitVertices[5][j], 1.0f);
+                    glm::vec4 rotatedPoint = orbit * glm::vec4(orbitVertices[5][j], 1.0f);
                     orbitVertices[5][j] = glm::vec3(rotatedPoint);
                 }
                 break;
@@ -391,37 +379,31 @@ void keyBoard(unsigned char key, int x, int y) {
     {
     case 'w':
     {
-        y_status = 0;
         orbitTransform = glm::translate(orbitTransform, glm::vec3(speed, 0.0, 0.0));
         break;
     }
     case 'a':
     {
-        y_status = 0;
         orbitTransform = glm::translate(orbitTransform, glm::vec3(0.0, -speed, 0.0));
         break;
     }
     case 's':
     {
-        y_status = 0;
         orbitTransform = glm::translate(orbitTransform, glm::vec3(-speed, 0.0, 0.0));
         break;
     }
     case 'd':
     {
-        y_status = 0;
         orbitTransform = glm::translate(orbitTransform, glm::vec3(0.0, speed, 0.0));
         break;
     }
     case '+':
     {
-        y_status = 0;
         orbitTransform = glm::translate(orbitTransform, glm::vec3(0.0, 0.0, speed));
         break;
     }
     case '-':
     {
-        y_status = 0;
         orbitTransform = glm::translate(orbitTransform, glm::vec3(0.0, 0.0, -speed));
         break;
     }
@@ -432,6 +414,21 @@ void keyBoard(unsigned char key, int x, int y) {
     for (auto& model : models) {
         model.modelMatrix = orbitTransform * model.modelMatrix;
     }
+
+   for (int i = 0; i < orbitVertices.size(); ++i) {
+        for (int j = 0; j < orbitVertices[i].size(); ++j) {
+
+            glm::vec4 rotatedPoint = orbitTransform * glm::vec4(orbitVertices[i][j], 1.0f);
+            orbitVertices[i][j] = glm::vec3(rotatedPoint);
+
+        }
+        // 변경된 orbitVertices 데이터를 VBO에 업로드
+        glBindBuffer(GL_ARRAY_BUFFER, orbitVBO[i]);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, orbitVertices[i].size() * sizeof(glm::vec3), orbitVertices[i].data());
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+
+
 
     glutPostRedisplay();  // 화면 다시 그리기 요청
 }
@@ -580,9 +577,9 @@ GLvoid drawScene() {
     // 카메라
     cameraPos = glm::vec3(0.0, 0.0, 5.5);
     glm::mat4 view = glm::mat4(1.0f);
-   /* glm::mat4 rotationMatrix_x = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 rotationMatrix_x = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 rotationMatrix_y = glm::rotate(glm::mat4(1.0f), glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    cameraPos = glm::vec3(rotationMatrix_x * rotationMatrix_y * glm::vec4(cameraPos, 1.0f));*/
+    cameraPos = glm::vec3(rotationMatrix_x * rotationMatrix_y * glm::vec4(cameraPos, 1.0f));
     view = glm::lookAt(
         cameraPos,  //--- 카메라위치
         cameraDirection,  //--- 카메라바라보는방향
@@ -615,13 +612,6 @@ GLvoid drawScene() {
 
             glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
         }
-        else if (models[i].name == "xLine" || models[i].name == "yLine" || models[i].name == "zLine") {
-            GLint lineLoc = glGetUniformLocation(shaderProgramID, "Line");
-            glUniformMatrix4fv(lineLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
-            glUniform1i(modelStatus, 1);
-            glLineWidth(1.5f);
-            glDrawArrays(GL_LINES, 0, 2);
-        }
 
         glBindVertexArray(0);
     }
@@ -630,6 +620,14 @@ GLvoid drawScene() {
     //-------------------------------------------------
     for (int i = 0; i < orbitVertices.size(); ++i) {
         glBindVertexArray(orbitVAO[i]);
+
+        // Line 행렬을 가져와서 현재 궤도 위치로 변환 설정
+        GLint lineLoc = glGetUniformLocation(shaderProgramID, "model");
+
+        // 모델 행렬 대신, 궤도의 중심을 Line 행렬로 전달합니다.
+        glm::mat4 lineTransform = glm::mat4(1.0f);  // 필요한 경우 중심 이동이나 회전 적용 가능
+        glUniformMatrix4fv(lineLoc, 1, GL_FALSE, glm::value_ptr(lineTransform));
+
         glUniform1i(modelStatus, 2);
         glLineWidth(1.5f);
         glDrawArrays(GL_LINE_STRIP, 0, orbitVertices[i].size());
