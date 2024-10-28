@@ -137,8 +137,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="filetobuf.h" />
-    <ClInclude Include="LoadMtl.h" />
-    <ClInclude Include="LoadTexture.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="LoadObj.h" />
     <ClInclude Include="shaderMaker.h" />

@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "Model.h"
-#include "LoadMtl.h"
+
 
 // OBJ 파일을 읽어와서 모델 데이터를 파싱하는 함수
 void read_obj_file(const std::string& filename, Model& model, std::string name) {
@@ -116,9 +116,9 @@ void read_obj_file(const std::string& filename, Model& model, std::string name) 
 
     model.name = name;
 
-    if (!mtlFilename.empty()) {
-        read_mtl_file(mtlFilename, model.material);  // MTL 파일 로드
-    }
+    //if (!mtlFilename.empty()) {
+    //    read_mtl_file(mtlFilename, model.material);  // MTL 파일 로드
+    //}
 
     file.close();  // 파일 닫기
 }

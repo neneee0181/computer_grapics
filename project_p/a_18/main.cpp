@@ -9,7 +9,6 @@
 #include <random>
 #include <unordered_map>
 
-
 #include "LoadObj.h"
 #include "shaderMaker.h"
 
@@ -407,7 +406,7 @@ void keyBoard(unsigned char key, int x, int y) {
             break;
         }
         for (auto& model : models) {
-            model.modelMatrix = orbitTransform * model.modelMatrix;
+            model.translationMatrix = orbitTransform * model.translationMatrix;
         }
         glutPostRedisplay();  // 화면 다시 그리기 요청
 }

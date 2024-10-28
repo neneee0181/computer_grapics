@@ -40,13 +40,7 @@
     <ClInclude Include="LoadObj.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="LoadTexture.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Model.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="LoadMtl.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="shaderMaker.h">
