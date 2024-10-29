@@ -1,2 +1,7 @@
+<<<<<<< HEAD
 PlatformToolSet=v143:VCToolArchitecture=Native64Bit:VCToolsVersion=14.41.34120:TargetPlatformVersion=10.0.22621.0:
 Debug|x64|C:\Users\neneee\computer_grapics-main\project_p\|
+=======
+PlatformToolSet=v143:VCToolArchitecture=NativeARM64:VCToolsVersion=14.41.34120:TargetPlatformVersion=10.0.22621.0:
+Debug|x64|C:\Mac\Home\Documents\computer_grapics\project_p\|
+>>>>>>> e6a4bb11feed4f360158fa61e1854338583b71fd

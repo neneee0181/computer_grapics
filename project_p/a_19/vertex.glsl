@@ -9,14 +9,12 @@ uniform mat4 viewTransform;
 uniform mat4 projectionTransform;
 
 uniform mat4 Line;
+uniform mat4 Ss;
 uniform int modelStatus;  // 0 -> ¸ðµ¨ , 1 -> ÁÂÇ¥°è
 
 void main() {
     if (modelStatus == 0) {
         gl_Position = projectionTransform * viewTransform * model * vec4(in_Position, 1.0);
         out_Color = in_Color;  // ¸ðµ¨
-    }else if(modelStatus == 1){
-        gl_Position = projectionTransform * viewTransform * Line * vec4(in_Position, 1.0);
-        out_Color = in_Color;   // x,y,z Ãà
     }
 }
