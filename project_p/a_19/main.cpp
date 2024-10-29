@@ -57,9 +57,9 @@ const GLfloat color_z[2][3] = {
     {0.0,0.0,1.0}
 };
 
-GLuint xVBO[2], xVAO;
-GLuint yVBO[2], yVAO;
-GLuint zVBO[2], zVAO;
+GLuint xyz_VBO[6], xyz_VAO[3];
+//GLuint yVBO[2], yVAO;
+//GLuint zVBO[2], zVAO;
 
 // 화면 크기가 변경될 때 호출되는 함수
 GLvoid Reshape(int w, int h) {
@@ -181,11 +181,13 @@ GLvoid drawScene() {
        
         glBindVertexArray(0);
     }
-
-    glBindVertexArray(xVAO);
-    glUniform1i(modelStatus, 0);
-    glDrawArrays(GL_LINES, 0, 2);
-
+    
+    for (int i = 0; i < 3; ++i) {
+        glBindVertexArray(xyz_VAO[i]);
+        glUniform1i(modelStatus, 0);
+        glDrawArrays(GL_LINES, 0, 2);
+        glBindVertexArray(0);
+    }
 
     glDisable(GL_DEPTH_TEST);
 
@@ -201,30 +203,49 @@ GLvoid drawScene() {
 // 버퍼 초기화 함수
 void InitBuffer() {
 
-    // X축 좌표계 선을 위한 VAO와 VBO 설정
-    glGenVertexArrays(1, &xVAO);  // X축 VAO 생성
-    glBindVertexArray(xVAO);  // VAO 바인딩
-    glGenBuffers(1, &xVBO[0]);  // VBO 생성
-    glBindBuffer(GL_ARRAY_BUFFER, xVBO[0]);  // 버퍼 바인딩
-    glBufferData(GL_ARRAY_BUFFER, sizeof(x), x, GL_STATIC_DRAW);  // X축 좌표 데이터 설정
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);  // 정점 속성 포인터 설정
-    glEnableVertexAttribArray(0);  // 정점 속성 사용
+    glGenVertexArrays(1, &xyz_VAO[0]);
+    glBindVertexArray(xyz_VAO[0]);
+    glGenBuffers(1, &xyz_VBO[0]);  
+    glBindBuffer(GL_ARRAY_BUFFER, xyz_VBO[0]); 
+    glBufferData(GL_ARRAY_BUFFER, sizeof(x), x, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0); 
+    glEnableVertexAttribArray(0); 
 
-    glGenBuffers(1, &xVBO[1]);  // VBO 생성
-    glBindBuffer(GL_ARRAY_BUFFER, xVBO[1]);  // 버퍼 바인딩
-    glBufferData(GL_ARRAY_BUFFER, sizeof(color_x), color_x, GL_STATIC_DRAW);  // X축 좌표 데이터 설정
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);  // 정점 속성 포인터 설정
-    glEnableVertexAttribArray(1);  // 정점 속성 사용
+    glGenBuffers(1, &xyz_VBO[1]);  
+    glBindBuffer(GL_ARRAY_BUFFER, xyz_VBO[1]); 
+    glBufferData(GL_ARRAY_BUFFER, sizeof(color_x), color_x, GL_STATIC_DRAW); 
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0); 
+    glEnableVertexAttribArray(1); 
 
-    glBindVertexArray(0);  // VAO 해제
+    glGenVertexArrays(1, &xyz_VAO[1]);
+    glBindVertexArray(xyz_VAO[1]);
+    glGenBuffers(1, &xyz_VBO[2]);  
+    glBindBuffer(GL_ARRAY_BUFFER, xyz_VBO[2]);  
+    glBufferData(GL_ARRAY_BUFFER, sizeof(y), y, GL_STATIC_DRAW); 
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0); 
+    glEnableVertexAttribArray(0);  
 
-    //glGenVertexArrays(1, &yVAO);
-    //glBindVertexArray(yVAO);  // VAO 바인딩
-    //glGenBuffers(1, &yVBO);  // VBO 생성
-    //glBindBuffer(GL_ARRAY_BUFFER, yVBO);  // 버퍼 바인딩
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(y), y, GL_STATIC_DRAW);  // Y축 좌표 데이터 설정
-    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);  // 정점 속성 포인터 설정
-    //glEnableVertexAttribArray(0);  // 정점 속성 사용
+    glGenBuffers(1, &xyz_VBO[3]); 
+    glBindBuffer(GL_ARRAY_BUFFER, xyz_VBO[3]); 
+    glBufferData(GL_ARRAY_BUFFER, sizeof(color_y), color_y, GL_STATIC_DRAW);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(1);
+    glBindVertexArray(0);
+
+    glGenVertexArrays(1, &xyz_VAO[2]);
+    glBindVertexArray(xyz_VAO[2]);
+    glGenBuffers(1, &xyz_VBO[4]);
+    glBindBuffer(GL_ARRAY_BUFFER, xyz_VBO[4]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(z), z, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(0);
+
+    glGenBuffers(1, &xyz_VBO[5]);
+    glBindBuffer(GL_ARRAY_BUFFER, xyz_VBO[5]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(color_z), color_z, GL_STATIC_DRAW);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(1);
+    glBindVertexArray(0);
 
     // 각 모델에 대한 VAO, VBO, EBO 설정
     vaos.resize(models.size());

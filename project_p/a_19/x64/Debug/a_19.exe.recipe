@@ -2,11 +2,7 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-<<<<<<< HEAD
       <FullPath>C:\Users\neneee\computer_grapics-main\project_p\x64\Debug\a_19.exe</FullPath>
-=======
-      <FullPath>C:\Mac\Home\Documents\computer_grapics\project_p\x64\Debug\a_19.exe</FullPath>
->>>>>>> e6a4bb11feed4f360158fa61e1854338583b71fd
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />
