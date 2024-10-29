@@ -27,20 +27,39 @@ glm::vec3 cameraPos = glm::vec3(0.0, 0.0, 4.0);
 glm::vec3 cameraDirection = glm::vec3(0.0, 0.0, 0.0);
 glm::vec3 cameraUp = glm::vec3(0.0, 1.0, 0.0);
 
-const Vertex x[2] = {
+const GLfloat x[2][3] = {
     {-0.8f,0.0f, 0.0f},
     {0.8f,0.0f, 0.0f}
 };
 
-const Vertex y[2] = {
+const GLfloat color_x[2][3] = {
+    {1.0,0.0,0.0},
+    {1.0,0.0,0.0}
+};
+
+const GLfloat y[2][3] = {
     {0.0f,-0.8f, 0.0f},
     {0.0f, 0.8f, 0.0f}
 };
 
-const Vertex z[2] = {
+const GLfloat color_y[2][3] = {
+    {0.0,1.0,0.0},
+    {0.0,1.0,0.0}
+};
+
+const GLfloat z[2][3] = {
     {0.0f, 0.0f, -0.8f},
     {0.0f, 0.0f, 0.8f}
 };
+
+const GLfloat color_z[2][3] = {
+    {0.0,0.0,1.0},
+    {0.0,0.0,1.0}
+};
+
+GLuint xVBO[2], xVAO;
+GLuint yVBO[2], yVAO;
+GLuint zVBO[2], zVAO;
 
 // 화면 크기가 변경될 때 호출되는 함수
 GLvoid Reshape(int w, int h) {
@@ -97,37 +116,13 @@ int main(int argc, char** argv) {
     Model modelSqu, modelCone, modelSphere, modelCylinder;
 
     // 정육면체
-    read_obj_file("box3.obj", modelSqu, "cube");
+    read_obj_file("box.obj", modelSqu, "cube");
     // 초기 회전 상태를 저장 (초기 회전 상태는 고정됨)
     modelSqu.initialRotation = glm::mat4(1.0f);  // 초기 회전 행렬을 단위 행렬로 설정
-    modelSqu.initialRotation = glm::rotate(modelSqu.initialRotation, glm::radians(35.0f), glm::vec3(1.0, 0.0, 0.0)); // X축 회전
-    modelSqu.initialRotation = glm::rotate(modelSqu.initialRotation, glm::radians(-35.0f), glm::vec3(0.0, 1.0, 0.0)); // Y축 회전
     modelSqu.modelMatrix = modelSqu.initialRotation;
-    modelSqu.modelMatrix = glm::scale(modelSqu.modelMatrix, glm::vec3(0.2, 0.2, 0.2));
-    modelSqu.translationOffset = glm::vec3(-3.0f, 0.0f, 0.0f);
-    modelSqu.modelMatrix = glm::translate(modelSqu.modelMatrix, modelSqu.translationOffset);
+    modelSqu.modelMatrix = glm::translate(modelSqu.modelMatrix, glm::vec3(0.0, 0.0, 0.0));
     modelSqu.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
     models.push_back(modelSqu);
-
-    Model modelXLine, modelYLine, modelZLine;
-    modelXLine.name = "xLine";
-    modelXLine.vertices.push_back(x[0]);
-    modelXLine.vertices.push_back(x[1]);
-    modelXLine.colors.push_back(glm::vec3(1.0, 0.0, 0.0));
-
-    modelYLine.name = "yLine";
-    modelYLine.vertices.push_back(y[0]);
-    modelYLine.vertices.push_back(y[1]);
-    modelYLine.colors.push_back(glm::vec3(0.0, 1.0, 0.0));
-
-    modelZLine.name = "zLine";
-    modelZLine.vertices.push_back(z[0]);
-    modelZLine.vertices.push_back(z[1]);
-    modelZLine.colors.push_back(glm::vec3(0.0, 0.0, 1.0));
-
-    models.push_back(modelXLine);
-    models.push_back(modelYLine);
-    models.push_back(modelZLine);
 
     InitBuffer();  // 버퍼 초기화
 
@@ -169,30 +164,28 @@ GLvoid drawScene() {
     glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, &projection[0][0]);
 
     glEnable(GL_DEPTH_TEST);
+
+    GLint modelStatus = glGetUniformLocation(shaderProgramID, "modelStatus");
+    GLint modelLoc = glGetUniformLocation(shaderProgramID, "model");
     // 각 모델을 그리기
     for (size_t i = 0; i < models.size(); ++i) {
         glBindVertexArray(vaos[i]);
 
-        GLint modelStatus = glGetUniformLocation(shaderProgramID, "modelStatus");
-
         if (models[i].name == "cube" || models[i].name == "cone") {
-            GLint modelLoc = glGetUniformLocation(shaderProgramID, "model");
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
             // 면 그리기
             glUniform1i(modelStatus, 0);
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
         }
-        else if (models[i].name == "xLine" || models[i].name == "yLine" || models[i].name == "zLine") {
-            GLint lineLoc = glGetUniformLocation(shaderProgramID, "Line");
-            glUniformMatrix4fv(lineLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
-            glUniform1i(modelStatus, 1);
-            glLineWidth(1.5f);
-            glDrawArrays(GL_LINES, 0, 2);
-        }
-
+       
         glBindVertexArray(0);
     }
+
+    glBindVertexArray(xVAO);
+    glUniform1i(modelStatus, 0);
+    glDrawArrays(GL_LINES, 0, 2);
+
 
     glDisable(GL_DEPTH_TEST);
 
@@ -207,6 +200,31 @@ GLvoid drawScene() {
 
 // 버퍼 초기화 함수
 void InitBuffer() {
+
+    // X축 좌표계 선을 위한 VAO와 VBO 설정
+    glGenVertexArrays(1, &xVAO);  // X축 VAO 생성
+    glBindVertexArray(xVAO);  // VAO 바인딩
+    glGenBuffers(1, &xVBO[0]);  // VBO 생성
+    glBindBuffer(GL_ARRAY_BUFFER, xVBO[0]);  // 버퍼 바인딩
+    glBufferData(GL_ARRAY_BUFFER, sizeof(x), x, GL_STATIC_DRAW);  // X축 좌표 데이터 설정
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);  // 정점 속성 포인터 설정
+    glEnableVertexAttribArray(0);  // 정점 속성 사용
+
+    glGenBuffers(1, &xVBO[1]);  // VBO 생성
+    glBindBuffer(GL_ARRAY_BUFFER, xVBO[1]);  // 버퍼 바인딩
+    glBufferData(GL_ARRAY_BUFFER, sizeof(color_x), color_x, GL_STATIC_DRAW);  // X축 좌표 데이터 설정
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);  // 정점 속성 포인터 설정
+    glEnableVertexAttribArray(1);  // 정점 속성 사용
+
+    glBindVertexArray(0);  // VAO 해제
+
+    //glGenVertexArrays(1, &yVAO);
+    //glBindVertexArray(yVAO);  // VAO 바인딩
+    //glGenBuffers(1, &yVBO);  // VBO 생성
+    //glBindBuffer(GL_ARRAY_BUFFER, yVBO);  // 버퍼 바인딩
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(y), y, GL_STATIC_DRAW);  // Y축 좌표 데이터 설정
+    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);  // 정점 속성 포인터 설정
+    //glEnableVertexAttribArray(0);  // 정점 속성 사용
 
     // 각 모델에 대한 VAO, VBO, EBO 설정
     vaos.resize(models.size());
