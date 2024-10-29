@@ -58,8 +58,6 @@ const GLfloat color_z[2][3] = {
 };
 
 GLuint xyz_VBO[6], xyz_VAO[3];
-//GLuint yVBO[2], yVAO;
-//GLuint zVBO[2], zVAO;
 
 // 화면 크기가 변경될 때 호출되는 함수
 GLvoid Reshape(int w, int h) {
@@ -113,16 +111,16 @@ int main(int argc, char** argv) {
     make_shaderProgram();  // 쉐이더 프로그램 생성
         
     // 모델들을 로드하고 벡터에 추가
-    Model modelSqu, modelCone, modelSphere, modelCylinder;
+    Model modelBoard;
 
-    // 정육면체
-    read_obj_file("box.obj", modelSqu, "cube");
+    // 바닥
+    read_obj_file("obj/board.obj", modelBoard, "board");
     // 초기 회전 상태를 저장 (초기 회전 상태는 고정됨)
-    modelSqu.initialRotation = glm::mat4(1.0f);  // 초기 회전 행렬을 단위 행렬로 설정
-    modelSqu.modelMatrix = modelSqu.initialRotation;
-    modelSqu.modelMatrix = glm::translate(modelSqu.modelMatrix, glm::vec3(0.0, 0.0, 0.0));
-    modelSqu.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
-    models.push_back(modelSqu);
+    modelBoard.initialRotation = glm::mat4(1.0f);  // 초기 회전 행렬을 단위 행렬로 설정
+    modelBoard.modelMatrix = modelBoard.initialRotation;
+    modelBoard.modelMatrix = glm::translate(modelBoard.modelMatrix, glm::vec3(0.0, 0.0, 0.0));
+    modelBoard.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
+    models.push_back(modelBoard);
 
     InitBuffer();  // 버퍼 초기화
 
@@ -144,7 +142,7 @@ GLvoid drawScene() {
     glUseProgram(shaderProgramID);  // 쉐이더 프로그램 사용
 
     // 카메라
-    cameraPos = glm::vec3(0.0, 0.0, 3.0);
+    cameraPos = glm::vec3(0.0, 0.0, 4.0);
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 rotationMatrix_x = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 rotationMatrix_y = glm::rotate(glm::mat4(1.0f), glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -171,11 +169,11 @@ GLvoid drawScene() {
     for (size_t i = 0; i < models.size(); ++i) {
         glBindVertexArray(vaos[i]);
 
-        if (models[i].name == "cube" || models[i].name == "cone") {
+        if (models[i].name == "board" || models[i].name == "cone") {
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
             // 면 그리기
             glUniform1i(modelStatus, 0);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
         }
        
@@ -183,7 +181,7 @@ GLvoid drawScene() {
     }
     
     for (int i = 0; i < 3; ++i) {
-        glBindVertexArray(xyz_VAO[i]);
+        glBindVertexArray(xyz_VAO[i]); 
         glUniform1i(modelStatus, 0);
         glDrawArrays(GL_LINES, 0, 2);
         glBindVertexArray(0);
