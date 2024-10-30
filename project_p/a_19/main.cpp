@@ -59,11 +59,14 @@ GLuint xyz_VBO[6], xyz_VAO[3];
 GLvoid Reshape(int w, int h) {
     glViewport(0, 0, w, h);
     width = w;
-    height = h;
+    height = h; 
 }
 
 void timer(int value) {
+
     float speed = 0.05;
+    float r_speed = 0.5;
+
     for (int i = 1; i < models.size(); ++i) {
         
         switch (keyState.key)
@@ -87,7 +90,28 @@ void timer(int value) {
             break;
         }
         case 'm':
+        {
+            glm::mat4 matrix = glm::mat4(1.0f);
+            if (models[i].name == "mid_b") {
+                matrix = glm::translate(matrix, glm::vec3(models[1].modelMatrix[3]));
+                matrix = glm::rotate(matrix, glm::radians(r_speed), glm::vec3(0.0, 1.0, 0.0));
+                matrix = glm::translate(matrix, glm::vec3(-models[1].modelMatrix[3]));
+
+                models[i].modelMatrix = matrix * models[i].modelMatrix;
+            }
+
+            if (models[i].name == "right_a_b" || models[i].name == "left_a_b") {
+                matrix = glm::mat4(1.0f);
+                matrix = glm::translate(matrix, glm::vec3(models[1].modelMatrix[3]));
+                matrix = glm::rotate(matrix, glm::radians(r_speed), glm::vec3(0.0, 1.0, 0.0));
+                matrix = glm::translate(matrix, glm::vec3(-models[1].modelMatrix[3]));
+
+                models[i].modelMatrix = matrix * models[i].modelMatrix;
+
+            }
+           
             break;
+        }
         case 'M':
             break;
         case 'f':
@@ -115,6 +139,7 @@ void timer(int value) {
 void keyBoard(unsigned char key, int x, int y) {
 
     keyState.key = key;
+    keyState.status = !keyState.status;
 
     switch (keyState.key)
     {
@@ -129,7 +154,6 @@ void keyBoard(unsigned char key, int x, int y) {
     case 't':
     case 'T':
     case 'z':
-        keyState.status = !keyState.status;
         glutTimerFunc(0, timer, 0);
         break;
     case 'c':
