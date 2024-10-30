@@ -132,16 +132,15 @@
     <None Include="vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\a_19\filetobuf.h" />
-    <ClInclude Include="..\a_19\LoadMtl.h" />
-    <ClInclude Include="..\a_19\LoadObj.h" />
-    <ClInclude Include="..\a_19\LoadTexture.h" />
-    <ClInclude Include="..\a_19\Model.h" />
-    <ClInclude Include="..\a_19\shaderMaker.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\a_19\filetobuf.cpp" />
     <ClCompile Include="..\a_19\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="filetobuf.h" />
+    <ClInclude Include="LoadMtl.h" />
+    <ClInclude Include="LoadObj.h" />
+    <ClInclude Include="Model.h" />
+    <ClInclude Include="shaderMaker.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -111,7 +111,7 @@ int main(int argc, char** argv) {
     make_shaderProgram();  // 쉐이더 프로그램 생성
         
     // 모델들을 로드하고 벡터에 추가
-    Model modelBoard;
+    Model modelBoard, modelBottomBox;
 
     // 바닥
     read_obj_file("obj/board.obj", modelBoard, "board");
@@ -121,6 +121,14 @@ int main(int argc, char** argv) {
     modelBoard.modelMatrix = glm::translate(modelBoard.modelMatrix, glm::vec3(0.0, 0.0, 0.0));
     modelBoard.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
     models.push_back(modelBoard);
+
+    read_obj_file("obj/box_bottom.obj", modelBottomBox, "bottom_b");
+    modelBottomBox.initialRotation = glm::mat4(1.0f);
+    modelBottomBox.modelMatrix = modelBottomBox.initialRotation;
+    modelBottomBox.modelMatrix = glm::translate(modelBottomBox.modelMatrix, glm::vec3(0.0, 0.0, 0.0));
+    modelBottomBox.modelMatrix = glm::scale(modelBottomBox.modelMatrix, glm::vec3(0.1, 0.1, 0.1));
+    modelBottomBox.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
+    models.push_back(modelBottomBox);
 
     InitBuffer();  // 버퍼 초기화
 
@@ -142,7 +150,7 @@ GLvoid drawScene() {
     glUseProgram(shaderProgramID);  // 쉐이더 프로그램 사용
 
     // 카메라
-    cameraPos = glm::vec3(0.0, 0.0, 4.0);
+    cameraPos = glm::vec3(0.0, 0.0, 6.0);
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 rotationMatrix_x = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 rotationMatrix_y = glm::rotate(glm::mat4(1.0f), glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -169,7 +177,11 @@ GLvoid drawScene() {
     for (size_t i = 0; i < models.size(); ++i) {
         glBindVertexArray(vaos[i]);
 
-        if (models[i].name == "board" || models[i].name == "cone") {
+        // 각 모델의 색상 정보 전달
+        GLint KdLoc = glGetUniformLocation(shaderProgramID, "Kd");
+        glUniform3fv(KdLoc, 1, glm::value_ptr(models[i].material.Kd));
+
+        if (models[i].name == "board" || models[i].name == "bottom_b") {
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
             // 면 그리기
             glUniform1i(modelStatus, 0);
@@ -263,10 +275,10 @@ void InitBuffer() {
         glEnableVertexAttribArray(0);
 
         // 색상 버퍼 설정
-        glBindBuffer(GL_ARRAY_BUFFER, vbos[i][1]);
-        glBufferData(GL_ARRAY_BUFFER, models[i].colors.size() * sizeof(glm::vec3), models[i].colors.data(), GL_STATIC_DRAW);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);  // location 1에 색상 할당
-        glEnableVertexAttribArray(1);
+        //glBindBuffer(GL_ARRAY_BUFFER, vbos[i][1]);
+        //glBufferData(GL_ARRAY_BUFFER, models[i].colors.size() * sizeof(glm::vec3), models[i].colors.data(), GL_STATIC_DRAW);
+        //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);  // location 1에 색상 할당
+        //glEnableVertexAttribArray(1);
 
         // 면 인덱스 데이터 (EBO) 설정
         vector<unsigned int> indices;
