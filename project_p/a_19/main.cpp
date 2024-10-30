@@ -107,13 +107,32 @@ void timer(int value) {
                 matrix = glm::translate(matrix, glm::vec3(-models[1].modelMatrix[3]));
 
                 models[i].modelMatrix = matrix * models[i].modelMatrix;
-
             }
            
             break;
         }
         case 'M':
+        {
+            glm::mat4 matrix = glm::mat4(1.0f);
+            if (models[i].name == "mid_b") {
+                matrix = glm::translate(matrix, glm::vec3(models[1].modelMatrix[3]));
+                matrix = glm::rotate(matrix, glm::radians(-r_speed), glm::vec3(0.0, 1.0, 0.0));
+                matrix = glm::translate(matrix, glm::vec3(-models[1].modelMatrix[3]));
+
+                models[i].modelMatrix = matrix * models[i].modelMatrix;
+            }
+
+            if (models[i].name == "right_a_b" || models[i].name == "left_a_b") {
+                matrix = glm::mat4(1.0f);
+                matrix = glm::translate(matrix, glm::vec3(models[1].modelMatrix[3]));
+                matrix = glm::rotate(matrix, glm::radians(-r_speed), glm::vec3(0.0, 1.0, 0.0));
+                matrix = glm::translate(matrix, glm::vec3(-models[1].modelMatrix[3]));
+
+                models[i].modelMatrix = matrix * models[i].modelMatrix;
+            }
+
             break;
+        }
         case 'f':
             break;
         case 'F':
