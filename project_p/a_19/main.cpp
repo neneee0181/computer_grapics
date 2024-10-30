@@ -72,19 +72,31 @@ void keyBoard(unsigned char key, int x, int y) {
     keyState.key = key;
     keyState.status = !keyState.status;
 
-    if (keyState.key == 'c' || keyState.key == 'C') {
+    switch (keyState.key)
+    {
+    case 'c':
+    case 'C':
         reset_All();
-    }
-
-    if (keyState.key == '+') {
+        break;
+    case '+':
+    {
         glm::mat4 rotationMatrix;
         rotationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -0.1f));
         cameraPos = glm::vec3(rotationMatrix * glm::vec4(cameraPos, 1.0f));
+        break;
     }
-    else if (keyState.key == '-') {
+    case '-':
+    {
         glm::mat4 rotationMatrix;
         rotationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.1f));
         cameraPos = glm::vec3(rotationMatrix * glm::vec4(cameraPos, 1.0f));
+        break;
+    }
+    case 'q':
+        exit(0);
+        break;
+    default:
+        break;
     }
 
     glutPostRedisplay();
@@ -181,6 +193,9 @@ void reset_All() {
     modelLegLeft.modelMatrix = glm::scale(modelLegLeft.modelMatrix, glm::vec3(0.05, 0.05, 0.05));
     modelLegLeft.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
     models.push_back(modelLegLeft);
+
+    InitBuffer();
+
 }
 
 int main(int argc, char** argv) {
@@ -205,8 +220,6 @@ int main(int argc, char** argv) {
     make_shaderProgram();
 
     reset_All();
-
-    InitBuffer();
 
     glutDisplayFunc(drawScene);
     glutReshapeFunc(Reshape);
