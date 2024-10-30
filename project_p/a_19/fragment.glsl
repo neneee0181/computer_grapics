@@ -13,17 +13,24 @@ uniform vec3 Kd;           // 난반사 색상
 uniform vec3 Ks;           // 반사광 색상
 uniform float Ns;          // 반짝임 강도 (샤이니니스)
 
+uniform bool useCustomColor;  // 커스텀 색상 사용 플래그
+uniform vec3 customColor;     // 커스텀 색상 (좌표축 색상)
+
 void main() {
-    // 1. 환경광 (Ambient)
+    if (useCustomColor) {
+        // 플래그가 true일 경우, 조명 계산 없이 직접 색상 출력
+        FragColor = vec4(customColor, 1.0);
+        return;
+    }
+
+    // 조명 계산
     vec3 ambient = Ka * lightColor;
 
-    // 2. 난반사광 (Diffuse)
     vec3 norm = normalize(Normal);
     vec3 lightDir = normalize(lightPos - FragPos);
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = Kd * diff * lightColor;
 
-    // 3. 반사광 (Specular)
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 reflectDir = reflect(-lightDir, norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), Ns);

@@ -25,33 +25,24 @@ glm::vec3 cameraDirection = glm::vec3(0.0, 0.0, 0.0);
 glm::vec3 cameraUp = glm::vec3(0.0, 1.0, 0.0);
 
 const GLfloat x[2][3] = {
-    {-0.8f,0.0f, 0.0f},
-    {0.8f,0.0f, 0.0f}
+    {-10.0f,0.0f, 0.0f},
+    {10.0f,0.0f, 0.0f}
 };
 
-const GLfloat color_x[2][3] = {
-    {1.0,0.0,0.0},
-    {1.0,0.0,0.0}
+const glm::vec3 color_xyz[3]= {
+    glm::vec3(1.0,0.0,0.0),
+    glm::vec3(0.0,1.0,0.0),
+    glm::vec3(0.0,0.0,1.0)
 };
 
 const GLfloat y[2][3] = {
-    {0.0f,-0.8f, 0.0f},
-    {0.0f, 0.8f, 0.0f}
-};
-
-const GLfloat color_y[2][3] = {
-    {0.0,1.0,0.0},
-    {0.0,1.0,0.0}
+    {0.0f,-10.0f, 0.0f},
+    {0.0f, 10.0f, 0.0f}
 };
 
 const GLfloat z[2][3] = {
-    {0.0f, 0.0f, -0.8f},
-    {0.0f, 0.0f, 0.8f}
-};
-
-const GLfloat color_z[2][3] = {
-    {0.0,0.0,1.0},
-    {0.0,0.0,1.0}
+    {0.0f, 0.0f, -10.0f},
+    {0.0f, 0.0f, 10.0f}
 };
 
 GLuint xyz_VBO[6], xyz_VAO[3];
@@ -71,12 +62,12 @@ void keyBoard(unsigned char key, int x, int y) {
 
     if (key == '+') {
         glm::mat4 rotationMatrix;
-        rotationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+        rotationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -0.1f));
         cameraPos = glm::vec3(rotationMatrix * glm::vec4(cameraPos, 1.0f));
     }
     else if (key == '-') {
         glm::mat4 rotationMatrix;
-        rotationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+        rotationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.1f));
         cameraPos = glm::vec3(rotationMatrix * glm::vec4(cameraPos, 1.0f));
     }
 
@@ -234,6 +225,8 @@ GLvoid drawScene() {
     GLint modelStatus = glGetUniformLocation(shaderProgramID, "modelStatus");
     GLint modelLoc = glGetUniformLocation(shaderProgramID, "model");
 
+    glUniform1i(glGetUniformLocation(shaderProgramID, "useCustomColor"), GL_FALSE);
+
     for (size_t i = 0; i < models.size(); ++i) {
         glBindVertexArray(vaos[i]);
 
@@ -256,7 +249,10 @@ GLvoid drawScene() {
         glBindVertexArray(0);
     }
 
+    glUniform1i(glGetUniformLocation(shaderProgramID, "useCustomColor"), GL_TRUE);
+
     for (int i = 0; i < 3; ++i) {
+        glUniform3fv(glGetUniformLocation(shaderProgramID, "customColor"), 1, glm::value_ptr(color_xyz[i]));
         glBindVertexArray(xyz_VAO[i]);
         glUniform1i(modelStatus, 0);
         glDrawArrays(GL_LINES, 0, 2);
@@ -284,12 +280,6 @@ void InitBuffer() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
 
-    glGenBuffers(1, &xyz_VBO[1]);
-    glBindBuffer(GL_ARRAY_BUFFER, xyz_VBO[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(color_x), color_x, GL_STATIC_DRAW);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(1);
-
     glGenVertexArrays(1, &xyz_VAO[1]);
     glBindVertexArray(xyz_VAO[1]);
     glGenBuffers(1, &xyz_VBO[2]);
@@ -298,13 +288,6 @@ void InitBuffer() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
 
-    glGenBuffers(1, &xyz_VBO[3]);
-    glBindBuffer(GL_ARRAY_BUFFER, xyz_VBO[3]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(color_y), color_y, GL_STATIC_DRAW);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(1);
-    glBindVertexArray(0);
-
     glGenVertexArrays(1, &xyz_VAO[2]);
     glBindVertexArray(xyz_VAO[2]);
     glGenBuffers(1, &xyz_VBO[4]);
@@ -312,13 +295,6 @@ void InitBuffer() {
     glBufferData(GL_ARRAY_BUFFER, sizeof(z), z, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
-
-    glGenBuffers(1, &xyz_VBO[5]);
-    glBindBuffer(GL_ARRAY_BUFFER, xyz_VBO[5]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(color_z), color_z, GL_STATIC_DRAW);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(1);
-    glBindVertexArray(0);
 
     vaos.resize(models.size());
     vbos.resize(models.size(), vector<GLuint>(4)); // 모델마다 4개의 VBO가 필요 (정점, 색상, 법선, 텍스처 좌표)
@@ -359,5 +335,6 @@ void InitBuffer() {
         glGenBuffers(1, &ebo);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+        glBindVertexArray(0);
     }
 }
