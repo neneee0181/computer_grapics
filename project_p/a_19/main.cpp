@@ -6,6 +6,7 @@
 #include <gl/glm/glm/gtc/matrix_transform.hpp>
 #include <gl/glm/glm/gtc/type_ptr.hpp>
 #include <vector> 
+#include <unordered_map>
 
 #include "LoadObj.h"
 #include "shaderMaker.h"
@@ -13,6 +14,7 @@
 using namespace std;
 
 void InitBuffer();
+void reset_All();
 GLvoid drawScene(GLvoid);
 GLvoid Reshape(int w, int h);
 
@@ -23,6 +25,13 @@ vector<vector<GLuint>> vbos;
 glm::vec3 cameraPos = glm::vec3(0.0, 0.0, 6.0);
 glm::vec3 cameraDirection = glm::vec3(0.0, 0.0, 0.0);
 glm::vec3 cameraUp = glm::vec3(0.0, 1.0, 0.0);
+
+struct KeyState {
+    unsigned key;
+    bool status;
+};
+
+KeyState keyState;
 
 const GLfloat x[2][3] = {
     {-10.0f,0.0f, 0.0f},
@@ -60,12 +69,19 @@ void timer(int value) {
 
 void keyBoard(unsigned char key, int x, int y) {
 
-    if (key == '+') {
+    keyState.key = key;
+    keyState.status = !keyState.status;
+
+    if (keyState.key == 'c' || keyState.key == 'C') {
+        reset_All();
+    }
+
+    if (keyState.key == '+') {
         glm::mat4 rotationMatrix;
         rotationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -0.1f));
         cameraPos = glm::vec3(rotationMatrix * glm::vec4(cameraPos, 1.0f));
     }
-    else if (key == '-') {
+    else if (keyState.key == '-') {
         glm::mat4 rotationMatrix;
         rotationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.1f));
         cameraPos = glm::vec3(rotationMatrix * glm::vec4(cameraPos, 1.0f));
@@ -104,26 +120,9 @@ void mouse(int button, int state, int x, int y) {
     glutPostRedisplay();
 }
 
-int main(int argc, char** argv) {
+void reset_All() {
 
-    width = 800;
-    height = 600;
-
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-    glutInitWindowPosition(100, 100);
-    glutInitWindowSize(width, height);
-    glutCreateWindow("19¹ø");
-
-    glewExperimental = GL_TRUE;
-    if (glewInit() != GLEW_OK) {
-        cerr << "Unable to initialize GLEW" << endl;
-        exit(EXIT_FAILURE);
-    }
-    else
-        cout << "GLEW Initialized\n";
-
-    make_shaderProgram();
+    models.clear();
 
     Model modelBoard, modelBottomBox, modelMiddleBox, modelArmRight, modelArmLeft, modelLegRight, modelLegLeft;
 
@@ -182,6 +181,30 @@ int main(int argc, char** argv) {
     modelLegLeft.modelMatrix = glm::scale(modelLegLeft.modelMatrix, glm::vec3(0.05, 0.05, 0.05));
     modelLegLeft.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
     models.push_back(modelLegLeft);
+}
+
+int main(int argc, char** argv) {
+
+    width = 800;
+    height = 600;
+
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+    glutInitWindowPosition(100, 100);
+    glutInitWindowSize(width, height);
+    glutCreateWindow("19¹ø");
+
+    glewExperimental = GL_TRUE;
+    if (glewInit() != GLEW_OK) {
+        cerr << "Unable to initialize GLEW" << endl;
+        exit(EXIT_FAILURE);
+    }
+    else
+        cout << "GLEW Initialized\n";
+
+    make_shaderProgram();
+
+    reset_All();
 
     InitBuffer();
 
