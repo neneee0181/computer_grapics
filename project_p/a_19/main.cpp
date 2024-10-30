@@ -134,7 +134,7 @@ int main(int argc, char** argv) {
 
     make_shaderProgram();
 
-    Model modelBoard, modelBottomBox, modelMiddleBox;
+    Model modelBoard, modelBottomBox, modelMiddleBox, modelArmRight, modelArmLeft, modelLegRight, modelLegLeft;
 
     read_obj_file("obj/board.obj", modelBoard, "board");
     modelBoard.initialRotation = glm::mat4(1.0f);
@@ -152,13 +152,45 @@ int main(int argc, char** argv) {
     modelBottomBox.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
     models.push_back(modelBottomBox);
 
-    read_obj_file("obj/box_middle.obj", modelMiddleBox, "bottom_mid");
+    read_obj_file("obj/box_middle.obj", modelMiddleBox, "mid_b");
     modelMiddleBox.initialRotation = glm::mat4(1.0f);
     modelMiddleBox.modelMatrix = modelMiddleBox.initialRotation;
     modelMiddleBox.modelMatrix = glm::translate(modelMiddleBox.modelMatrix, glm::vec3(0.0, 0.0, 0.0));
     modelMiddleBox.modelMatrix = glm::scale(modelMiddleBox.modelMatrix, glm::vec3(0.05, 0.05, 0.05));
     modelMiddleBox.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
     models.push_back(modelMiddleBox);
+
+    read_obj_file("obj/box_arm_right.obj", modelArmRight, "right_a_b");
+    modelArmRight.initialRotation = glm::mat4(1.0f);
+    modelArmRight.modelMatrix = modelArmRight.initialRotation;
+    modelArmRight.modelMatrix = glm::translate(modelArmRight.modelMatrix, glm::vec3(0.0, 0.0, 0.0));
+    modelArmRight.modelMatrix = glm::scale(modelArmRight.modelMatrix, glm::vec3(0.05, 0.05, 0.05));
+    modelArmRight.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
+    models.push_back(modelArmRight);
+
+    read_obj_file("obj/box_arm_left.obj", modelArmLeft, "left_a_b");
+    modelArmLeft.initialRotation = glm::mat4(1.0f);
+    modelArmLeft.modelMatrix = modelArmLeft.initialRotation;
+    modelArmLeft.modelMatrix = glm::translate(modelArmLeft.modelMatrix, glm::vec3(0.0, 0.0, 0.0));
+    modelArmLeft.modelMatrix = glm::scale(modelArmLeft.modelMatrix, glm::vec3(0.05, 0.05, 0.05));
+    modelArmLeft.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
+    models.push_back(modelArmLeft);
+
+    read_obj_file("obj/box_leg_right.obj", modelLegRight, "right_l_b");
+    modelLegRight.initialRotation = glm::mat4(1.0f);
+    modelLegRight.modelMatrix = modelLegRight.initialRotation;
+    modelLegRight.modelMatrix = glm::translate(modelLegRight.modelMatrix, glm::vec3(0.0, 0.0, 0.0));
+    modelLegRight.modelMatrix = glm::scale(modelLegRight.modelMatrix, glm::vec3(0.05, 0.05, 0.05));
+    modelLegRight.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
+    models.push_back(modelLegRight);
+
+    read_obj_file("obj/box_leg_left.obj", modelLegLeft, "left_l_b");
+    modelLegLeft.initialRotation = glm::mat4(1.0f);
+    modelLegLeft.modelMatrix = modelLegLeft.initialRotation;
+    modelLegLeft.modelMatrix = glm::translate(modelLegLeft.modelMatrix, glm::vec3(0.0, 0.0, 0.0));
+    modelLegLeft.modelMatrix = glm::scale(modelLegLeft.modelMatrix, glm::vec3(0.05, 0.05, 0.05));
+    modelLegLeft.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
+    models.push_back(modelLegLeft);
 
     InitBuffer();
 
@@ -215,13 +247,11 @@ GLvoid drawScene() {
         glUniform3fv(KsLoc, 1, glm::value_ptr(models[i].material.Ks));
         glUniform1f(NsLoc, models[i].material.Ns);
 
-        if (models[i].name == "board" || models[i].name == "bottom_b" || models[i].name == "bottom_mid") {
-            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
 
-            glUniform1i(modelStatus, 0);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
-        }
+        glUniform1i(modelStatus, 0);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
 
         glBindVertexArray(0);
     }
