@@ -28,7 +28,7 @@ glm::vec3 cameraUp = glm::vec3(0.0, 1.0, 0.0);
 
 struct KeyState {
     unsigned key;
-    bool status;
+    bool status = false;
 };
 
 KeyState keyState;
@@ -63,17 +63,75 @@ GLvoid Reshape(int w, int h) {
 }
 
 void timer(int value) {
+    float speed = 0.05;
+    for (int i = 1; i < models.size(); ++i) {
+        
+        switch (keyState.key)
+        {
+        case 'b':
+        {
+            if (models[i].modelMatrix[3].x >= models[0].modelMatrix[0].x - 0.35)
+                keyState.status = false;
+            glm::mat4 matrix = glm::mat4(1.0f);
+            matrix = glm::translate(matrix, glm::vec3(speed, 0.0, 0.0));
+            models[i].modelMatrix = matrix * models[i].modelMatrix;
+            break;
+        }
+        case 'B':
+        {
+            if (models[i].modelMatrix[3].x <= -models[0].modelMatrix[0].x + 0.35)
+                keyState.status = false;
+            glm::mat4 matrix = glm::mat4(1.0f);
+            matrix = glm::translate(matrix, glm::vec3(-speed, 0.0, 0.0));
+            models[i].modelMatrix = matrix * models[i].modelMatrix;
+            break;
+        }
+        case 'm':
+            break;
+        case 'M':
+            break;
+        case 'f':
+            break;
+        case 'F':
+            break;
+        case 'e':
+            break;
+        case 'E':
+            break;
+        case 't':
+            break;
+        case 'T':
+            break;
+        default:
+            break;
+        }
+    }
+
     glutPostRedisplay();
-    glutTimerFunc(16, timer, 0);
+    if (keyState.status)
+        glutTimerFunc(16, timer, 0);
 }
 
 void keyBoard(unsigned char key, int x, int y) {
 
     keyState.key = key;
-    keyState.status = !keyState.status;
 
     switch (keyState.key)
     {
+    case 'b':
+    case 'B': 
+    case 'm':
+    case 'M':
+    case 'f':
+    case 'F':
+    case 'e':
+    case 'E':
+    case 't':
+    case 'T':
+    case 'z':
+        keyState.status = !keyState.status;
+        glutTimerFunc(0, timer, 0);
+        break;
     case 'c':
     case 'C':
         reset_All();
