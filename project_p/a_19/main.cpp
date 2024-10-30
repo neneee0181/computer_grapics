@@ -29,6 +29,7 @@ glm::vec3 cameraUp = glm::vec3(0.0, 1.0, 0.0);
 struct KeyState {
     unsigned key;
     bool status = false;
+    bool key_s = false;
 };
 
 KeyState keyState;
@@ -135,6 +136,7 @@ void timer(int value) {
         }
         case 'f':
         {
+            keyState.key_s = true;
             glm::mat4 matrix = glm::mat4(1.0f);
             if (models[i].name == "right_l_b") {
                 matrix = glm::translate(matrix, glm::vec3(models[1].modelMatrix[3]));
@@ -154,6 +156,7 @@ void timer(int value) {
         }
         case 'F':
         {
+            keyState.key_s = true;
             glm::mat4 matrix = glm::mat4(1.0f);
             if (models[i].name == "left_l_b") {
                 matrix = glm::translate(matrix, glm::vec3(models[1].modelMatrix[3]));
@@ -172,9 +175,13 @@ void timer(int value) {
             break;
         }
         case 'e':
+        {
             break;
+        }
         case 'E':
+        {
             break;
+        }
         case 't':
             break;
         case 'T':
