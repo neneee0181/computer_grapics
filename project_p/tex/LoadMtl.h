@@ -10,7 +10,7 @@
 
 // MTL 파일을 읽어와서 재질 정보를 파싱하는 함수
 void read_mtl_file(const std::string& filename, Material& material) {
-    std::ifstream file(filename);  // MTL 파일 열기
+    std::ifstream file("obj/" + filename);  // MTL 파일 열기
     if (!file.is_open()) {  // 파일 열기 실패 시 예외 처리
         //throw std::runtime_error("Error opening MTL file: " + filename);
         return;

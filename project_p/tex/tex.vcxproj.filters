@@ -26,14 +26,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\a_19\main.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="..\a_19\filetobuf.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="filetobuf.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -49,5 +41,13 @@
     <ClInclude Include="LoadMtl.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="filetobuf.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

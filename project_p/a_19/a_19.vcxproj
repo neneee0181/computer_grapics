@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{5dc47507-ec71-4c88-aaf3-87913b078944}</ProjectGuid>
+    <ProjectGuid>{bb903589-f3ef-43da-98c2-569a083c3bb4}</ProjectGuid>
     <RootNamespace>a_19</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -128,20 +128,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="filetobuf.cpp" />
-    <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="fragment.glsl" />
     <None Include="vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="filetobuf.h" />
     <ClInclude Include="LoadMtl.h" />
-    <ClInclude Include="LoadTexture.h" />
-    <ClInclude Include="Model.h" />
     <ClInclude Include="LoadObj.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="shaderMaker.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="filetobuf.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

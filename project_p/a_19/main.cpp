@@ -68,7 +68,7 @@ void timer(int value) {
 }
 
 void keyBoard(unsigned char key, int x, int y) {
-    glutPostRedisplay(); 
+    glutPostRedisplay();
 }
 
 void keySpecial(int key, int x, int y) {
@@ -78,7 +78,7 @@ void keySpecial(int key, int x, int y) {
         rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(-0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
     }
     else if (key == GLUT_KEY_RIGHT) {
-       rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
+        rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
     }
     else if (key == GLUT_KEY_UP) {
         rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(0.5f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -121,7 +121,7 @@ int main(int argc, char** argv) {
         cout << "GLEW Initialized\n";
 
     make_shaderProgram();
-        
+
     Model modelBoard, modelBottomBox;
 
     read_obj_file("obj/board.obj", modelBoard, "board");
@@ -143,12 +143,12 @@ int main(int argc, char** argv) {
 
     glutDisplayFunc(drawScene);
     glutReshapeFunc(Reshape);
-    glutKeyboardFunc(keyBoard); 
+    glutKeyboardFunc(keyBoard);
     glutSpecialFunc(keySpecial);
     glutMouseFunc(mouse);
     glutMainLoop();
 
-    return 0; 
+    return 0;
 }
 
 GLvoid drawScene() {
@@ -159,9 +159,9 @@ GLvoid drawScene() {
 
     glm::mat4 view = glm::mat4(1.0f);
     view = glm::lookAt(
-        cameraPos,  
-        cameraDirection,  
-        cameraUp   
+        cameraPos,
+        cameraDirection,
+        cameraUp
     );
     unsigned int viewLocation = glGetUniformLocation(shaderProgramID, "viewTransform");
     glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
@@ -201,12 +201,12 @@ GLvoid drawScene() {
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
         }
-       
+
         glBindVertexArray(0);
     }
-    
+
     for (int i = 0; i < 3; ++i) {
-        glBindVertexArray(xyz_VAO[i]); 
+        glBindVertexArray(xyz_VAO[i]);
         glUniform1i(modelStatus, 0);
         glDrawArrays(GL_LINES, 0, 2);
         glBindVertexArray(0);
@@ -227,28 +227,28 @@ void InitBuffer() {
 
     glGenVertexArrays(1, &xyz_VAO[0]);
     glBindVertexArray(xyz_VAO[0]);
-    glGenBuffers(1, &xyz_VBO[0]);  
-    glBindBuffer(GL_ARRAY_BUFFER, xyz_VBO[0]); 
+    glGenBuffers(1, &xyz_VBO[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, xyz_VBO[0]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(x), x, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0); 
-    glEnableVertexAttribArray(0); 
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(0);
 
-    glGenBuffers(1, &xyz_VBO[1]);  
-    glBindBuffer(GL_ARRAY_BUFFER, xyz_VBO[1]); 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(color_x), color_x, GL_STATIC_DRAW); 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0); 
-    glEnableVertexAttribArray(1); 
+    glGenBuffers(1, &xyz_VBO[1]);
+    glBindBuffer(GL_ARRAY_BUFFER, xyz_VBO[1]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(color_x), color_x, GL_STATIC_DRAW);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(1);
 
     glGenVertexArrays(1, &xyz_VAO[1]);
     glBindVertexArray(xyz_VAO[1]);
-    glGenBuffers(1, &xyz_VBO[2]);  
-    glBindBuffer(GL_ARRAY_BUFFER, xyz_VBO[2]);  
-    glBufferData(GL_ARRAY_BUFFER, sizeof(y), y, GL_STATIC_DRAW); 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0); 
-    glEnableVertexAttribArray(0);  
+    glGenBuffers(1, &xyz_VBO[2]);
+    glBindBuffer(GL_ARRAY_BUFFER, xyz_VBO[2]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(y), y, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(0);
 
-    glGenBuffers(1, &xyz_VBO[3]); 
-    glBindBuffer(GL_ARRAY_BUFFER, xyz_VBO[3]); 
+    glGenBuffers(1, &xyz_VBO[3]);
+    glBindBuffer(GL_ARRAY_BUFFER, xyz_VBO[3]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(color_y), color_y, GL_STATIC_DRAW);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(1);
