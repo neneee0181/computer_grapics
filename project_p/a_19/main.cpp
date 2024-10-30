@@ -68,6 +68,18 @@ void timer(int value) {
 }
 
 void keyBoard(unsigned char key, int x, int y) {
+
+    if (key == '+') {
+        glm::mat4 rotationMatrix;
+        rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(0.5f), glm::vec3(0.0f, 0.0f, 1.0f));
+        cameraPos = glm::vec3(rotationMatrix * glm::vec4(cameraPos, 1.0f));
+    }
+    else if (key == '-') {
+        glm::mat4 rotationMatrix;
+        rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(-0.5f), glm::vec3(0.0f, 0.0f, 1.0f));
+        cameraPos = glm::vec3(rotationMatrix * glm::vec4(cameraPos, 1.0f));
+    }
+
     glutPostRedisplay();
 }
 
@@ -122,12 +134,13 @@ int main(int argc, char** argv) {
 
     make_shaderProgram();
 
-    Model modelBoard, modelBottomBox;
+    Model modelBoard, modelBottomBox, modelMiddleBox;
 
     read_obj_file("obj/board.obj", modelBoard, "board");
     modelBoard.initialRotation = glm::mat4(1.0f);
     modelBoard.modelMatrix = modelBoard.initialRotation;
     modelBoard.modelMatrix = glm::translate(modelBoard.modelMatrix, glm::vec3(0.0, 0.0, 0.0));
+    modelBoard.modelMatrix = glm::scale(modelBoard.modelMatrix, glm::vec3(2.5, 2.5, 2.5));
     modelBoard.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
     models.push_back(modelBoard);
 
@@ -135,9 +148,17 @@ int main(int argc, char** argv) {
     modelBottomBox.initialRotation = glm::mat4(1.0f);
     modelBottomBox.modelMatrix = modelBottomBox.initialRotation;
     modelBottomBox.modelMatrix = glm::translate(modelBottomBox.modelMatrix, glm::vec3(0.0, 0.0, 0.0));
-    modelBottomBox.modelMatrix = glm::scale(modelBottomBox.modelMatrix, glm::vec3(0.1, 0.1, 0.1));
+    modelBottomBox.modelMatrix = glm::scale(modelBottomBox.modelMatrix, glm::vec3(0.05, 0.05, 0.05));
     modelBottomBox.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
     models.push_back(modelBottomBox);
+
+    read_obj_file("obj/box_middle.obj", modelMiddleBox, "bottom_mid");
+    modelMiddleBox.initialRotation = glm::mat4(1.0f);
+    modelMiddleBox.modelMatrix = modelMiddleBox.initialRotation;
+    modelMiddleBox.modelMatrix = glm::translate(modelMiddleBox.modelMatrix, glm::vec3(0.0, 0.0, 0.0));
+    modelMiddleBox.modelMatrix = glm::scale(modelMiddleBox.modelMatrix, glm::vec3(0.05, 0.05, 0.05));
+    modelMiddleBox.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
+    models.push_back(modelMiddleBox);
 
     InitBuffer();
 
@@ -194,7 +215,7 @@ GLvoid drawScene() {
         glUniform3fv(KsLoc, 1, glm::value_ptr(models[i].material.Ks));
         glUniform1f(NsLoc, models[i].material.Ns);
 
-        if (models[i].name == "board" || models[i].name == "bottom_b") {
+        if (models[i].name == "board" || models[i].name == "bottom_b" || models[i].name == "bottom_mid") {
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
 
             glUniform1i(modelStatus, 0);
@@ -282,18 +303,18 @@ void InitBuffer() {
         // 정점 버퍼 설정
         glBindBuffer(GL_ARRAY_BUFFER, vbos[i][0]);
         glBufferData(GL_ARRAY_BUFFER, models[i].vertices.size() * sizeof(glm::vec3), models[i].vertices.data(), GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);  // location 0에 정점 할당
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
         glEnableVertexAttribArray(0);
 
         // 색상 버퍼 설정
         //glBindBuffer(GL_ARRAY_BUFFER, vbos[i][1]);
         //glBufferData(GL_ARRAY_BUFFER, models[i].colors.size() * sizeof(glm::vec3), models[i].colors.data(), GL_STATIC_DRAW);
-        //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);  // location 1에 색상 할당
+        //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
         //glEnableVertexAttribArray(1);
 
         glBindBuffer(GL_ARRAY_BUFFER, vbos[i][2]);  // 법선용 VBO
         glBufferData(GL_ARRAY_BUFFER, models[i].normals.size() * sizeof(glm::vec3), models[i].normals.data(), GL_STATIC_DRAW);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);  // location 1에 법선 할당
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
         glEnableVertexAttribArray(1);
 
         // 면 인덱스 데이터 (EBO) 설정
