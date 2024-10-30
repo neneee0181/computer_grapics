@@ -134,9 +134,43 @@ void timer(int value) {
             break;
         }
         case 'f':
+        {
+            glm::mat4 matrix = glm::mat4(1.0f);
+            if (models[i].name == "right_l_b") {
+                matrix = glm::translate(matrix, glm::vec3(models[1].modelMatrix[3]));
+                matrix = glm::rotate(matrix, glm::radians(r_speed), glm::vec3(0.0, 1.0, 0.0));
+                matrix = glm::translate(matrix, glm::vec3(-models[1].modelMatrix[3]));
+                models[i].modelMatrix = matrix * models[i].modelMatrix;
+            }
+
+            matrix = glm::mat4(1.0f);
+            if (models[i].name == "left_l_b") {
+                matrix = glm::translate(matrix, glm::vec3(models[1].modelMatrix[3]));
+                matrix = glm::rotate(matrix, glm::radians(-r_speed), glm::vec3(0.0, 1.0, 0.0));
+                matrix = glm::translate(matrix, glm::vec3(-models[1].modelMatrix[3]));
+                models[i].modelMatrix = matrix * models[i].modelMatrix;
+            }
             break;
+        }
         case 'F':
+        {
+            glm::mat4 matrix = glm::mat4(1.0f);
+            if (models[i].name == "left_l_b") {
+                matrix = glm::translate(matrix, glm::vec3(models[1].modelMatrix[3]));
+                matrix = glm::rotate(matrix, glm::radians(r_speed), glm::vec3(0.0, 1.0, 0.0));
+                matrix = glm::translate(matrix, glm::vec3(-models[1].modelMatrix[3]));
+                models[i].modelMatrix = matrix * models[i].modelMatrix;
+            }
+
+            matrix = glm::mat4(1.0f);
+            if (models[i].name == "right_l_b") {
+                matrix = glm::translate(matrix, glm::vec3(models[1].modelMatrix[3]));
+                matrix = glm::rotate(matrix, glm::radians(-r_speed), glm::vec3(0.0, 1.0, 0.0));
+                matrix = glm::translate(matrix, glm::vec3(-models[1].modelMatrix[3]));
+                models[i].modelMatrix = matrix * models[i].modelMatrix;
+            }
             break;
+        }
         case 'e':
             break;
         case 'E':
