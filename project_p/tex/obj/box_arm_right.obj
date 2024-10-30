@@ -1,5 +1,5 @@
 # 3ds Max Wavefront OBJ Exporter v0.99 - (c)2007 guruware
-# File Created: 29.10.2024 00:43:20
+# File Created: 30.10.2024 16:49:19
 
 mtllib box_arm_right.mtl
 
@@ -39,7 +39,7 @@ vt 0.5000 1.0000 0.0000
 
 o Box003
 g Box003
-usemtl wire_228153184
+usemtl wire_008008136
 s 64
 f 1/1/1 2/2/1 3/3/1 
 f 3/3/1 4/4/1 1/1/1 

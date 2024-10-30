@@ -1,29 +1,26 @@
-#include <iostream>   // 표준 입출력 라이브러리 포함
-#include <gl/glew.h>  // GLEW 라이브러리 포함 (OpenGL 확장 기능을 사용하기 위해 필요)
-#include <gl/freeglut.h>  // GLUT 라이브러리 포함 (윈도우 창 및 사용자 입력 처리를 위해 사용)
-#include <gl/freeglut_ext.h>  // GLUT 확장 기능 포함
-#include <gl/glm/glm/glm.hpp>  // GLM 라이브러리 포함 (수학적인 계산을 돕기 위한 라이브러리)
+#include <iostream>
+#include <gl/glew.h>
+#include <gl/freeglut.h>
+#include <gl/freeglut_ext.h>
+#include <gl/glm/glm/glm.hpp>
 #include <gl/glm/glm/gtc/matrix_transform.hpp>
 #include <gl/glm/glm/gtc/type_ptr.hpp>
-#include <vector>  // 표준 벡터 라이브러리 포함 (동적 배열을 사용하기 위해 필요)
+#include <vector> 
 
 #include "LoadObj.h"
 #include "shaderMaker.h"
 
-using namespace std;  // 네임스페이스 std 사용으로 코드 내에서 std:: 생략 가능
+using namespace std;
 
-// 함수 선언부
-void InitBuffer();  // 버퍼 초기화 함수 선언
-GLvoid drawScene(GLvoid);  // 화면을 그리는 함수 선언
-GLvoid Reshape(int w, int h);  // 화면 크기가 변경될 때 호출되는 함수 선언
+void InitBuffer();
+GLvoid drawScene(GLvoid);
+GLvoid Reshape(int w, int h);
 
-// 여러 3D 모델을 관리하는 벡터
 vector<Model> models;
 vector<GLuint> vaos;
 vector<vector<GLuint>> vbos;
 
-// camera
-glm::vec3 cameraPos = glm::vec3(0.0, 0.0, 4.0);
+glm::vec3 cameraPos = glm::vec3(0.0, 0.0, 6.0);
 glm::vec3 cameraDirection = glm::vec3(0.0, 0.0, 0.0);
 glm::vec3 cameraUp = glm::vec3(0.0, 1.0, 0.0);
 
@@ -59,64 +56,76 @@ const GLfloat color_z[2][3] = {
 
 GLuint xyz_VBO[6], xyz_VAO[3];
 
-// 화면 크기가 변경될 때 호출되는 함수
 GLvoid Reshape(int w, int h) {
-    glViewport(0, 0, w, h);  // 뷰포트 크기 설정
+    glViewport(0, 0, w, h);
     width = w;
     height = h;
 }
 
 void timer(int value) {
-    glutPostRedisplay();  // 화면 다시 그리기 요청
+    glutPostRedisplay();
     glutTimerFunc(16, timer, 0);
 }
 
 void keyBoard(unsigned char key, int x, int y) {
-    glutPostRedisplay();  // 화면 다시 그리기 요청
+    glutPostRedisplay(); 
 }
 
-// 마우스 입력을 처리하는 함수
+void keySpecial(int key, int x, int y) {
+
+    glm::mat4 rotationMatrix;
+    if (key == GLUT_KEY_LEFT) {
+        rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(-0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
+    }
+    else if (key == GLUT_KEY_RIGHT) {
+       rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
+    }
+    else if (key == GLUT_KEY_UP) {
+        rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(0.5f), glm::vec3(1.0f, 0.0f, 0.0f));
+    }
+    else if (key == GLUT_KEY_DOWN) {
+        rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(-0.5f), glm::vec3(1.0f, 0.0f, 0.0f));
+    }
+    else {
+        return;
+    }
+
+    cameraPos = glm::vec3(rotationMatrix * glm::vec4(cameraPos, 1.0f));
+
+    glutPostRedisplay();
+}
+
 void mouse(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
-        std::cout << "x = " << x << " y = " << y << std::endl;  // 마우스 클릭 좌표 출력
-    glutPostRedisplay();  // 키보드 입력 후 화면을 다시 그리도록 요청
+        std::cout << "x = " << x << " y = " << y << std::endl;
+    glutPostRedisplay();
 }
 
-void rotation_xyz(Model& model, float radians, glm::vec3 xyz) {
-    model.modelMatrix = glm::rotate(model.modelMatrix, glm::radians(radians), xyz);
-}
-
-// 메인 함수
 int main(int argc, char** argv) {
 
-    width = 800;  // 창의 기본 너비 설정
-    height = 600;  // 창의 기본 높이 설정
+    width = 800;
+    height = 600;
 
-    // 윈도우 생성
-    glutInit(&argc, argv);  // GLUT 초기화
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);  // 화면 모드 설정 (더블 버퍼링, RGBA 컬러 모드)
-    glutInitWindowPosition(100, 100);  // 창의 시작 위치 설정
-    glutInitWindowSize(width, height);  // 창의 크기 설정
-    glutCreateWindow("template");  // 창 생성 및 제목 설정
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+    glutInitWindowPosition(100, 100);
+    glutInitWindowSize(width, height);
+    glutCreateWindow("template");
 
-    // GLEW 초기화
-    glewExperimental = GL_TRUE;  // GLEW 실험적 기능 활성화
-    if (glewInit() != GLEW_OK) {  // GLEW 초기화 및 오류 체크
-        cerr << "Unable to initialize GLEW" << endl;  // GLEW 초기화 실패 시 오류 메시지 출력
-        exit(EXIT_FAILURE);  // 프로그램 종료
+    glewExperimental = GL_TRUE;
+    if (glewInit() != GLEW_OK) {
+        cerr << "Unable to initialize GLEW" << endl;
+        exit(EXIT_FAILURE);
     }
     else
-        cout << "GLEW Initialized\n";  // 초기화 성공 시 메시지 출력
+        cout << "GLEW Initialized\n";
 
-    make_shaderProgram();  // 쉐이더 프로그램 생성
+    make_shaderProgram();
         
-    // 모델들을 로드하고 벡터에 추가
     Model modelBoard, modelBottomBox;
 
-    // 바닥
     read_obj_file("obj/board.obj", modelBoard, "board");
-    // 초기 회전 상태를 저장 (초기 회전 상태는 고정됨)
-    modelBoard.initialRotation = glm::mat4(1.0f);  // 초기 회전 행렬을 단위 행렬로 설정
+    modelBoard.initialRotation = glm::mat4(1.0f);
     modelBoard.modelMatrix = modelBoard.initialRotation;
     modelBoard.modelMatrix = glm::translate(modelBoard.modelMatrix, glm::vec3(0.0, 0.0, 0.0));
     modelBoard.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
@@ -130,60 +139,64 @@ int main(int argc, char** argv) {
     modelBottomBox.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
     models.push_back(modelBottomBox);
 
-    InitBuffer();  // 버퍼 초기화
+    InitBuffer();
 
-    // 콜백 함수 등록
-    glutDisplayFunc(drawScene);  // 화면을 그리는 함수 등록
-    glutReshapeFunc(Reshape);  // 화면 크기 변경 시 호출되는 함수 등록
-    glutKeyboardFunc(keyBoard);  // 키보드 입력 처리 함수 등록
-    glutMouseFunc(mouse);  // 마우스 입력 처리 함수 등록
-    glutMainLoop();  // 이벤트 루프 시작
+    glutDisplayFunc(drawScene);
+    glutReshapeFunc(Reshape);
+    glutKeyboardFunc(keyBoard); 
+    glutSpecialFunc(keySpecial);
+    glutMouseFunc(mouse);
+    glutMainLoop();
 
-    return 0;  // 프로그램 정상 종료
+    return 0; 
 }
 
-// 화면을 그리는 함수
 GLvoid drawScene() {
-    glClearColor(1.0, 1.0, 1.0, 1.0f);  // 화면을 흰색으로 초기화
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  // 컬러 버퍼와 깊이 버퍼 초기화
+    glClearColor(1.0, 1.0, 1.0, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glUseProgram(shaderProgramID);  // 쉐이더 프로그램 사용
+    glUseProgram(shaderProgramID);
 
-    // 카메라
-    cameraPos = glm::vec3(0.0, 0.0, 6.0);
     glm::mat4 view = glm::mat4(1.0f);
-    glm::mat4 rotationMatrix_x = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::mat4 rotationMatrix_y = glm::rotate(glm::mat4(1.0f), glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    cameraPos = glm::vec3(rotationMatrix_x * rotationMatrix_y * glm::vec4(cameraPos, 1.0f));
     view = glm::lookAt(
-        cameraPos,  //--- 카메라위치
-        cameraDirection,  //--- 카메라바라보는방향
-        cameraUp   //--- 카메라위쪽방향
+        cameraPos,  
+        cameraDirection,  
+        cameraUp   
     );
     unsigned int viewLocation = glGetUniformLocation(shaderProgramID, "viewTransform");
     glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
 
-    // 투영
     glm::mat4 projection = glm::mat4(1.0f);
     projection = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / static_cast<float>(height), 0.1f, 100.0f);
     unsigned int projectionLocation = glGetUniformLocation(shaderProgramID, "projectionTransform");
     glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, &projection[0][0]);
 
+    GLint lightPosLoc = glGetUniformLocation(shaderProgramID, "lightPos");
+    GLint lightColorLoc = glGetUniformLocation(shaderProgramID, "lightColor");
+    glUniform3fv(lightPosLoc, 1, glm::value_ptr(-cameraPos));
+    glUniform3fv(lightColorLoc, 1, glm::value_ptr(glm::vec3(1.0f, 0.95f, 0.9f)));
+
     glEnable(GL_DEPTH_TEST);
 
     GLint modelStatus = glGetUniformLocation(shaderProgramID, "modelStatus");
     GLint modelLoc = glGetUniformLocation(shaderProgramID, "model");
-    // 각 모델을 그리기
+
     for (size_t i = 0; i < models.size(); ++i) {
         glBindVertexArray(vaos[i]);
 
-        // 각 모델의 색상 정보 전달
+        GLint KaLoc = glGetUniformLocation(shaderProgramID, "Ka");
         GLint KdLoc = glGetUniformLocation(shaderProgramID, "Kd");
+        GLint KsLoc = glGetUniformLocation(shaderProgramID, "Ks");
+        GLint NsLoc = glGetUniformLocation(shaderProgramID, "Ns");
+
+        glUniform3fv(KaLoc, 1, glm::value_ptr(models[i].material.Ka));
         glUniform3fv(KdLoc, 1, glm::value_ptr(models[i].material.Kd));
+        glUniform3fv(KsLoc, 1, glm::value_ptr(models[i].material.Ks));
+        glUniform1f(NsLoc, models[i].material.Ns);
 
         if (models[i].name == "board" || models[i].name == "bottom_b") {
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
-            // 면 그리기
+
             glUniform1i(modelStatus, 0);
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
@@ -201,12 +214,11 @@ GLvoid drawScene() {
 
     glDisable(GL_DEPTH_TEST);
 
-    glutSwapBuffers();  // 더블 버퍼링 사용, 화면 갱신
+    glutSwapBuffers();
 
-    // OpenGL 오류 체크 루프
     GLenum err;
     while ((err = glGetError()) != GL_NO_ERROR) {
-        cout << "OpenGL error: " << err << endl;  // 오류 메시지 출력
+        cout << "OpenGL error: " << err << endl;
     }
 }
 
@@ -257,7 +269,6 @@ void InitBuffer() {
     glEnableVertexAttribArray(1);
     glBindVertexArray(0);
 
-    // 각 모델에 대한 VAO, VBO, EBO 설정
     vaos.resize(models.size());
     vbos.resize(models.size(), vector<GLuint>(4)); // 모델마다 4개의 VBO가 필요 (정점, 색상, 법선, 텍스처 좌표)
 
@@ -279,6 +290,11 @@ void InitBuffer() {
         //glBufferData(GL_ARRAY_BUFFER, models[i].colors.size() * sizeof(glm::vec3), models[i].colors.data(), GL_STATIC_DRAW);
         //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);  // location 1에 색상 할당
         //glEnableVertexAttribArray(1);
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbos[i][2]);  // 법선용 VBO
+        glBufferData(GL_ARRAY_BUFFER, models[i].normals.size() * sizeof(glm::vec3), models[i].normals.data(), GL_STATIC_DRAW);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);  // location 1에 법선 할당
+        glEnableVertexAttribArray(1);
 
         // 면 인덱스 데이터 (EBO) 설정
         vector<unsigned int> indices;
