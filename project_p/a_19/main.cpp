@@ -176,10 +176,61 @@ void timer(int value) {
         }
         case 'e':
         {
+            glm::mat4 matrix = glm::mat4(1.0f);
+            if (models[i].name == "right_l_b") {
+                matrix = glm::translate(matrix, glm::vec3(models[1].modelMatrix[3]));
+                matrix = glm::rotate(matrix, glm::radians(r_speed), glm::vec3(0.0, 1.0, 0.0));
+                matrix = glm::translate(matrix, glm::vec3(-models[1].modelMatrix[3]));
+                models[i].modelMatrix = matrix * models[i].modelMatrix;
+
+                float le = glm::length(glm::vec3(models[i].modelMatrix[0]) - glm::vec3(glm::mat4(1.0f)[0]));
+                // 현재 위치와 초기 위치 비교
+                if (le < 0.95001f) {
+                    models[5].modelMatrix = models[5].initialRotation; // 초기 위치로 맞추기
+                    models[6].modelMatrix = models[6].initialRotation; // 초기 위치로 맞추기
+
+                    keyState.status = false; // 타이머 중지
+                }
+
+            }
+
+            matrix = glm::mat4(1.0f);
+            if (models[i].name == "left_l_b") {
+                matrix = glm::translate(matrix, glm::vec3(models[1].modelMatrix[3]));
+                matrix = glm::rotate(matrix, glm::radians(-r_speed), glm::vec3(0.0, 1.0, 0.0));
+                matrix = glm::translate(matrix, glm::vec3(-models[1].modelMatrix[3]));
+                models[i].modelMatrix = matrix * models[i].modelMatrix;
+            }
+
             break;
         }
         case 'E':
         {
+            glm::mat4 matrix = glm::mat4(1.0f);
+            if (models[i].name == "right_l_b") {
+                matrix = glm::translate(matrix, glm::vec3(models[1].modelMatrix[3]));
+                matrix = glm::rotate(matrix, glm::radians(-r_speed), glm::vec3(0.0, 1.0, 0.0));
+                matrix = glm::translate(matrix, glm::vec3(-models[1].modelMatrix[3]));
+                models[i].modelMatrix = matrix * models[i].modelMatrix;
+
+                float le = glm::length(glm::vec3(models[i].modelMatrix[0]) - glm::vec3(glm::mat4(1.0f)[0]));
+                // 현재 위치와 초기 위치 비교
+                if (le < 0.95001f) {
+                    models[5].modelMatrix = models[5].initialRotation; // 초기 위치로 맞추기
+                    models[6].modelMatrix = models[6].initialRotation; // 초기 위치로 맞추기
+
+                    keyState.status = false; // 타이머 중지
+                }
+
+            }
+
+            matrix = glm::mat4(1.0f);
+            if (models[i].name == "left_l_b") {
+                matrix = glm::translate(matrix, glm::vec3(models[1].modelMatrix[3]));
+                matrix = glm::rotate(matrix, glm::radians(r_speed), glm::vec3(0.0, 1.0, 0.0));
+                matrix = glm::translate(matrix, glm::vec3(-models[1].modelMatrix[3]));
+                models[i].modelMatrix = matrix * models[i].modelMatrix;
+            }
             break;
         }
         case 't':
@@ -281,58 +332,58 @@ void reset_All() {
     Model modelBoard, modelBottomBox, modelMiddleBox, modelArmRight, modelArmLeft, modelLegRight, modelLegLeft;
 
     read_obj_file("obj/board.obj", modelBoard, "board");
-    modelBoard.initialRotation = glm::mat4(1.0f);
-    modelBoard.modelMatrix = modelBoard.initialRotation;
+    modelBoard.modelMatrix = glm::mat4(1.0f);
     modelBoard.modelMatrix = glm::translate(modelBoard.modelMatrix, glm::vec3(0.0, 0.0, 0.0));
     modelBoard.modelMatrix = glm::scale(modelBoard.modelMatrix, glm::vec3(2.5, 2.5, 2.5));
+    modelBoard.initialRotation = modelBoard.modelMatrix;
     modelBoard.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
     models.push_back(modelBoard);
 
     read_obj_file("obj/box_bottom.obj", modelBottomBox, "bottom_b");
-    modelBottomBox.initialRotation = glm::mat4(1.0f);
-    modelBottomBox.modelMatrix = modelBottomBox.initialRotation;
+    modelBottomBox.modelMatrix = glm::mat4(1.0f);
     modelBottomBox.modelMatrix = glm::translate(modelBottomBox.modelMatrix, glm::vec3(0.0, 0.0, 0.0));
     modelBottomBox.modelMatrix = glm::scale(modelBottomBox.modelMatrix, glm::vec3(0.05, 0.05, 0.05));
+    modelBottomBox.initialRotation = modelBottomBox.modelMatrix;
     modelBottomBox.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
     models.push_back(modelBottomBox);
 
     read_obj_file("obj/box_middle.obj", modelMiddleBox, "mid_b");
-    modelMiddleBox.initialRotation = glm::mat4(1.0f);
-    modelMiddleBox.modelMatrix = modelMiddleBox.initialRotation;
+    modelMiddleBox.modelMatrix = glm::mat4(1.0f);
     modelMiddleBox.modelMatrix = glm::translate(modelMiddleBox.modelMatrix, glm::vec3(0.0, 0.0, 0.0));
     modelMiddleBox.modelMatrix = glm::scale(modelMiddleBox.modelMatrix, glm::vec3(0.05, 0.05, 0.05));
+    modelMiddleBox.initialRotation = modelMiddleBox.modelMatrix;
     modelMiddleBox.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
     models.push_back(modelMiddleBox);
 
     read_obj_file("obj/box_arm_right.obj", modelArmRight, "right_a_b");
-    modelArmRight.initialRotation = glm::mat4(1.0f);
-    modelArmRight.modelMatrix = modelArmRight.initialRotation;
+    modelArmRight.modelMatrix = glm::mat4(1.0f);
     modelArmRight.modelMatrix = glm::translate(modelArmRight.modelMatrix, glm::vec3(0.0, 0.0, 0.0));
     modelArmRight.modelMatrix = glm::scale(modelArmRight.modelMatrix, glm::vec3(0.05, 0.05, 0.05));
+    modelArmRight.initialRotation = modelArmRight.modelMatrix;
     modelArmRight.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
     models.push_back(modelArmRight);
 
     read_obj_file("obj/box_arm_left.obj", modelArmLeft, "left_a_b");
-    modelArmLeft.initialRotation = glm::mat4(1.0f);
-    modelArmLeft.modelMatrix = modelArmLeft.initialRotation;
+    modelArmLeft.modelMatrix = glm::mat4(1.0f);
     modelArmLeft.modelMatrix = glm::translate(modelArmLeft.modelMatrix, glm::vec3(0.0, 0.0, 0.0));
     modelArmLeft.modelMatrix = glm::scale(modelArmLeft.modelMatrix, glm::vec3(0.05, 0.05, 0.05));
+    modelArmLeft.initialRotation = modelArmLeft.modelMatrix;
     modelArmLeft.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
     models.push_back(modelArmLeft);
 
     read_obj_file("obj/box_leg_right.obj", modelLegRight, "right_l_b");
-    modelLegRight.initialRotation = glm::mat4(1.0f);
-    modelLegRight.modelMatrix = modelLegRight.initialRotation;
+    modelLegRight.modelMatrix = glm::mat4(1.0f);
     modelLegRight.modelMatrix = glm::translate(modelLegRight.modelMatrix, glm::vec3(0.0, 0.0, 0.0));
     modelLegRight.modelMatrix = glm::scale(modelLegRight.modelMatrix, glm::vec3(0.05, 0.05, 0.05));
+    modelLegRight.initialRotation = modelLegRight.modelMatrix;
     modelLegRight.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
     models.push_back(modelLegRight);
 
     read_obj_file("obj/box_leg_left.obj", modelLegLeft, "left_l_b");
-    modelLegLeft.initialRotation = glm::mat4(1.0f);
-    modelLegLeft.modelMatrix = modelLegLeft.initialRotation;
+    modelLegLeft.modelMatrix = glm::mat4(1.0f);
     modelLegLeft.modelMatrix = glm::translate(modelLegLeft.modelMatrix, glm::vec3(0.0, 0.0, 0.0));
     modelLegLeft.modelMatrix = glm::scale(modelLegLeft.modelMatrix, glm::vec3(0.05, 0.05, 0.05));
+    modelLegLeft.initialRotation = modelLegLeft.modelMatrix;
     modelLegLeft.colors.push_back(glm::vec3(0.0, 0.0, 0.0));
     models.push_back(modelLegLeft);
 
