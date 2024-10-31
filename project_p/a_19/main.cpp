@@ -186,9 +186,6 @@ void timer(int value) {
                 float le = glm::length(glm::vec3(models[i].modelMatrix[0]) - glm::vec3(glm::mat4(1.0f)[0]));
                 // 현재 위치와 초기 위치 비교
                 if (le < 0.95001f) {
-                    //models[5].modelMatrix = models[5].initialRotation; // 초기 위치로 맞추기
-                    //models[6].modelMatrix = models[6].initialRotation; // 초기 위치로 맞추기
-
                     keyState.key = 'w';
                 }
 
@@ -206,7 +203,22 @@ void timer(int value) {
         }
         case 'E':
         {
-            
+            if (models[i].name == "right_l_b") {
+                models[i].modelMatrix = glm::translate(models[i].modelMatrix, glm::vec3(0.01, 0.0, 0.0));
+
+                float le = glm::length(glm::vec3(models[5].modelMatrix[3]) - glm::vec3(models[6].modelMatrix[3]));
+                cout << le << endl;
+                // 현재 위치와 초기 위치 비교
+                if (le < 0.0010f) {
+                    keyState.status = false;
+                }
+            }
+
+            if (models[i].name == "left_l_b") {
+                models[i].modelMatrix = glm::translate(models[i].modelMatrix, glm::vec3(-0.01, 0.0, 0.0));
+
+            }
+
             break;
         }
         case 't':
