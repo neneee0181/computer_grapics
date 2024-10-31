@@ -222,9 +222,47 @@ void timer(int value) {
             break;
         }
         case 't':
+        {
+            glm::mat4 matrix = glm::mat4(1.0f);
+
+            if (models[i].name == "right_a_b") {
+                matrix = glm::translate(matrix, glm::vec3(models[1].modelMatrix[3]));
+                matrix = glm::rotate(matrix, glm::radians(r_speed), glm::vec3(0.0, 0.0, 1.0));
+                matrix = glm::translate(matrix, glm::vec3(-models[1].modelMatrix[3]));
+                models[i].modelMatrix = matrix * models[i].modelMatrix;
+            }
+
+            matrix = glm::mat4(1.0f);
+
+            if (models[i].name == "left_a_b") {
+                matrix = glm::translate(matrix, glm::vec3(models[1].modelMatrix[3]));
+                matrix = glm::rotate(matrix, glm::radians(-r_speed), glm::vec3(0.0, 0.0, 1.0));
+                matrix = glm::translate(matrix, glm::vec3(-models[1].modelMatrix[3]));
+                models[i].modelMatrix = matrix * models[i].modelMatrix;
+            }
             break;
+        }
         case 'T':
+        {
+            glm::mat4 matrix = glm::mat4(1.0f);
+
+            if (models[i].name == "right_a_b") {
+                matrix = glm::translate(matrix, glm::vec3(models[1].modelMatrix[3]));
+                matrix = glm::rotate(matrix, glm::radians(-r_speed), glm::vec3(0.0, 0.0, 1.0));
+                matrix = glm::translate(matrix, glm::vec3(-models[1].modelMatrix[3]));
+                models[i].modelMatrix = matrix * models[i].modelMatrix;
+            }
+
+            matrix = glm::mat4(1.0f);
+
+            if (models[i].name == "left_a_b") {
+                matrix = glm::translate(matrix, glm::vec3(models[1].modelMatrix[3]));
+                matrix = glm::rotate(matrix, glm::radians(r_speed), glm::vec3(0.0, 0.0, 1.0));
+                matrix = glm::translate(matrix, glm::vec3(-models[1].modelMatrix[3]));
+                models[i].modelMatrix = matrix * models[i].modelMatrix;
+            }
             break;
+        }
         case 'w':
         {
             if (models[i].name == "right_l_b") {
@@ -242,6 +280,52 @@ void timer(int value) {
             if (le >= 0.25) {
                 keyState.status = false;
             }
+            break;
+        }
+        case 'r':
+        {
+            // 카메라가 공전할 중심점 (예: 원점)
+            glm::vec3 center = glm::vec3(0.0f, 0.0f, 0.0f);
+
+            // 카메라 위치와 중심점 사이의 오프셋
+            glm::vec3 offset = cameraPos - center;
+
+            // 공전 각도
+            float orbitSpeed = glm::radians(r_speed); // r_speed를 라디안으로 변환
+
+            // y축을 기준으로 offset 회전
+            glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), orbitSpeed, glm::vec3(0.0, 1.0, 0.0));
+            offset = glm::vec3(rotationMatrix * glm::vec4(offset, 1.0f));
+
+            // 새로운 카메라 위치는 중심점 + 회전된 offset
+            cameraPos = center + offset;
+
+            // 카메라가 항상 중심점을 바라보도록 설정
+            cameraDirection = center;
+
+            break;
+        }
+        case 'R':
+        {
+            // 카메라가 공전할 중심점 (예: 원점)
+            glm::vec3 center = glm::vec3(0.0f, 0.0f, 0.0f);
+
+            // 카메라 위치와 중심점 사이의 오프셋
+            glm::vec3 offset = cameraPos - center;
+
+            // 공전 각도
+            float orbitSpeed = glm::radians(-r_speed); // r_speed를 라디안으로 변환
+
+            // y축을 기준으로 offset 회전
+            glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), orbitSpeed, glm::vec3(0.0, 1.0, 0.0));
+            offset = glm::vec3(rotationMatrix * glm::vec4(offset, 1.0f));
+
+            // 새로운 카메라 위치는 중심점 + 회전된 offset
+            cameraPos = center + offset;
+
+            // 카메라가 항상 중심점을 바라보도록 설정
+            cameraDirection = center;
+
             break;
         }
         default:
@@ -272,11 +356,16 @@ void keyBoard(unsigned char key, int x, int y) {
     case 't':
     case 'T':
     case 'z':
+    case 'r':
+    case 'R':
         glutTimerFunc(0, timer, 0);
         break;
     case 'c':
     case 'C':
         reset_All();
+        break;
+    case 's':
+        keyState.status = false;
         break;
     case '+':
     {
