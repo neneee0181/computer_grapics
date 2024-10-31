@@ -186,10 +186,10 @@ void timer(int value) {
                 float le = glm::length(glm::vec3(models[i].modelMatrix[0]) - glm::vec3(glm::mat4(1.0f)[0]));
                 // 현재 위치와 초기 위치 비교
                 if (le < 0.95001f) {
-                    models[5].modelMatrix = models[5].initialRotation; // 초기 위치로 맞추기
-                    models[6].modelMatrix = models[6].initialRotation; // 초기 위치로 맞추기
+                    //models[5].modelMatrix = models[5].initialRotation; // 초기 위치로 맞추기
+                    //models[6].modelMatrix = models[6].initialRotation; // 초기 위치로 맞추기
 
-                    keyState.status = false; // 타이머 중지
+                    keyState.key = 'w';
                 }
 
             }
@@ -206,37 +206,32 @@ void timer(int value) {
         }
         case 'E':
         {
-            glm::mat4 matrix = glm::mat4(1.0f);
-            if (models[i].name == "right_l_b") {
-                matrix = glm::translate(matrix, glm::vec3(models[1].modelMatrix[3]));
-                matrix = glm::rotate(matrix, glm::radians(-r_speed), glm::vec3(0.0, 1.0, 0.0));
-                matrix = glm::translate(matrix, glm::vec3(-models[1].modelMatrix[3]));
-                models[i].modelMatrix = matrix * models[i].modelMatrix;
-
-                float le = glm::length(glm::vec3(models[i].modelMatrix[0]) - glm::vec3(glm::mat4(1.0f)[0]));
-                // 현재 위치와 초기 위치 비교
-                if (le < 0.95001f) {
-                    models[5].modelMatrix = models[5].initialRotation; // 초기 위치로 맞추기
-                    models[6].modelMatrix = models[6].initialRotation; // 초기 위치로 맞추기
-
-                    keyState.status = false; // 타이머 중지
-                }
-
-            }
-
-            matrix = glm::mat4(1.0f);
-            if (models[i].name == "left_l_b") {
-                matrix = glm::translate(matrix, glm::vec3(models[1].modelMatrix[3]));
-                matrix = glm::rotate(matrix, glm::radians(r_speed), glm::vec3(0.0, 1.0, 0.0));
-                matrix = glm::translate(matrix, glm::vec3(-models[1].modelMatrix[3]));
-                models[i].modelMatrix = matrix * models[i].modelMatrix;
-            }
+            
             break;
         }
         case 't':
             break;
         case 'T':
             break;
+        case 'w':
+        {
+            if (models[i].name == "right_l_b") {
+                models[i].modelMatrix = glm::translate(models[i].modelMatrix, glm::vec3(-0.01, 0.0, 0.0));
+
+            }
+
+            if (models[i].name == "left_l_b") {
+                models[i].modelMatrix = glm::translate(models[i].modelMatrix, glm::vec3(0.01, 0.0, 0.0));
+
+            }
+
+            float le = glm::length(glm::vec3(models[5].modelMatrix[3]) - glm::vec3(models[6].modelMatrix[3]));
+
+            if (le >= 0.25) {
+                keyState.status = false;
+            }
+            break;
+        }
         default:
             break;
         }
