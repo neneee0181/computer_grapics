@@ -10,7 +10,7 @@
 #include "LoadMtl.h"
 
 // OBJ 파일을 읽어와서 모델 데이터를 파싱하는 함수
-void read_obj_file(const std::string& filename, Model& model, std::string name) {
+void read_obj_file(const std::string& filename, Model& model, std::string name, std::string type) {
     std::ifstream file(filename);  // 파일 읽기 모드로 열기
     if (!file.is_open()) {  // 파일을 열지 못한 경우
         //throw std::runtime_error("Error opening file: " + filename);
@@ -115,6 +115,7 @@ void read_obj_file(const std::string& filename, Model& model, std::string name) 
 
 
     model.name = name;
+    model.type = type;
 
     if (!mtlFilename.empty()) {
         read_mtl_file(mtlFilename, model.material);  // MTL 파일 로드

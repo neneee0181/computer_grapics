@@ -95,39 +95,38 @@ void keySpecial(int key, int x, int y) {
     glutPostRedisplay();
 }
 
-int main(int argc, char** argv) {
+void timer(int value) {
 
-    width = 800;
-    height = 600;
+    float speed = 0.1f;
 
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-    glutInitWindowPosition(100, 100);
-    glutInitWindowSize(width, height);
-    glutCreateWindow("template");
-
-    glewExperimental = GL_TRUE;
-    if (glewInit() != GLEW_OK) {
-        cerr << "Unable to initialize GLEW" << endl;
-        exit(EXIT_FAILURE);
+    glm::mat4 matrix = glm::mat4(1.0f);
+    if (keyState['w']) {
+        matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, speed));
     }
-    else
-        cout << "GLEW Initialized\n";
 
-    make_shaderProgram();
+    for (auto& model : models) {
+        if (model.type == "body") {
+            model.modelMatrix = matrix * model.modelMatrix;
+        }
+    }
 
-    read_obj_file("obj/box_back.obj", model_box_back, "box_back");
-    read_obj_file("obj/box_bottom.obj", model_box_bottom, "box_bottom");
-    read_obj_file("obj/box_right.obj", model_box_right, "box_right");
-    read_obj_file("obj/box_left.obj", model_box_left, "box_left");
-    read_obj_file("obj/box_front.obj", model_box_front, "box_front");
-    read_obj_file("obj/box_top.obj", model_box_top, "box_top");
+    glutPostRedisplay();
+    glutTimerFunc(16, timer, 0);
+}
 
-    read_obj_file("obj/body.obj", model_body, "body");
-    read_obj_file("obj/left_a.obj", model_left_a, "left_a");
-    read_obj_file("obj/right_a.obj", model_right_a, "right_a");
-    read_obj_file("obj/left_l.obj", model_left_l, "left_l");
-    read_obj_file("obj/right_l.obj", model_right_l, "right_l");
+void make_model() {
+    read_obj_file("obj/box_back.obj", model_box_back, "box_back", "box");
+    read_obj_file("obj/box_bottom.obj", model_box_bottom, "box_bottom", "box");
+    read_obj_file("obj/box_right.obj", model_box_right, "box_right", "box");
+    read_obj_file("obj/box_left.obj", model_box_left, "box_left", "box");
+    read_obj_file("obj/box_front.obj", model_box_front, "box_front", "box");
+    read_obj_file("obj/box_top.obj", model_box_top, "box_top", "box");
+
+    read_obj_file("obj/body.obj", model_body, "body", "body");
+    read_obj_file("obj/left_a.obj", model_left_a, "left_a", "body");
+    read_obj_file("obj/right_a.obj", model_right_a, "right_a", "body");
+    read_obj_file("obj/left_l.obj", model_left_l, "left_l", "body");
+    read_obj_file("obj/right_l.obj", model_right_l, "right_l", "body");
 
 
 
@@ -161,6 +160,30 @@ int main(int argc, char** argv) {
     models.push_back(model_box_left);
     //models.push_back(model_box_front);
     models.push_back(model_box_top);
+}
+
+int main(int argc, char** argv) {
+
+    width = 800;
+    height = 600;
+
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+    glutInitWindowPosition(100, 100);
+    glutInitWindowSize(width, height);
+    glutCreateWindow("template");
+
+    glewExperimental = GL_TRUE;
+    if (glewInit() != GLEW_OK) {
+        cerr << "Unable to initialize GLEW" << endl;
+        exit(EXIT_FAILURE);
+    }
+    else
+        cout << "GLEW Initialized\n";
+
+    make_shaderProgram();
+
+    make_model();
 
     for (auto& model : models) {
         if (!model.material.map_Kd.empty()) {
@@ -179,6 +202,7 @@ int main(int argc, char** argv) {
     glutKeyboardFunc(keyDown);
     glutKeyboardUpFunc(keyUp);
     glutSpecialFunc(keySpecial);
+    glutTimerFunc(0, timer, 0);
     glutMainLoop();
 
     return 0;
