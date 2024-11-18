@@ -47,6 +47,7 @@ struct Model {
     glm::mat4 modelMatrix = glm::mat4(1.0f);
     glm::mat4 translateMatrix = glm::mat4(1.0f);  // 모델이 이동한 위치를 저장할 벡터
     glm::mat4 rotationMatrix = glm::mat4(1.0f);    // 모델의 초기 회전 행렬
+    glm::mat4 armRotationMatrix = glm::mat4(1.0f);
 
     Material material;
     std::vector<glm::vec3> colors;      // **각 정점에 대한 색상 배열**

@@ -56,8 +56,9 @@ void keyUp(unsigned char key, int x, int y) {
 }
 
 float speed = 0.2f;
-float radi_speed = 0.5f;
-float radi = glm::radians(0.0f);
+float radi_speed = 0.1f;
+float radi_l = 0.1;
+int radi_status = 1;
 
 void keyDown(unsigned char key, int x, int y) {
 
@@ -153,29 +154,96 @@ void timer(int value) {
         matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, -speed));
     }
 
-    if (keyState['w'] || keyState['a'] || keyState['s'] || keyState['d']) {
-        angle = glm::translate(angle, glm::vec3(models[0].modelMatrix[3]));
-        angle = glm::rotate(angle, radi_speed, glm::vec3(1.0, 0.0, 0.0));
-        angle = glm::translate(angle, -glm::vec3(models[0].modelMatrix[3]));
+    if (radi_status == 1) {
+        radi_l -= 0.01;
+    }
+    else {
+        radi_l += 0.01;
+    }
+    if (radi_l <= 0) {
+        radi_status = -1;
+    }
+    if (radi_l >= 0.1) {
+        radi_status = 1;
+    }
 
+    if (keyState['w'] || keyState['s']) {
+        //哭率促府
+        angle = glm::translate(angle, glm::vec3(0,0,0));
+        angle = glm::translate(angle, glm::vec3(0.0, 10.0, 0.0));
+        angle = glm::rotate(angle, radi_speed * radi_status, glm::vec3(1.0, 0.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, -10.0, 0.0));
+        angle = glm::translate(angle, -glm::vec3(0, 0, 0));
+        models[3].rotationMatrix = angle * models[3].rotationMatrix;
+
+        //快螟促府
+        angle = glm::mat4(1.0f);
+        angle = glm::translate(angle, glm::vec3(0, 0, 0));
+        angle = glm::translate(angle, glm::vec3(0.0, 10.0, 0.0));
+        angle = glm::rotate(angle, radi_speed * -radi_status, glm::vec3(1.0, 0.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, -10.0, 0.0));
+        angle = glm::translate(angle, -glm::vec3(0, 0, 0));
+        models[4].rotationMatrix = angle * models[4].rotationMatrix;
+
+        angle = glm::mat4(1.0f);
+        angle = glm::translate(angle, glm::vec3(0, 0, 0));
+        angle = glm::translate(angle, glm::vec3(0.0, 20.0, 0.0));
+        angle = glm::rotate(angle, radi_speed * radi_status, glm::vec3(1.0, 0.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, -20.0, 0.0));
+        angle = glm::translate(angle, -glm::vec3(0, 0, 0));
+        models[2].rotationMatrix = angle * models[2].rotationMatrix;
+
+        angle = glm::mat4(1.0f);
+        angle = glm::translate(angle, glm::vec3(0, 0, 0));
+        angle = glm::translate(angle, glm::vec3(0.0, 20.0, 0.0));
+        angle = glm::rotate(angle, radi_speed * -radi_status, glm::vec3(1.0, 0.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, -20.0, 0.0));
+        angle = glm::translate(angle, -glm::vec3(0, 0, 0));
+        models[1].rotationMatrix = angle * models[1].rotationMatrix;
+    }
+    else if (keyState['a'] || keyState['d']) {
+        //哭率促府
+        angle = glm::translate(angle, glm::vec3(0, 0, 0));
+        angle = glm::translate(angle, glm::vec3(0.0, 10.0, 0.0));
+        angle = glm::rotate(angle, radi_speed * radi_status, glm::vec3(0.0, 0.0, 1.0));
+        angle = glm::translate(angle, glm::vec3(0.0, -10.0, 0.0));
+        angle = glm::translate(angle, -glm::vec3(0, 0, 0));
+        models[3].rotationMatrix = angle * models[3].rotationMatrix;
+
+        //快螟促府
+        angle = glm::mat4(1.0f);
+        angle = glm::translate(angle, glm::vec3(0, 0, 0));
+        angle = glm::translate(angle, glm::vec3(0.0, 10.0, 0.0));
+        angle = glm::rotate(angle, radi_speed * -radi_status, glm::vec3(0.0, 0.0, 1.0));
+        angle = glm::translate(angle, glm::vec3(0.0, -10.0, 0.0));
+        angle = glm::translate(angle, -glm::vec3(0, 0, 0));
+        models[4].rotationMatrix = angle * models[4].rotationMatrix;
+
+        angle = glm::mat4(1.0f);
+        angle = glm::translate(angle, glm::vec3(0, 0, 0));
+        angle = glm::translate(angle, glm::vec3(0.0, 20.0, 0.0));
+        angle = glm::rotate(angle, radi_speed * radi_status, glm::vec3(0.0, 0.0, 1.0));
+        angle = glm::translate(angle, glm::vec3(0.0, -20.0, 0.0));
+        angle = glm::translate(angle, -glm::vec3(0, 0, 0));
+        models[2].rotationMatrix = angle * models[2].rotationMatrix;
+
+        angle = glm::mat4(1.0f);
+        angle = glm::translate(angle, glm::vec3(0, 0, 0));
+        angle = glm::translate(angle, glm::vec3(0.0, 20.0, 0.0));
+        angle = glm::rotate(angle, radi_speed * -radi_status, glm::vec3(0.0, 0.0, 1.0));
+        angle = glm::translate(angle, glm::vec3(0.0, -20.0, 0.0));
+        angle = glm::translate(angle, -glm::vec3(0, 0, 0));
+        models[1].rotationMatrix = angle * models[1].rotationMatrix;
     }
 
     for (auto& model : models) {
         if (model.type == "body") {
             model.modelMatrix = matrix * model.modelMatrix;
         }
-        if (model.name == "left_a") {
-            model.modelMatrix = angle * model.modelMatrix;
-        }
-        if (model.name == "right_a") {
-            model.modelMatrix = angle * model.modelMatrix;
-        }
-        if (model.name == "left_l") {
-            model.modelMatrix = angle * model.modelMatrix;
-        }
-        if (model.name == "right_l") {
-            model.modelMatrix = angle * model.modelMatrix;
-        }
+        /*if (model.name == "left_a" || model.name == "right_a" || model.name == "left_l" || model.name == "right_l")
+        {
+            model.rotationMatrix = angle * model.rotationMatrix;
+        }*/
     }
 
     glutPostRedisplay();
