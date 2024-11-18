@@ -17,6 +17,7 @@ using namespace std;
 void InitBuffer();
 GLvoid drawScene(GLvoid);
 GLvoid Reshape(int w, int h);
+void make_model();
 
 vector<Model> models;
 vector<GLuint> vaos;
@@ -27,9 +28,6 @@ glm::vec3 cameraDirection = glm::vec3(0.0, 0.0, 0.0);
 glm::vec3 cameraUp = glm::vec3(0.0, 1.0, 0.0);
 glm::mat4 projection = glm::mat4(1.0f);
 glm::mat4 view = glm::mat4(1.0f);
-
-Model model_box_front, model_box_back, model_box_top, model_box_bottom, model_box_left, model_box_right,
-model_left_a, model_left_l, model_right_a, model_right_l, model_body;
 
 std::unordered_map<char, bool> keyState;
 
@@ -70,9 +68,16 @@ void keyDown(unsigned char key, int x, int y) {
         break;
     case '+':
         speed += 0.01f;
+        radi_speed += 0.01f;
         break;
     case '-':
         speed -= 0.01f;
+        radi_speed -= 0.01f;
+        break;
+    case 'i':
+        models.clear();
+        make_model();
+        InitBuffer();
         break;
     case 'w':
     case 'a':
@@ -240,10 +245,6 @@ void timer(int value) {
         if (model.type == "body") {
             model.modelMatrix = matrix * model.modelMatrix;
         }
-        /*if (model.name == "left_a" || model.name == "right_a" || model.name == "left_l" || model.name == "right_l")
-        {
-            model.rotationMatrix = angle * model.rotationMatrix;
-        }*/
     }
 
     glutPostRedisplay();
@@ -251,6 +252,10 @@ void timer(int value) {
 }
 
 void make_model() {
+
+    Model model_box_front, model_box_back, model_box_top, model_box_bottom, model_box_left, model_box_right,
+        model_left_a, model_left_l, model_right_a, model_right_l, model_body;
+
     read_obj_file("obj/box_back.obj", model_box_back, "box_back", "box");
     read_obj_file("obj/box_bottom.obj", model_box_bottom, "box_bottom", "box");
     read_obj_file("obj/box_right.obj", model_box_right, "box_right", "box");
