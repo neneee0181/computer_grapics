@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <random>
 
+#include "BulletPhysics.h"
 #include "LoadObj.h"
 #include "shaderMaker.h"
 
@@ -290,8 +291,6 @@ void make_model() {
     read_obj_file("obj/left_l.obj", model_left_l, "left_l", "body");
     read_obj_file("obj/right_l.obj", model_right_l, "right_l", "body");
 
-
-
     glm::mat4 matrix_body = glm::mat4(1.0f);
     matrix_body = glm::translate(matrix_body, glm::vec3(0.0, -20.0, 0.0));
     matrix_body = glm::scale(matrix_body, glm::vec3(0.4, 0.4, 0.4));
@@ -324,6 +323,11 @@ void make_model() {
     models.push_back(model_box_front1); //9
     models.push_back(model_box_front2); //10
     models.push_back(model_box_top);
+
+    for (auto& model : models) {
+        addModelToPhysicsWorld(model);
+    }
+
 }
 
 int main(int argc, char** argv) {

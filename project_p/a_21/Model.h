@@ -59,4 +59,6 @@ struct Model {
 
     bool model_status = true;
     int model_arrow = 0; // 0= 정면 ,1 =좌측, 2 = 우측, 3 = 뒤
+
+    btRigidBody* rigidBody = nullptr;  // 각 모델에 대한 RigidBody 포인터 추가
 };
