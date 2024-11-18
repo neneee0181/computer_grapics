@@ -56,6 +56,8 @@ void keyUp(unsigned char key, int x, int y) {
 }
 
 float speed = 0.2f;
+float radi_speed = 0.5f;
+float radi = glm::radians(0.0f);
 
 void keyDown(unsigned char key, int x, int y) {
 
@@ -134,9 +136,10 @@ void keySpecial(int key, int x, int y) {
 }
 
 void timer(int value) {
-
-
     glm::mat4 matrix = glm::mat4(1.0f);
+    glm::mat4 angle = glm::mat4(1.0f);
+
+    // 이동 처리 (w, a, s, d 키에 따라)
     if (keyState['w']) {
         matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, speed));
     }
@@ -150,9 +153,28 @@ void timer(int value) {
         matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, -speed));
     }
 
+    if (keyState['w'] || keyState['a'] || keyState['s'] || keyState['d']) {
+        angle = glm::translate(angle, glm::vec3(models[0].modelMatrix[3]));
+        angle = glm::rotate(angle, radi_speed, glm::vec3(1.0, 0.0, 0.0));
+        angle = glm::translate(angle, -glm::vec3(models[0].modelMatrix[3]));
+
+    }
+
     for (auto& model : models) {
         if (model.type == "body") {
             model.modelMatrix = matrix * model.modelMatrix;
+        }
+        if (model.name == "left_a") {
+            model.modelMatrix = angle * model.modelMatrix;
+        }
+        if (model.name == "right_a") {
+            model.modelMatrix = angle * model.modelMatrix;
+        }
+        if (model.name == "left_l") {
+            model.modelMatrix = angle * model.modelMatrix;
+        }
+        if (model.name == "right_l") {
+            model.modelMatrix = angle * model.modelMatrix;
         }
     }
 
@@ -315,15 +337,21 @@ GLvoid drawScene() {
                 glUniform1f(NsLoc, models[i].material.Ns);
             }
 
-            //if (models[i].name == "box" || models[i].name == "body") {
+            if (models[i].name == "body") {
                 glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix * models[i].rotationMatrix));
-                glUniform1i(modelStatus, 0);
-                if (isKeyPressed_s('1'))
-                    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-                else
-                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-                glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
-            //}
+            }
+            else if (models[i].name == "left_a" || models[i].name == "right_a"|| models[i].name == "left_l" || models[i].name == "right_l") {
+                glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix * models[i].rotationMatrix));
+            }
+            else if (models[i].type == "box") {
+                glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
+            }
+            glUniform1i(modelStatus, 0);
+            if (isKeyPressed_s('1'))
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            else
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
 
             glBindVertexArray(0);
         }
