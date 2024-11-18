@@ -57,17 +57,47 @@ void keyUp(unsigned char key, int x, int y) {
 
 void keyDown(unsigned char key, int x, int y) {
 
-    keyDown_s(key);
-
     switch (key)
     {
     case 'q':
         cout << " 프로그램 종료 " << endl;
         exit(0);
         break;
+    case 'w':
+    case 'a':
+    case 's':
+    case 'd':
+        if (!keyState[key]) {
+            glm::mat4 matrix = glm::mat4(1.0f);
+            for (auto& model : models) {
+                if (model.type == "body") {
+                    switch (key)
+                    {
+                    case 'w':
+                        model.rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0, 1.0, 0.0));
+                        break;
+                    case 'a':
+                        model.rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0, 1.0, 0.0));
+                        break;
+                    case 's':
+                        model.rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+                        break;
+                    case 'd':
+                        model.rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+                        break;
+                    default:
+                        break;
+                    }
+                }
+            }
+        }
+        break;
     default:
         break;
     }
+
+    keyDown_s(key);
+
     glutPostRedisplay();
 }
 
@@ -97,22 +127,29 @@ void keySpecial(int key, int x, int y) {
 
 void timer(int value) {
 
-    float speed = 0.1f;
+    float speed = 0.2f;
 
     glm::mat4 matrix = glm::mat4(1.0f);
+    /*if (keyState['w'] || keyState['a'] || keyState['d']) {
+        matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, speed));
+    }
+    else if (keyState['s']) {
+        matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, -speed));
+    }*/
+
+
     if (keyState['w']) {
         matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, speed));
     }
     else if (keyState['a']) {
         matrix = glm::translate(matrix, glm::vec3(-speed, 0.0, 0.0));
     }
-    else if (keyState['s']) {
-        matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, -speed));
-    }
     else if (keyState['d']) {
         matrix = glm::translate(matrix, glm::vec3(speed, 0.0, 0.0));
     }
-
+    else if (keyState['s']) {
+        matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, -speed));
+    }
 
     for (auto& model : models) {
         if (model.type == "body") {
@@ -280,7 +317,7 @@ GLvoid drawScene() {
             }
 
             //if (models[i].name == "box" || models[i].name == "body") {
-                glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
+                glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix * models[i].rotationMatrix));
                 glUniform1i(modelStatus, 0);
                 if (isKeyPressed_s('1'))
                     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

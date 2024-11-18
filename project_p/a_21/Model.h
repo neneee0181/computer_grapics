@@ -46,7 +46,7 @@ struct Model {
 
     glm::mat4 modelMatrix = glm::mat4(1.0f);
     glm::mat4 translateMatrix = glm::mat4(1.0f);  // 모델이 이동한 위치를 저장할 벡터
-    glm::mat4 rotateMatrix = glm::mat4(1.0f);    // 모델의 초기 회전 행렬
+    glm::mat4 rotationMatrix = glm::mat4(1.0f);    // 모델의 초기 회전 행렬
 
     Material material;
     std::vector<glm::vec3> colors;      // **각 정점에 대한 색상 배열**
@@ -57,4 +57,5 @@ struct Model {
     GLuint textureID;  // 텍스처 ID 필드 추가
 
     bool model_status = true;
+    int model_arrow = 0; // 0= 정면 ,1 =좌측, 2 = 우측, 3 = 뒤
 };
