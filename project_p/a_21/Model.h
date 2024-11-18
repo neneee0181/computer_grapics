@@ -5,6 +5,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include"include/btBulletCollisionCommon.h"
 
 struct Vertex {
     float x, y, z;

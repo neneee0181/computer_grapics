@@ -31,72 +31,99 @@ void initPhysics() {
 // Model의 AABB를 계산하여 크기를 반환하는 함수
 glm::vec3 calculateModelSize(const Model& model) {
     // 초기 최소, 최대값을 설정
-    float minX = std::numeric_limits<float>::max();
-    float minY = std::numeric_limits<float>::max();
-    float minZ = std::numeric_limits<float>::max();
-    float maxX = std::numeric_limits<float>::lowest();
-    float maxY = std::numeric_limits<float>::lowest();
-    float maxZ = std::numeric_limits<float>::lowest();
+    glm::vec3 min(std::numeric_limits<float>::max());
+    glm::vec3 max(std::numeric_limits<float>::lowest());
 
-    // 모든 정점을 순회하며 최소, 최대값 업데이트
+    // 모든 정점 순회
     for (const Vertex& vertex : model.vertices) {
-        if (vertex.x < minX) minX = vertex.x;
-        if (vertex.y < minY) minY = vertex.y;
-        if (vertex.z < minZ) minZ = vertex.z;
-        if (vertex.x > maxX) maxX = vertex.x;
-        if (vertex.y > maxY) maxY = vertex.y;
-        if (vertex.z > maxZ) maxZ = vertex.z;
+        // 정점 위치를 월드 공간으로 변환
+        glm::vec4 transformedVertex = model.modelMatrix * glm::vec4(vertex.x, vertex.y, vertex.z, 1.0f);
+
+        // 최소값과 최대값 갱신
+        min.x = std::min(min.x, transformedVertex.x);
+        min.y = std::min(min.y, transformedVertex.y);
+        min.z = std::min(min.z, transformedVertex.z);
+
+        max.x = std::max(max.x, transformedVertex.x);
+        max.y = std::max(max.y, transformedVertex.y);
+        max.z = std::max(max.z, transformedVertex.z);
     }
 
     // 폭, 높이, 깊이를 계산
-    float width = maxX - minX;
-    float height = maxY - minY;
-    float depth = maxZ - minZ;
+    return max - min;
+}
 
-    return glm::vec3(width, height, depth);
+void alignModelToOrigin(Model& model) {
+    glm::vec3 min(std::numeric_limits<float>::max());
+    glm::vec3 max(std::numeric_limits<float>::lowest());
+
+    // 1. AABB 계산 (모델의 최소/최대 정점 찾기)
+    for (const Vertex& vertex : model.vertices) {
+        min.x = std::min(min.x, vertex.x);
+        min.y = std::min(min.y, vertex.y);
+        min.z = std::min(min.z, vertex.z);
+
+        max.x = std::max(max.x, vertex.x);
+        max.y = std::max(max.y, vertex.y);
+        max.z = std::max(max.z, vertex.z);
+    }
+
+    glm::vec3 center = (min + max) * 0.5f; // AABB의 중심 계산
+    if (model.type == "box")
+        center.y -= 10.0f; // 중심의 Y축을 -20으로 내림
+    else if (model.type == "body")
+        center.y -= 25.0f;
+
+    // 2. 모든 정점을 중심 기준으로 이동
+    for (auto& vertex : model.vertices) {
+        vertex.x -= center.x;
+        vertex.y -= center.y;
+        vertex.z -= center.z;
+    }
+
+    // 3. 모델 행렬에 중심 이동 추가
+    model.modelMatrix = glm::translate(model.modelMatrix, center);
 }
 
 // 모델에 대한 충돌 객체와 강체 생성 및 물리 세계에 추가
 void addModelToPhysicsWorld(Model& model) {
-    // 모델의 크기를 계산
+    // 모델의 크기 계산 (AABB)
     glm::vec3 size = calculateModelSize(model);
 
+    // 충돌 박스 생성
     btCollisionShape* shape = nullptr;
 
-    // 모델의 이름에 따라 충돌 경계 설정
-    if (model.type == "box") {
-        // Box 형태의 충돌 경계 생성
+    if (model.type == "box" || model.type == "body") {
+        if (model.name == "box_bottom" || model.name == "box_front" || model.name == "box_top") {
+            return; // 제외 조건
+        }
+
+        // Box 형태의 충돌 경계 생성 (0.5배로 크기 설정)
         shape = new btBoxShape(btVector3(size.x * 0.5f, size.y * 0.5f, size.z * 0.5f));
     }
-    //else if (model.name == "sphere") {
-    //    // Sphere 형태의 충돌 경계 생성 (구의 반지름을 x, y, z 중 최소값의 절반으로 설정)
-    //    float radius = std::min({ size.x, size.y, size.z }) * 0.5f;
-    //    shape = new btSphereShape(radius);
-    //}
-    //else if (model.name == "cylinder") {
-    //    // Cylinder 형태의 충돌 경계 생성 (x와 z의 평균값을 반지름으로, y를 높이로 사용)
-    //    shape = new btCylinderShape(btVector3(size.x * 0.5f, size.y * 0.5f, size.z * 0.5f));
-    //}
-    //else if (model.name == "plane") {
-    //    shape = new btBoxShape(btVector3(size.x * 0.5f, 0.1f, size.z * 0.5f));
-    //}
-    //else {
-    //    // 기본값으로 Box 형태 사용 (예외 처리를 위해)
-    //    shape = new btBoxShape(btVector3(size.x * 0.5f, size.y * 0.5f, size.z * 0.5f));
-    //}
 
+    if (!shape) {
+        std::cerr << "Failed to create collision shape for model: " << model.name << std::endl;
+        return;
+    }
+
+    // 시작 위치 설정
     btTransform startTransform;
     startTransform.setIdentity();
-    startTransform.setOrigin(btVector3(model.modelMatrix[3].x, model.modelMatrix[3].y, model.modelMatrix[3].z));
+    startTransform.setOrigin(btVector3(
+        model.modelMatrix[3].x,
+        model.modelMatrix[3].y,
+        model.modelMatrix[3].z
+    ));
 
+    // 질량 및 관성 설정
     btScalar mass = 1.0f;
-    bool isDynamic = (mass != 0.0f);
-
     btVector3 localInertia(0, 0, 0);
-    if (isDynamic) {
+    if (mass != 0.0f) {
         shape->calculateLocalInertia(mass, localInertia);
     }
 
+    // RigidBody 생성 및 물리 세계에 추가
     btDefaultMotionState* motionState = new btDefaultMotionState(startTransform);
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, shape, localInertia);
     btRigidBody* body = new btRigidBody(rbInfo);
@@ -105,18 +132,12 @@ void addModelToPhysicsWorld(Model& model) {
     model.rigidBody = body;
 }
 
-
 // 모든 모델에 대한 물리 세계 충돌 객체 초기화
 void initializeModelsWithPhysics(std::vector<Model>& models) {
     for (auto& model : models) {
         addModelToPhysicsWorld(model);
     }
 }
-
-random_device rd_b;
-mt19937 gen_b(rd_b());
-uniform_real_distribution<> basket_r_dis(-10.0, 10.0);
-uniform_real_distribution<> basket_r_y_dis(-8.0, -2.0);
 
 void updatePhysics(std::vector<Model>& models, Model& model_basket) {
     CustomContactResultCallback resultCallback;
@@ -147,43 +168,10 @@ void updatePhysics(std::vector<Model>& models, Model& model_basket) {
 
             // 충돌이 감지되었는지 확인
             if (resultCallback.hitDetected) {
-                // 모델을 비활성화하거나 상태를 업데이트
-                model.line_status = false;
-                model.basket_in = true;
-                // 모델의 현재 회전 상태를 유지
-                glm::mat4 rotationMatrix = glm::mat4(1.0f);
-                rotationMatrix[0] = glm::vec4(model.modelMatrix[0]); // x축 회전
-                rotationMatrix[1] = glm::vec4(model.modelMatrix[1]); // y축 회전
-                rotationMatrix[2] = glm::vec4(model.modelMatrix[2]); // z축 회전
-
-                // 바구니 위치로 이동 (바구니의 중심으로 모델을 이동)
-                glm::vec3 basketPosition(
-                    model_basket.modelMatrix[3].x + basket_r_dis(gen_b),
-                    model_basket.modelMatrix[3].y + basket_r_y_dis(gen_b),
-                    model_basket.modelMatrix[3].z + basket_r_dis(gen_b)
-                );
-                glm::mat4 translateMatrix = glm::translate(glm::mat4(1.0f), basketPosition + glm::vec3(0, 10, 0));
-
-                // 모델을 바구니 안에 작게 배치하도록 스케일 적용
-                glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.2f, 0.2f));
-
-                // 모델 행렬 업데이트 (스케일, 위치, 마지막 회전 적용)
-                model.modelMatrix = translateMatrix * rotationMatrix * scaleMatrix;
-
-                // 모델의 RigidBody만 제거하여 물리 엔진의 영향을 받지 않도록 함
-                removeRigidBodyFromModel(model);
+                //
             }
         }
     }
-
-    // 모델들끼리의 충돌 검사 (선택적으로 사용 가능)
-    // for (size_t i = 0; i < models.size(); ++i) {
-    //     for (size_t j = i + 1; j < models.size(); ++j) {  
-    //         if (models[i].rigidBody && models[j].rigidBody) {
-    //             dynamicsWorld->contactPairTest(models[i].rigidBody, models[j].rigidBody, resultCallback);
-    //         }
-    //     }
-    // }
 }
 
 void cleanupPhysics() {
@@ -239,50 +227,65 @@ void removeRigidBodyFromModel(Model& model) {
     }
 }
 
-btCollisionObject* dragPlaneObject = nullptr;
+void UpdateRigidBodyTransform(Model& model) {
+    if (!model.rigidBody) return; // 물리 객체가 없으면 건너뜀
+    glm::mat4 modelMatrix;
+    if (model.type == "box") {
+        // ModelMatrix에서 Bullet Transform으로 변환
+        modelMatrix = model.modelMatrix; // 변환 & 회전 적용
+    }
+    else if (model.type == "body") {
+        modelMatrix = model.modelMatrix * model.rotationMatrix; // 변환 & 회전 적용
+    }
+   
+    btTransform transform;
 
-//// 드래그 평면 생성
-//void createDragPlane(const glm::vec3& pointA, const glm::vec3& pointB, const glm::vec3& pointC, const glm::vec3& pointD) {
-//    if (dragPlaneObject) {
-//        // 기존 평면 삭제
-//        dynamicsWorld->removeCollisionObject(dragPlaneObject);
-//        delete dragPlaneObject;
-//    }
-//
-//    // 네 개의 점을 이용해 평면 정의
-//    glm::vec3 normal = glm::normalize(glm::cross(pointB - pointA, pointD - pointA));
-//    btVector3 planeOrigin(pointA.x, pointA.y, pointA.z);
-//    btVector3 planeNormal(normal.x, normal.y, normal.z);
-//
-//    // Bullet의 평면 충돌체 생성
-//    btStaticPlaneShape* planeShape = new btStaticPlaneShape(planeNormal, planeOrigin.dot(planeNormal));
-//    dragPlaneObject = new btCollisionObject();
-//    dragPlaneObject->setCollisionShape(planeShape);
-//    dragPlaneObject->setUserPointer((void*)"dragPlane");
-//
-//    dynamicsWorld->addCollisionObject(dragPlaneObject);
-//}
+    // glm::mat4 -> btTransform 변환
+    transform.setFromOpenGLMatrix(glm::value_ptr(modelMatrix));
+    model.rigidBody->setWorldTransform(transform); // Bullet 물리 객체 갱신
+}
 
-void createDragBox(const glm::vec3& pointA, const glm::vec3& pointB, const glm::vec3& pointC, const glm::vec3& pointD) {
-    if (dragPlaneObject) {
-        // 기존 평면 삭제
-        dynamicsWorld->removeCollisionObject(dragPlaneObject);
-        delete dragPlaneObject;
+
+
+void RenderCollisionBox(const Model& model) {
+    if (!model.rigidBody) return; // 물리 객체가 없으면 건너뜀
+
+    // AABB 계산
+    btVector3 aabbMin, aabbMax;
+    model.rigidBody->getCollisionShape()->getAabb(model.rigidBody->getWorldTransform(), aabbMin, aabbMax);
+
+    // AABB를 glm::vec3로 변환
+    glm::vec3 min = glm::vec3(aabbMin.getX(), aabbMin.getY(), aabbMin.getZ());
+    glm::vec3 max = glm::vec3(aabbMax.getX(), aabbMax.getY(), aabbMax.getZ());
+
+    // AABB의 8개 꼭짓점 계산
+    glm::vec3 corners[8] = {
+        glm::vec3(min.x, min.y, min.z), // 0: (xmin, ymin, zmin)
+        glm::vec3(max.x, min.y, min.z), // 1: (xmax, ymin, zmin)
+        glm::vec3(max.x, max.y, min.z), // 2: (xmax, ymax, zmin)
+        glm::vec3(min.x, max.y, min.z), // 3: (xmin, ymax, zmin)
+        glm::vec3(min.x, min.y, max.z), // 4: (xmin, ymin, zmax)
+        glm::vec3(max.x, min.y, max.z), // 5: (xmax, ymin, zmax)
+        glm::vec3(max.x, max.y, max.z), // 6: (xmax, ymax, zmax)
+        glm::vec3(min.x, max.y, max.z)  // 7: (xmin, ymax, zmax)
+    };
+
+    // 충돌 박스를 그리는 선분 인덱스
+    GLuint indices[24] = {
+        0, 1, 1, 2, 2, 3, 3, 0, // 아래쪽 사각형
+        4, 5, 5, 6, 6, 7, 7, 4, // 위쪽 사각형
+        0, 4, 1, 5, 2, 6, 3, 7  // 아래-위 연결
+    };
+
+    // OpenGL로 충돌 박스 렌더링
+    glLineWidth(2.0f); // 선 굵기
+    glColor3f(1.0f, 0.0f, 0.0f); // 빨간색
+    glBegin(GL_LINES);
+
+    for (int i = 0; i < 24; i += 2) {
+        glVertex3fv(glm::value_ptr(corners[indices[i]]));
+        glVertex3fv(glm::value_ptr(corners[indices[i + 1]]));
     }
 
-    // 사각형 중심 계산
-    glm::vec3 center = (pointA + pointB + pointC + pointD) / 4.0f;
-    glm::vec3 halfExtents = glm::vec3(glm::distance(pointA, pointB) / 2.0f, 0.1f, glm::distance(pointA, pointD) / 2.0f);
-
-    btBoxShape* boxShape = new btBoxShape(btVector3(halfExtents.x, halfExtents.y, halfExtents.z));
-    dragPlaneObject = new btCollisionObject();
-    dragPlaneObject->setCollisionShape(boxShape);
-
-    // 위치 지정
-    btTransform transform;
-    transform.setIdentity();
-    transform.setOrigin(btVector3(center.x, center.y, center.z));
-    dragPlaneObject->setWorldTransform(transform);
-
-    dynamicsWorld->addCollisionObject(dragPlaneObject);
+    glEnd();
 }

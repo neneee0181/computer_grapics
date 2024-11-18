@@ -32,6 +32,37 @@ glm::mat4 view = glm::mat4(1.0f);
 
 std::unordered_map<char, bool> keyState;
 
+void checkBoxCollisions(const std::vector<Model>& models) {
+    for (size_t i = 0; i < models.size(); ++i) {
+        if (models[i].type != "box") continue;
+
+        for (size_t j = 0; j < models.size(); ++j) {
+            if (models[j].type != "body") continue;
+
+
+            if (models[i].rigidBody == nullptr || models[j].rigidBody == nullptr)
+                continue;
+
+            // 충돌 검사
+            CustomContactResultCallback resultCallback;
+            dynamicsWorld->contactPairTest(models[i].rigidBody, models[j].rigidBody, resultCallback);
+
+            // 충돌 여부 확인
+            if (resultCallback.hitDetected) {
+                std::cout << "Collision detected between model " << i
+                    << " (" << models[i].name << ") and model "
+                    << j << " (" << models[j].name << ")!" << std::endl;
+            }
+        }
+    }
+}
+
+// Bullet Physics 초기화
+void InitPhysics() {
+    initPhysics(); // Bullet 초기화 함수 호출
+    initializeModelsWithPhysics(models); // 모든 모델을 물리 세계에 추가
+}
+
 void keyDown_s(const char& key) {
     keyState[key] = true;
 }
@@ -114,7 +145,9 @@ void keyDown(unsigned char key, int x, int y) {
                         model.rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0, 1.0, 0.0));
                         break;
                     case 'a':
-                        model.rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0, 1.0, 0.0));
+                        matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, 0.0));
+                        matrix = glm::rotate(matrix, glm::radians(-90.0f), glm::vec3(0.0, 1.0, 0.0));
+                        model.modelMatrix = matrix * model.modelMatrix;
                         break;
                     case 's':
                         model.rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -196,68 +229,68 @@ void timer(int value) {
     if (keyState['w'] || keyState['s']) {
         //왼쪽다리
         angle = glm::translate(angle, glm::vec3(0,0,0));
-        angle = glm::translate(angle, glm::vec3(0.0, 10.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, 30.0, 0.0));
         angle = glm::rotate(angle, radi_speed * radi_status, glm::vec3(1.0, 0.0, 0.0));
-        angle = glm::translate(angle, glm::vec3(0.0, -10.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, -30.0, 0.0));
         angle = glm::translate(angle, -glm::vec3(0, 0, 0));
         models[3].rotationMatrix = angle * models[3].rotationMatrix;
 
         //우측다리
         angle = glm::mat4(1.0f);
         angle = glm::translate(angle, glm::vec3(0, 0, 0));
-        angle = glm::translate(angle, glm::vec3(0.0, 10.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, 30.0, 0.0));
         angle = glm::rotate(angle, radi_speed * -radi_status, glm::vec3(1.0, 0.0, 0.0));
-        angle = glm::translate(angle, glm::vec3(0.0, -10.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, -30.0, 0.0));
         angle = glm::translate(angle, -glm::vec3(0, 0, 0));
         models[4].rotationMatrix = angle * models[4].rotationMatrix;
 
         angle = glm::mat4(1.0f);
         angle = glm::translate(angle, glm::vec3(0, 0, 0));
-        angle = glm::translate(angle, glm::vec3(0.0, 20.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, 30.0, 0.0));
         angle = glm::rotate(angle, radi_speed * radi_status, glm::vec3(1.0, 0.0, 0.0));
-        angle = glm::translate(angle, glm::vec3(0.0, -20.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, -30.0, 0.0));
         angle = glm::translate(angle, -glm::vec3(0, 0, 0));
         models[2].rotationMatrix = angle * models[2].rotationMatrix;
 
         angle = glm::mat4(1.0f);
         angle = glm::translate(angle, glm::vec3(0, 0, 0));
-        angle = glm::translate(angle, glm::vec3(0.0, 20.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, 30.0, 0.0));
         angle = glm::rotate(angle, radi_speed * -radi_status, glm::vec3(1.0, 0.0, 0.0));
-        angle = glm::translate(angle, glm::vec3(0.0, -20.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, -30.0, 0.0));
         angle = glm::translate(angle, -glm::vec3(0, 0, 0));
         models[1].rotationMatrix = angle * models[1].rotationMatrix;
     }
     else if (keyState['a'] || keyState['d']) {
         //왼쪽다리
         angle = glm::translate(angle, glm::vec3(0, 0, 0));
-        angle = glm::translate(angle, glm::vec3(0.0, 10.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, 30.0, 0.0));
         angle = glm::rotate(angle, radi_speed * radi_status, glm::vec3(0.0, 0.0, 1.0));
-        angle = glm::translate(angle, glm::vec3(0.0, -10.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, -30.0, 0.0));
         angle = glm::translate(angle, -glm::vec3(0, 0, 0));
         models[3].rotationMatrix = angle * models[3].rotationMatrix;
 
         //우측다리
         angle = glm::mat4(1.0f);
         angle = glm::translate(angle, glm::vec3(0, 0, 0));
-        angle = glm::translate(angle, glm::vec3(0.0, 10.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, 30.0, 0.0));
         angle = glm::rotate(angle, radi_speed * -radi_status, glm::vec3(0.0, 0.0, 1.0));
-        angle = glm::translate(angle, glm::vec3(0.0, -10.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, -30.0, 0.0));
         angle = glm::translate(angle, -glm::vec3(0, 0, 0));
         models[4].rotationMatrix = angle * models[4].rotationMatrix;
 
         angle = glm::mat4(1.0f);
         angle = glm::translate(angle, glm::vec3(0, 0, 0));
-        angle = glm::translate(angle, glm::vec3(0.0, 20.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, 40.0, 0.0));
         angle = glm::rotate(angle, radi_speed * radi_status, glm::vec3(0.0, 0.0, 1.0));
-        angle = glm::translate(angle, glm::vec3(0.0, -20.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, -40.0, 0.0));
         angle = glm::translate(angle, -glm::vec3(0, 0, 0));
         models[2].rotationMatrix = angle * models[2].rotationMatrix;
 
         angle = glm::mat4(1.0f);
         angle = glm::translate(angle, glm::vec3(0, 0, 0));
-        angle = glm::translate(angle, glm::vec3(0.0, 20.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, 40.0, 0.0));
         angle = glm::rotate(angle, radi_speed * -radi_status, glm::vec3(0.0, 0.0, 1.0));
-        angle = glm::translate(angle, glm::vec3(0.0, -20.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, -40.0, 0.0));
         angle = glm::translate(angle, -glm::vec3(0, 0, 0));
         models[1].rotationMatrix = angle * models[1].rotationMatrix;
     }
@@ -266,7 +299,10 @@ void timer(int value) {
         if (model.type == "body") {
             model.modelMatrix = matrix * model.modelMatrix;
         }
+        UpdateRigidBodyTransform(model);
     }
+
+    checkBoxCollisions(models);
 
     glutPostRedisplay();
     glutTimerFunc(16, timer, 0);
@@ -325,7 +361,9 @@ void make_model() {
     models.push_back(model_box_top);
 
     for (auto& model : models) {
+        alignModelToOrigin(model); // 모델의 중심을 정렬
         addModelToPhysicsWorld(model);
+        UpdateRigidBodyTransform(model);  // 초기 위치 동기화
     }
 
 }
@@ -350,7 +388,7 @@ int main(int argc, char** argv) {
         cout << "GLEW Initialized\n";
 
     make_shaderProgram();
-
+    InitPhysics();
     make_model();
 
     for (auto& model : models) {
@@ -444,7 +482,12 @@ GLvoid drawScene() {
                 glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix * models[i].rotationMatrix));
             }
             else if (models[i].type == "box") {
-                glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
+                if (models[i].name == "box_right") {
+
+                }
+                else {
+                    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
+                }
             }
             glUniform1i(modelStatus, 0);
             if (isKeyPressed_s('1'))
@@ -458,7 +501,15 @@ GLvoid drawScene() {
     }
 
 
-    glDisable(GL_DEPTH_TEST);
+    // 충돌 박스 렌더링
+    glDisable(GL_DEPTH_TEST); // 충돌 박스가 모든 객체 위에 그려지도록 설정
+    for (const auto& model : models) {
+        if (model.rigidBody) {
+            RenderCollisionBox(model); // 충돌 박스 그리기
+        }
+    }
+    glEnable(GL_DEPTH_TEST); // 깊이 테스트 다시 활성화
+
     glutSwapBuffers();
     GLenum err;
     while ((err = glGetError()) != GL_NO_ERROR) {
