@@ -103,6 +103,16 @@ void timer(int value) {
     if (keyState['w']) {
         matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, speed));
     }
+    else if (keyState['a']) {
+        matrix = glm::translate(matrix, glm::vec3(-speed, 0.0, 0.0));
+    }
+    else if (keyState['s']) {
+        matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, -speed));
+    }
+    else if (keyState['d']) {
+        matrix = glm::translate(matrix, glm::vec3(speed, 0.0, 0.0));
+    }
+
 
     for (auto& model : models) {
         if (model.type == "body") {
