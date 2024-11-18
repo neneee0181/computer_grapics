@@ -58,6 +58,22 @@ float radi_speed = 0.1f;
 float radi_l = 0.1;
 int radi_status = 1;
 
+void openTimer(int value) {
+
+    glm::mat4 matrix = glm::mat4(1.0f);
+    matrix = glm::translate(matrix, glm::vec3(speed, 0.0, 0.0));
+    models[9].modelMatrix = matrix * models[9].modelMatrix;
+
+    matrix = glm::mat4(1.0f);
+    matrix = glm::translate(matrix, glm::vec3(-speed, 0.0, 0.0));
+    models[10].modelMatrix = matrix * models[10].modelMatrix;
+
+    glutPostRedisplay();
+    if (value <= 98) {
+        glutTimerFunc(16, openTimer, ++value);
+    }
+}
+
 void keyDown(unsigned char key, int x, int y) {
 
     switch (key)
@@ -78,6 +94,10 @@ void keyDown(unsigned char key, int x, int y) {
         models.clear();
         make_model();
         InitBuffer();
+        break;
+    case 'o':
+    case 'O':
+        glutTimerFunc(0, openTimer, 0);
         break;
     case 'w':
     case 'a':
@@ -253,14 +273,15 @@ void timer(int value) {
 
 void make_model() {
 
-    Model model_box_front, model_box_back, model_box_top, model_box_bottom, model_box_left, model_box_right,
+    Model model_box_front1, model_box_front2, model_box_back, model_box_top, model_box_bottom, model_box_left, model_box_right,
         model_left_a, model_left_l, model_right_a, model_right_l, model_body;
 
     read_obj_file("obj/box_back.obj", model_box_back, "box_back", "box");
     read_obj_file("obj/box_bottom.obj", model_box_bottom, "box_bottom", "box");
     read_obj_file("obj/box_right.obj", model_box_right, "box_right", "box");
     read_obj_file("obj/box_left.obj", model_box_left, "box_left", "box");
-    read_obj_file("obj/box_front.obj", model_box_front, "box_front", "box");
+    read_obj_file("obj/box_front_1.obj", model_box_front1, "box_front", "box");
+    read_obj_file("obj/box_front_2.obj", model_box_front2, "box_front", "box");
     read_obj_file("obj/box_top.obj", model_box_top, "box_top", "box");
 
     read_obj_file("obj/body.obj", model_body, "body", "body");
@@ -292,14 +313,16 @@ void make_model() {
     model_box_bottom.modelMatrix = matrix_box * model_box_bottom.modelMatrix;
     model_box_right.modelMatrix = matrix_box * model_box_right.modelMatrix;
     model_box_left.modelMatrix = matrix_box * model_box_left.modelMatrix;
-    model_box_front.modelMatrix = matrix_box * model_box_front.modelMatrix;
+    model_box_front1.modelMatrix = matrix_box * model_box_front1.modelMatrix;
+    model_box_front2.modelMatrix = matrix_box * model_box_front2.modelMatrix;
     model_box_top.modelMatrix = matrix_box * model_box_top.modelMatrix;
 
     models.push_back(model_box_back);
     models.push_back(model_box_bottom);
     models.push_back(model_box_right);
     models.push_back(model_box_left);
-    //models.push_back(model_box_front);
+    models.push_back(model_box_front1); //9
+    models.push_back(model_box_front2); //10
     models.push_back(model_box_top);
 }
 
