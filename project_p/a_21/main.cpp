@@ -55,6 +55,8 @@ void keyUp(unsigned char key, int x, int y) {
     keyUp_s(key);
 }
 
+float speed = 0.2f;
+
 void keyDown(unsigned char key, int x, int y) {
 
     switch (key)
@@ -62,6 +64,12 @@ void keyDown(unsigned char key, int x, int y) {
     case 'q':
         cout << " 프로그램 종료 " << endl;
         exit(0);
+        break;
+    case '+':
+        speed += 0.01f;
+        break;
+    case '-':
+        speed -= 0.01f;
         break;
     case 'w':
     case 'a':
@@ -127,17 +135,8 @@ void keySpecial(int key, int x, int y) {
 
 void timer(int value) {
 
-    float speed = 0.2f;
 
     glm::mat4 matrix = glm::mat4(1.0f);
-    /*if (keyState['w'] || keyState['a'] || keyState['d']) {
-        matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, speed));
-    }
-    else if (keyState['s']) {
-        matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, -speed));
-    }*/
-
-
     if (keyState['w']) {
         matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, speed));
     }
