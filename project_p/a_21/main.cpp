@@ -28,7 +28,8 @@ glm::vec3 cameraUp = glm::vec3(0.0, 1.0, 0.0);
 glm::mat4 projection = glm::mat4(1.0f);
 glm::mat4 view = glm::mat4(1.0f);
 
-Model model_back, model_body;
+Model model_box_front, model_box_back, model_box_top, model_box_bottom, model_box_left, model_box_right,
+model_left_a, model_left_l, model_right_a, model_right_l, model_body;
 
 std::unordered_map<char, bool> keyState;
 
@@ -115,22 +116,51 @@ int main(int argc, char** argv) {
 
     make_shaderProgram();
 
-    read_obj_file("obj/box_back.obj", model_back, "box_back");
-    //read_obj_file("obj/box_back.obj", model_bottom, "box_back");
+    read_obj_file("obj/box_back.obj", model_box_back, "box_back");
+    read_obj_file("obj/box_bottom.obj", model_box_bottom, "box_bottom");
+    read_obj_file("obj/box_right.obj", model_box_right, "box_right");
+    read_obj_file("obj/box_left.obj", model_box_left, "box_left");
+    read_obj_file("obj/box_front.obj", model_box_front, "box_front");
+    read_obj_file("obj/box_top.obj", model_box_top, "box_top");
 
     read_obj_file("obj/body.obj", model_body, "body");
+    read_obj_file("obj/left_a.obj", model_left_a, "left_a");
+    read_obj_file("obj/right_a.obj", model_right_a, "right_a");
+    read_obj_file("obj/left_l.obj", model_left_l, "left_l");
+    read_obj_file("obj/right_l.obj", model_right_l, "right_l");
 
 
-    glm::mat4 matrix = glm::mat4(1.0f);
-    matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, 0.0));
-    model_body.modelMatrix = matrix * model_body.modelMatrix;
 
-    matrix = glm::mat4(1.0f);
-    matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, 0.0));
-    model_back.modelMatrix = matrix * model_back.modelMatrix;
+    glm::mat4 matrix_body = glm::mat4(1.0f);
+    matrix_body = glm::translate(matrix_body, glm::vec3(0.0, -20.0, 0.0));
+    matrix_body = glm::scale(matrix_body, glm::vec3(0.4, 0.4, 0.4));
+    model_body.modelMatrix = matrix_body * model_body.modelMatrix;
+    model_left_a.modelMatrix = matrix_body * model_left_a.modelMatrix;
+    model_right_a.modelMatrix = matrix_body * model_right_a.modelMatrix;
+    model_left_l.modelMatrix = matrix_body * model_left_l.modelMatrix;
+    model_right_l.modelMatrix = matrix_body * model_right_l.modelMatrix;
 
-    models.push_back(model_back);
     models.push_back(model_body);
+    models.push_back(model_left_a);
+    models.push_back(model_right_a);
+    models.push_back(model_left_l);
+    models.push_back(model_right_l);
+
+    glm::mat4 matrix_box = glm::mat4(1.0f);
+    matrix_box = glm::translate(matrix_box, glm::vec3(0.0, -20.0, 0.0));
+    model_box_back.modelMatrix = matrix_box * model_box_back.modelMatrix;
+    model_box_bottom.modelMatrix = matrix_box * model_box_bottom.modelMatrix;
+    model_box_right.modelMatrix = matrix_box * model_box_right.modelMatrix;
+    model_box_left.modelMatrix = matrix_box * model_box_left.modelMatrix;
+    model_box_front.modelMatrix = matrix_box * model_box_front.modelMatrix;
+    model_box_top.modelMatrix = matrix_box * model_box_top.modelMatrix;
+
+    models.push_back(model_box_back);
+    models.push_back(model_box_bottom);
+    models.push_back(model_box_right);
+    models.push_back(model_box_left);
+    //models.push_back(model_box_front);
+    models.push_back(model_box_top);
 
     for (auto& model : models) {
         if (!model.material.map_Kd.empty()) {
