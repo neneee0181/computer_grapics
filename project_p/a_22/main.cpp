@@ -695,7 +695,7 @@ void main(int argc, char** argv) {
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowPosition(100, 0);
 	glutInitWindowSize(800, 800);
-	glutCreateWindow("ㅍㅇㅌ");
+	glutCreateWindow("22번실습");
 
 	glEnable(GL_DEPTH_TEST);
 
