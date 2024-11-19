@@ -254,6 +254,24 @@ void keyDown(unsigned char key, int x, int y) {
             }
         }
         break;
+    case 'z': // 카메라 앞으로 이동
+        cameraPos += glm::vec3(0.0f, 0.0f, -1.0f);
+        break;
+    case 'Z': // 카메라 뒤로 이동
+        cameraPos += glm::vec3(0.0f, 0.0f, 1.0f);
+        break;
+    case 'x': // 카메라 좌측으로 이동
+        cameraPos += glm::vec3(-1.0f, 0.0f, 0.0f);
+        break;
+    case 'X': // 카메라 우측으로 이동
+        cameraPos += glm::vec3(1.0f, 0.0f, 0.0f);
+        break;
+    case 'y': // 카메라가 y축 기준으로 반시계 방향 회전
+        cameraPos = glm::rotate(glm::mat4(1.0f), glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::vec4(cameraPos, 1.0f);
+        break;
+    case 'Y': // 카메라가 y축 기준으로 시계 방향 회전
+        cameraPos = glm::rotate(glm::mat4(1.0f), glm::radians(-5.0f), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::vec4(cameraPos, 1.0f);
+        break;
     default:
         break;
     }
