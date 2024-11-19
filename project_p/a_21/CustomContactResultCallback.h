@@ -25,10 +25,10 @@ public:
         collisionPointB = cp.getPositionWorldOnB();
 
         // 콘솔에 충돌 위치를 출력
-        std::cout << "Collision detected at: "
+        /*std::cout << "Collision detected at: "
             << "Point A(" << collisionPointA.getX() << ", " << collisionPointA.getY() << ", " << collisionPointA.getZ() << ") - "
             << "Point B(" << collisionPointB.getX() << ", " << collisionPointB.getY() << ", " << collisionPointB.getZ() << ")"
-            << std::endl;
+            << std::endl;*/
 
         return 0; // 반환값은 특별히 의미가 없으므로 0 반환
     }

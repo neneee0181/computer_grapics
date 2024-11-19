@@ -32,7 +32,12 @@ glm::mat4 view = glm::mat4(1.0f);
 
 std::unordered_map<char, bool> keyState;
 
-void checkBoxCollisions(const std::vector<Model>& models) {
+float speed = 0.2f;
+float radi_speed = 0.1f;
+float radi_l = 0.1;
+int radi_status = 1;
+
+void checkBoxCollisions(std::vector<Model>& models) {
     for (size_t i = 0; i < models.size(); ++i) {
         if (models[i].type != "box") continue;
 
@@ -47,11 +52,39 @@ void checkBoxCollisions(const std::vector<Model>& models) {
             CustomContactResultCallback resultCallback;
             dynamicsWorld->contactPairTest(models[i].rigidBody, models[j].rigidBody, resultCallback);
 
+            glm::mat4 matrixRollBack = glm::mat4(1.0f);
             // 충돌 여부 확인
             if (resultCallback.hitDetected) {
-                std::cout << "Collision detected between model " << i
-                    << " (" << models[i].name << ") and model "
-                    << j << " (" << models[j].name << ")!" << std::endl;
+                if (models[i].name == "box_left" && models[j].name == "body") {
+                    //좌측
+                    keyState['a'] = false;
+                    keyState['d'] = true;
+                    for (auto& model : models) {
+                        if (model.type == "body") {
+                            model.rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+                        }
+                    }
+                }
+                if (models[i].name == "box_right" && models[j].name == "body") {
+                    //우측 박스
+                    keyState['d'] = false;
+                    keyState['a'] = true;
+                    for (auto& model : models) {
+                        if (model.type == "body") {
+                            model.rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0, 1.0, 0.0));
+                        }
+                    }
+                }
+                if (models[i].name == "box_back" && models[j].name == "body") {
+                    // 뒤쪽 박스
+                    keyState['s'] = false;
+                    keyState['w'] = true;
+                    for (auto& model : models) {
+                        if (model.type == "body") {
+                            model.rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0, 1.0, 0.0));
+                        }
+                    }
+                }
             }
         }
     }
@@ -84,11 +117,6 @@ GLvoid Reshape(int w, int h) {
 void keyUp(unsigned char key, int x, int y) {
     keyUp_s(key);
 }
-
-float speed = 0.2f;
-float radi_speed = 0.1f;
-float radi_l = 0.1;
-int radi_status = 1;
 
 void openTimer(int value) {
 
@@ -136,7 +164,6 @@ void keyDown(unsigned char key, int x, int y) {
     case 's':
     case 'd':
         if (!keyState[key]) {
-            glm::mat4 matrix = glm::mat4(1.0f);
             for (auto& model : models) {
                 if (model.type == "body") {
                     switch (key)
