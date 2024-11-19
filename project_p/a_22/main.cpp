@@ -656,7 +656,7 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 		cameraPos = glm::rotate(glm::mat4(1.0f), glm::radians(-5.0f), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::vec4(cameraPos, 1.0f);
 		break;
 	case 'b':
-		if (balls.size() <= 5) {
+		if (balls.size() < 5) {
 			shapes temp = {
 				(rand() % 35) / 10.0f - 1.7f, (rand() % 35) / 10.0f - 1.7f, (rand() % 35) / 10.0f - 1.7f,
 				-0.05f + (rand() % 6) * 0.02f,-0.05f + (rand() % 6) * 0.02f,-0.05f + (rand() % 6) * 0.02f
