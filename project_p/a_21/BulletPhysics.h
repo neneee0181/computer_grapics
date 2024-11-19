@@ -93,7 +93,7 @@ void addModelToPhysicsWorld(Model& model) {
     // 충돌 박스 생성
     btCollisionShape* shape = nullptr;
 
-    if (model.type == "box" || model.type == "body" || model.type =="bbox") {
+    if (model.type == "box" || model.type == "body" || model.name =="bbox") {
         if (model.name == "box_bottom" || model.name == "box_front" || model.name == "box_top") {
             return; // 제외 조건
         }
@@ -242,14 +242,14 @@ void UpdateRigidBodyTransform(Model& model) {
         if (model.name == "box_left") {
             modelMatrix = glm::translate(modelMatrix, glm::vec3(-20.0, 40.0, 0.0));
         }
+        if (model.name == "bbox") {
+            modelMatrix = model.modelMatrix;
+            modelMatrix = glm::translate(modelMatrix, glm::vec3(-10.0, 5.0, 10.0));
+        }
     }
     else if (model.type == "body") {
         modelMatrix = model.modelMatrix * model.rotationMatrix; // 변환 & 회전 적용
         modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0, 70.0, 0.0));
-    }
-    else if (model.type == "bbox") {
-        modelMatrix = model.modelMatrix;
-        modelMatrix = glm::translate(modelMatrix, glm::vec3(-10.0, 0.0, 10.0));
     }
    
     btTransform transform;

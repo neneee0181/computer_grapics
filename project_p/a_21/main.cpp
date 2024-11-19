@@ -37,10 +37,11 @@ float radi_speed = 0.1f;
 float radi_l = 0.1;
 int radi_status = 1;
 
+int floor1 = -20;
+
 void checkBoxCollisions(std::vector<Model>& models) {
     for (size_t i = 0; i < models.size(); ++i) {
         if (models[i].type != "box") continue;
-
         for (size_t j = 0; j < models.size(); ++j) {
             if (models[j].type != "body") continue;
 
@@ -85,10 +86,26 @@ void checkBoxCollisions(std::vector<Model>& models) {
                         }
                     }
                 }
+                if (models[i].name == "bbox" && models[j].name == "body") {
+                    floor1 = -16;
+                }
+                else {
+                    floor1 = -20;
+                }
             }
         }
     }
 }
+
+// 점프 상태를 관리하기 위한 구조체 추가
+struct JumpState {
+    bool jumping;       // 점프 중인지 여부
+    float velocity;     // 현재 점프 속도
+    float gravity;      // 중력 가속도
+    float maxHeight;    // 최대 점프 높이
+};
+
+std::unordered_map<Model*, JumpState> jumpStates;
 
 // Bullet Physics 초기화
 void InitPhysics() {
@@ -134,6 +151,43 @@ void openTimer(int value) {
     }
 }
 
+void jumpTimer(int value) {
+    bool anyJumping = false; // 점프 중인 모델이 있는지 확인
+
+    for (auto& model : models) {
+        if (model.type == "body") {
+            auto& jumpState = jumpStates[&model];
+
+            if (jumpState.jumping) {
+                // 현재 높이 계산
+                float currentY = model.modelMatrix[3].y;
+
+                // 속도 업데이트
+                jumpState.velocity -= jumpState.gravity;
+
+                // 새로운 높이 계산
+                float newY = currentY + jumpState.velocity;
+
+                // 최대 높이에 도달했을 때 처리
+                if (jumpState.velocity < 0 && newY <= floor1) {
+                    newY = floor1; // 바닥에 도달
+                    jumpState.jumping = false; // 점프 종료
+                }
+
+                // 모델 매트릭스 업데이트
+                model.modelMatrix = glm::translate(model.modelMatrix, glm::vec3(0.0f, newY - currentY, 0.0f));
+                anyJumping = true;
+            }
+        }
+    }
+
+    // 점프 중인 모델이 있으면 타이머를 다시 설정
+    if (anyJumping) {
+        glutTimerFunc(16, jumpTimer, 0);
+    }
+
+}
+
 void keyDown(unsigned char key, int x, int y) {
 
     switch (key)
@@ -158,6 +212,16 @@ void keyDown(unsigned char key, int x, int y) {
     case 'o':
     case 'O':
         glutTimerFunc(0, openTimer, 0);
+        break;
+    case 'j':
+        // 점프 초기화
+        for (auto& model : models) {
+            if (model.type == "body" && !jumpStates[&model].jumping) {
+                jumpStates[&model] = { true, 1.0f, 0.05f, 10.0f }; // 초기 속도와 중력 설정
+            }
+        }
+
+        glutTimerFunc(0, jumpTimer, 0);
         break;
     case 'w':
     case 'a':
@@ -355,7 +419,7 @@ void make_model() {
     read_obj_file("obj/left_l.obj", model_left_l, "left_l", "body");
     read_obj_file("obj/right_l.obj", model_right_l, "right_l", "body");
 
-    read_obj_file("obj/box3.obj", model_bbox, "bbox", "bbox");
+    read_obj_file("obj/box3.obj", model_bbox, "bbox", "box");
 
 
     glm::mat4 matrix_body = glm::mat4(1.0f);
