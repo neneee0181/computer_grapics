@@ -145,9 +145,10 @@ void keyDown(unsigned char key, int x, int y) {
                         model.rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0, 1.0, 0.0));
                         break;
                     case 'a':
-                        matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, 0.0));
+                        /*matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, 0.0));
                         matrix = glm::rotate(matrix, glm::radians(-90.0f), glm::vec3(0.0, 1.0, 0.0));
-                        model.modelMatrix = matrix * model.modelMatrix;
+                        model.modelMatrix = matrix * model.modelMatrix;*/
+                        model.rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0, 1.0, 0.0));
                         break;
                     case 's':
                         model.rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -229,68 +230,68 @@ void timer(int value) {
     if (keyState['w'] || keyState['s']) {
         //왼쪽다리
         angle = glm::translate(angle, glm::vec3(0,0,0));
-        angle = glm::translate(angle, glm::vec3(0.0, 30.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, 10.0, 0.0));
         angle = glm::rotate(angle, radi_speed * radi_status, glm::vec3(1.0, 0.0, 0.0));
-        angle = glm::translate(angle, glm::vec3(0.0, -30.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, -10.0, 0.0));
         angle = glm::translate(angle, -glm::vec3(0, 0, 0));
         models[3].rotationMatrix = angle * models[3].rotationMatrix;
 
         //우측다리
         angle = glm::mat4(1.0f);
         angle = glm::translate(angle, glm::vec3(0, 0, 0));
-        angle = glm::translate(angle, glm::vec3(0.0, 30.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, 10.0, 0.0));
         angle = glm::rotate(angle, radi_speed * -radi_status, glm::vec3(1.0, 0.0, 0.0));
-        angle = glm::translate(angle, glm::vec3(0.0, -30.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, -10.0, 0.0));
         angle = glm::translate(angle, -glm::vec3(0, 0, 0));
         models[4].rotationMatrix = angle * models[4].rotationMatrix;
 
         angle = glm::mat4(1.0f);
         angle = glm::translate(angle, glm::vec3(0, 0, 0));
-        angle = glm::translate(angle, glm::vec3(0.0, 30.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, 10.0, 0.0));
         angle = glm::rotate(angle, radi_speed * radi_status, glm::vec3(1.0, 0.0, 0.0));
-        angle = glm::translate(angle, glm::vec3(0.0, -30.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, -10.0, 0.0));
         angle = glm::translate(angle, -glm::vec3(0, 0, 0));
         models[2].rotationMatrix = angle * models[2].rotationMatrix;
 
         angle = glm::mat4(1.0f);
         angle = glm::translate(angle, glm::vec3(0, 0, 0));
-        angle = glm::translate(angle, glm::vec3(0.0, 30.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, 10.0, 0.0));
         angle = glm::rotate(angle, radi_speed * -radi_status, glm::vec3(1.0, 0.0, 0.0));
-        angle = glm::translate(angle, glm::vec3(0.0, -30.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, -10.0, 0.0));
         angle = glm::translate(angle, -glm::vec3(0, 0, 0));
         models[1].rotationMatrix = angle * models[1].rotationMatrix;
     }
     else if (keyState['a'] || keyState['d']) {
         //왼쪽다리
         angle = glm::translate(angle, glm::vec3(0, 0, 0));
-        angle = glm::translate(angle, glm::vec3(0.0, 30.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, 20.0, 0.0));
         angle = glm::rotate(angle, radi_speed * radi_status, glm::vec3(0.0, 0.0, 1.0));
-        angle = glm::translate(angle, glm::vec3(0.0, -30.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, -20.0, 0.0));
         angle = glm::translate(angle, -glm::vec3(0, 0, 0));
         models[3].rotationMatrix = angle * models[3].rotationMatrix;
 
         //우측다리
         angle = glm::mat4(1.0f);
         angle = glm::translate(angle, glm::vec3(0, 0, 0));
-        angle = glm::translate(angle, glm::vec3(0.0, 30.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, 20.0, 0.0));
         angle = glm::rotate(angle, radi_speed * -radi_status, glm::vec3(0.0, 0.0, 1.0));
-        angle = glm::translate(angle, glm::vec3(0.0, -30.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, -20.0, 0.0));
         angle = glm::translate(angle, -glm::vec3(0, 0, 0));
         models[4].rotationMatrix = angle * models[4].rotationMatrix;
 
         angle = glm::mat4(1.0f);
         angle = glm::translate(angle, glm::vec3(0, 0, 0));
-        angle = glm::translate(angle, glm::vec3(0.0, 40.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, 20.0, 0.0));
         angle = glm::rotate(angle, radi_speed * radi_status, glm::vec3(0.0, 0.0, 1.0));
-        angle = glm::translate(angle, glm::vec3(0.0, -40.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, -20.0, 0.0));
         angle = glm::translate(angle, -glm::vec3(0, 0, 0));
         models[2].rotationMatrix = angle * models[2].rotationMatrix;
 
         angle = glm::mat4(1.0f);
         angle = glm::translate(angle, glm::vec3(0, 0, 0));
-        angle = glm::translate(angle, glm::vec3(0.0, 40.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, 20.0, 0.0));
         angle = glm::rotate(angle, radi_speed * -radi_status, glm::vec3(0.0, 0.0, 1.0));
-        angle = glm::translate(angle, glm::vec3(0.0, -40.0, 0.0));
+        angle = glm::translate(angle, glm::vec3(0.0, -20.0, 0.0));
         angle = glm::translate(angle, -glm::vec3(0, 0, 0));
         models[1].rotationMatrix = angle * models[1].rotationMatrix;
     }
@@ -361,7 +362,7 @@ void make_model() {
     models.push_back(model_box_top);
 
     for (auto& model : models) {
-        alignModelToOrigin(model); // 모델의 중심을 정렬
+        //alignModelToOrigin(model); // 모델의 중심을 정렬
         addModelToPhysicsWorld(model);
         UpdateRigidBodyTransform(model);  // 초기 위치 동기화
     }

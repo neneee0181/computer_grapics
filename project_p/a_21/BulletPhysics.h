@@ -233,9 +233,19 @@ void UpdateRigidBodyTransform(Model& model) {
     if (model.type == "box") {
         // ModelMatrix에서 Bullet Transform으로 변환
         modelMatrix = model.modelMatrix; // 변환 & 회전 적용
+        if (model.name == "box_back") {
+            modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0, 40.0, -20.0));
+        }
+        if (model.name == "box_right") {
+            modelMatrix = glm::translate(modelMatrix, glm::vec3(20.0, 40.0, 0.0));
+        }
+        if (model.name == "box_left") {
+            modelMatrix = glm::translate(modelMatrix, glm::vec3(-20.0, 40.0, 0.0));
+        }
     }
     else if (model.type == "body") {
         modelMatrix = model.modelMatrix * model.rotationMatrix; // 변환 & 회전 적용
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0, 70.0, 0.0));
     }
    
     btTransform transform;

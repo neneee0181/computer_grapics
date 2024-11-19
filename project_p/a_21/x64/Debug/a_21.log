@@ -1,8 +1,10 @@
-﻿  main.cpp
-C:\Users\neneee\computer_grapics-main\project_p\a_21\main.cpp(59,14): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_21\main.cpp(184,19): warning C4305: '-=': 'double'에서 'float'(으)로 잘립니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_21\main.cpp(187,19): warning C4305: '+=': 'double'에서 'float'(으)로 잘립니다.
-C:\Users\neneee\computer_grapics-main\project_p\a_21\main.cpp(454,65): warning C4267: '인수': 'size_t'에서 'GLsizei'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+﻿  filetobuf.cpp
+  main.cpp
+C:\Users\kevin\mine\computer_grapics\project_p\a_21\main.cpp(90,14): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\kevin\mine\computer_grapics\project_p\a_21\main.cpp(217,19): warning C4305: '-=': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\kevin\mine\computer_grapics\project_p\a_21\main.cpp(220,19): warning C4305: '+=': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\kevin\mine\computer_grapics\project_p\a_21\main.cpp(497,65): warning C4267: '인수': 'size_t'에서 'GLsizei'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  코드를 생성하고 있습니다...
 BulletCollision.lib(btCollisionDispatcher.obj) : error LNK2038: '_ITERATOR_DEBUG_LEVEL'에 대해 불일치가 검색되었습니다. '0' 값이 '2'(main.obj에 위치) 값과 일치하지 않습니다.
 BulletCollision.lib(btCollisionDispatcher.obj) : error LNK2038: 'RuntimeLibrary'에 대해 불일치가 검색되었습니다. 'MD_DynamicRelease' 값이 'MDd_DynamicDebug'(main.obj에 위치) 값과 일치하지 않습니다.
 BulletCollision.lib(btCollisionWorld.obj) : error LNK2038: '_ITERATOR_DEBUG_LEVEL'에 대해 불일치가 검색되었습니다. '0' 값이 '2'(main.obj에 위치) 값과 일치하지 않습니다.
@@ -88,4 +90,4 @@ BulletCollision.lib(btSimulationIslandManager.obj) : error LNK2038: 'RuntimeLibr
 BulletCollision.lib(btUnionFind.obj) : error LNK2038: '_ITERATOR_DEBUG_LEVEL'에 대해 불일치가 검색되었습니다. '0' 값이 '2'(main.obj에 위치) 값과 일치하지 않습니다.
 BulletCollision.lib(btUnionFind.obj) : error LNK2038: 'RuntimeLibrary'에 대해 불일치가 검색되었습니다. 'MD_DynamicRelease' 값이 'MDd_DynamicDebug'(main.obj에 위치) 값과 일치하지 않습니다.
 LINK : warning LNK4098: 'MSVCRT' defaultlib가 다른 라이브러리와 충돌합니다. /NODEFAULTLIB:library를 사용하십시오.
-C:\Users\neneee\computer_grapics-main\project_p\x64\Debug\a_21.exe : fatal error LNK1319: 84개의 불일치가 검색되었습니다.
+C:\Users\kevin\mine\computer_grapics\project_p\x64\Debug\a_21.exe : fatal error LNK1319: 84개의 불일치가 검색되었습니다.
