@@ -339,7 +339,7 @@ void timer(int value) {
 void make_model() {
 
     Model model_box_front1, model_box_front2, model_box_back, model_box_top, model_box_bottom, model_box_left, model_box_right,
-        model_left_a, model_left_l, model_right_a, model_right_l, model_body;
+        model_left_a, model_left_l, model_right_a, model_right_l, model_body, model_bbox;
 
     read_obj_file("obj/box_back.obj", model_box_back, "box_back", "box");
     read_obj_file("obj/box_bottom.obj", model_box_bottom, "box_bottom", "box");
@@ -354,6 +354,9 @@ void make_model() {
     read_obj_file("obj/right_a.obj", model_right_a, "right_a", "body");
     read_obj_file("obj/left_l.obj", model_left_l, "left_l", "body");
     read_obj_file("obj/right_l.obj", model_right_l, "right_l", "body");
+
+    read_obj_file("obj/box3.obj", model_bbox, "bbox", "bbox");
+
 
     glm::mat4 matrix_body = glm::mat4(1.0f);
     matrix_body = glm::translate(matrix_body, glm::vec3(0.0, -20.0, 0.0));
@@ -387,6 +390,12 @@ void make_model() {
     models.push_back(model_box_front1); //9
     models.push_back(model_box_front2); //10
     models.push_back(model_box_top);
+
+    glm::mat4 matrix_bbox = glm::mat4(1.0f);
+    matrix_bbox = glm::translate(matrix_bbox, glm::vec3(0.0, 0.0, 0.0));
+    model_bbox.modelMatrix = matrix_bbox * model_bbox.modelMatrix;
+
+    models.push_back(model_bbox);
 
     for (auto& model : models) {
         //alignModelToOrigin(model); // 모델의 중심을 정렬
@@ -510,13 +519,15 @@ GLvoid drawScene() {
                 glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix * models[i].rotationMatrix));
             }
             else if (models[i].type == "box") {
-                if (models[i].name == "box_right") {
-
-                }
-                else {
-                    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
-                }
+                glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
             }
+            else {
+                glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
+            }
+           /* else if (models[i].type == "bbox") {
+                glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
+            }*/
+
             glUniform1i(modelStatus, 0);
             if (isKeyPressed_s('1'))
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

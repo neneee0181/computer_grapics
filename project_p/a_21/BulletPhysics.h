@@ -93,7 +93,7 @@ void addModelToPhysicsWorld(Model& model) {
     // 충돌 박스 생성
     btCollisionShape* shape = nullptr;
 
-    if (model.type == "box" || model.type == "body") {
+    if (model.type == "box" || model.type == "body" || model.type =="bbox") {
         if (model.name == "box_bottom" || model.name == "box_front" || model.name == "box_top") {
             return; // 제외 조건
         }
@@ -247,6 +247,10 @@ void UpdateRigidBodyTransform(Model& model) {
         modelMatrix = model.modelMatrix * model.rotationMatrix; // 변환 & 회전 적용
         modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0, 70.0, 0.0));
     }
+    else if (model.type == "bbox") {
+        modelMatrix = model.modelMatrix;
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(-10.0, 0.0, 10.0));
+    }
    
     btTransform transform;
 
@@ -289,7 +293,7 @@ void RenderCollisionBox(const Model& model) {
 
     // OpenGL로 충돌 박스 렌더링
     glLineWidth(2.0f); // 선 굵기
-    glColor3f(1.0f, 0.0f, 0.0f); // 빨간색
+    glColor3f(0.0f, 1.0f, 0.0f);
     glBegin(GL_LINES);
 
     for (int i = 0; i < 24; i += 2) {
