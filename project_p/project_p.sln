@@ -73,6 +73,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "opengl_template_v5", "openg
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "a_21", "a_21\a_21.vcxproj", "{FFCD3FF4-A85E-49F4-9FEA-0F38EE2B1945}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "a_22", "a_22\a_22.vcxproj", "{A3409B0F-FE37-441B-9E9B-E11B77BF8764}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM64 = Debug|ARM64
@@ -503,6 +505,18 @@ Global
 		{FFCD3FF4-A85E-49F4-9FEA-0F38EE2B1945}.Release|x64.Build.0 = Release|x64
 		{FFCD3FF4-A85E-49F4-9FEA-0F38EE2B1945}.Release|x86.ActiveCfg = Release|Win32
 		{FFCD3FF4-A85E-49F4-9FEA-0F38EE2B1945}.Release|x86.Build.0 = Release|Win32
+		{A3409B0F-FE37-441B-9E9B-E11B77BF8764}.Debug|ARM64.ActiveCfg = Debug|x64
+		{A3409B0F-FE37-441B-9E9B-E11B77BF8764}.Debug|ARM64.Build.0 = Debug|x64
+		{A3409B0F-FE37-441B-9E9B-E11B77BF8764}.Debug|x64.ActiveCfg = Debug|x64
+		{A3409B0F-FE37-441B-9E9B-E11B77BF8764}.Debug|x64.Build.0 = Debug|x64
+		{A3409B0F-FE37-441B-9E9B-E11B77BF8764}.Debug|x86.ActiveCfg = Debug|Win32
+		{A3409B0F-FE37-441B-9E9B-E11B77BF8764}.Debug|x86.Build.0 = Debug|Win32
+		{A3409B0F-FE37-441B-9E9B-E11B77BF8764}.Release|ARM64.ActiveCfg = Release|x64
+		{A3409B0F-FE37-441B-9E9B-E11B77BF8764}.Release|ARM64.Build.0 = Release|x64
+		{A3409B0F-FE37-441B-9E9B-E11B77BF8764}.Release|x64.ActiveCfg = Release|x64
+		{A3409B0F-FE37-441B-9E9B-E11B77BF8764}.Release|x64.Build.0 = Release|x64
+		{A3409B0F-FE37-441B-9E9B-E11B77BF8764}.Release|x86.ActiveCfg = Release|Win32
+		{A3409B0F-FE37-441B-9E9B-E11B77BF8764}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
