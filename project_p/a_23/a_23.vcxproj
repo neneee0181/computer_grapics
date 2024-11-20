@@ -145,6 +145,7 @@
     <ClInclude Include="LoadMtl.h" />
     <ClInclude Include="LoadObj.h" />
     <ClInclude Include="LoadTexture.h" />
+    <ClInclude Include="LoadWall.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="shaderMaker.h" />
   </ItemGroup>
