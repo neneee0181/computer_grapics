@@ -9,6 +9,7 @@
 
 #include "Model.h"
 #include "LoadObj.h"
+#include "BulletPhysics.h"
 
 using namespace std;
 
@@ -38,6 +39,8 @@ void load_wall_obj() {
         else {
             model.material.hasTexture = false;
         }
+        addModelToPhysicsWorld(model);
+        UpdateRigidBodyTransform(model);  // 초기 위치 동기화
     }
 }
 
@@ -85,6 +88,14 @@ void draw_wall(GLuint& shaderProgramID, bool (*isKeyPressed_s)(const char&)) {
         }
     }
     glDisable(GL_DEPTH_TEST);
+}
+
+void draw_rigidBody() {
+    for (const auto& model : wall_models) {
+        if (model.rigidBody) {
+            RenderCollisionBox(model); // 충돌 박스 그리기
+        }
+    }
 }
 
 void initBuffer_wall() {

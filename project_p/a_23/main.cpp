@@ -169,6 +169,8 @@ GLvoid drawScene() {
 void InitBuffer() {
     //-----------------------------------------------------------------------------------------------------------
     initBuffer_wall();
+
+   
 }
 
 //void AddModelBuffer(const Model& model) {
