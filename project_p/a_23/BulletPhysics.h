@@ -229,12 +229,8 @@ void UpdateRigidBodyTransform(Model& model) {
     transform.setFromOpenGLMatrix(glm::value_ptr(modelMatrix));
     model.rigidBody->setWorldTransform(transform); // Bullet 물리 객체 갱신
 }
-
-void RenderCollisionBox(const Model& model) {
+void RenderCollisionBox(const Model& model, GLuint shaderProgram) {
     if (!model.rigidBody) return; // 물리 객체가 없으면 건너뜀
-
-    // OpenGL 상태 저장
-    glPushAttrib(GL_CURRENT_BIT);
 
     // AABB 계산
     btVector3 aabbMin, aabbMax;
@@ -260,17 +256,39 @@ void RenderCollisionBox(const Model& model) {
         0, 4, 1, 5, 2, 6, 3, 7
     };
 
-    glLineWidth(2.0f);
-    glColor3f(1.0f, 0.0f, 0.0f); // 빨간색
+    // AABB 데이터를 VBO에 업로드
+    GLuint vao, vbo, ebo;
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &vbo);
+    glGenBuffers(1, &ebo);
 
-    glBegin(GL_LINES);
-    for (int i = 0; i < 24; i += 2) {
-        glVertex3fv(glm::value_ptr(corners[indices[i]]));
-        glVertex3fv(glm::value_ptr(corners[indices[i + 1]]));
-    }
-    glEnd();
+    glBindVertexArray(vao);
 
-    // OpenGL 상태 복원
-    glPopAttrib();
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(corners), corners, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // 셰이더 사용 및 유니폼 설정
+    glUseProgram(shaderProgram);
+
+    GLint isRigidBodyLoc = glGetUniformLocation(shaderProgram, "isRigidBody");
+    glUniform1i(isRigidBodyLoc, 1); // Rigid body 렌더링 활성화
+
+    // AABB 박스 렌더링
+    glBindVertexArray(vao);
+    glDrawElements(GL_LINES, 24, GL_UNSIGNED_INT, 0);
+
+    // 상태 복원: Rigid body 플래그 끄기
+    glUniform1i(isRigidBodyLoc, 0);
+
+    // VAO/VBO 정리
+    glBindVertexArray(0);
+    glDeleteVertexArrays(1, &vao);
+    glDeleteBuffers(1, &vbo);
+    glDeleteBuffers(1, &ebo);
 }
-

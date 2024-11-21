@@ -16,7 +16,15 @@ uniform float Ns;          // 반짝임 강도 (샤이니니스)
 uniform sampler2D texture1; // 텍스처 샘플러
 uniform bool hasTexture;    // 텍스처 유무 플래그
 
+uniform bool isRigidBody;   // true면 rigid body 상태로 렌더링
+
 void main() {
+
+    if (isRigidBody) {
+        FragColor = vec4(1.0, 0.0, 0.0, 1.0); // 고정된 빨간색
+        return;
+    }
+
     // 1. 환경광 (Ambient)
     vec3 ambient = Ka * lightColor;
 

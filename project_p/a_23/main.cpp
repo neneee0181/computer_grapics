@@ -159,7 +159,8 @@ GLvoid drawScene() {
     glUniform3fv(lightColorLoc, 1, glm::value_ptr(glm::vec3(0.6f, 0.65f, 0.6f)));
 
     draw_wall(shaderProgramID, isKeyPressed_s);
-    draw_rigidBody();
+
+    draw_rigidBody(shaderProgramID);
 
     glutSwapBuffers();
     GLenum err;

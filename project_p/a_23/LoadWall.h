@@ -90,10 +90,10 @@ void draw_wall(GLuint& shaderProgramID, bool (*isKeyPressed_s)(const char&)) {
     glDisable(GL_DEPTH_TEST);
 }
 
-void draw_rigidBody() {
+void draw_rigidBody(GLuint shaderProgramID) {
     for (const auto& model : wall_models) {
         if (model.rigidBody) {
-            RenderCollisionBox(model); // 충돌 박스 그리기
+            RenderCollisionBox(model, shaderProgramID); // 충돌 박스 그리기
         }
     }
 }
