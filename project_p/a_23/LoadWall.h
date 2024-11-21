@@ -37,9 +37,39 @@ namespace Wall{
         model_2.modelMatrix = matrix * model_2.modelMatrix;
         model_2.material.Ka = glm::vec3(0.0, 0.0, 0.0f);
 
-        models.push_back(model_1);
-        models.push_back(model_2);
+        // 5x5 크기의 바닥 설치
+        const float spacing = 10; // 각 plane의 크기 (x와 z 간 간격)
+        const int gridSize = 5;
 
+        // 중심 계산 (그리드 전체 크기의 절반만큼 이동)
+        const float offset = (gridSize - 1) * spacing * 0.5f;
+
+        for (int z = 0; z < gridSize; ++z) {
+            for (int x = 0; x < gridSize; ++x) {
+                Model model;
+
+                // x와 z 위치 계산
+                float posX = x * spacing - offset; // x 좌표를 중심으로 조정
+                float posZ = z * spacing - offset; // z 좌표를 중심으로 조정
+
+                // 번갈아가며 다른 재질 적용 및 위치 보정
+                if ((x + z) % 2 == 0) {
+                    model = model_2; // model_1은 위치 보정 없음
+                    posX += 20; // model_2를 오른쪽으로 이동
+                }
+                else {
+                    model = model_1;
+                }
+
+                // 변환 행렬 생성
+                glm::mat4 transform = glm::mat4(1.0f);
+                transform = glm::translate(transform, glm::vec3(posX, 0.0f, posZ));
+                model.modelMatrix = transform * model.modelMatrix;
+
+                // 모델 벡터에 추가
+                models.push_back(model);
+            }
+        }
 
         for (auto& model : models) {
             if (!model.material.map_Kd.empty()) {
