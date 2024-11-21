@@ -107,7 +107,7 @@ void move_arm_leg(Model& model) {
 }
 
 void timer(int value) {
-    collisionCheck();
+    //collisionCheck();
 
     for (auto& model : Body::models) {
         if (keyState['w']) {
@@ -146,6 +146,81 @@ void timer(int value) {
     glutTimerFunc(16, timer, 0);
 }
 
+// 점프 상태를 관리하기 위한 구조체 추가
+struct JumpState {
+    bool jumping;       // 점프 중인지 여부
+    float velocity;     // 현재 점프 속도
+    float gravity;      // 중력 가속도
+    float maxHeight;    // 최대 점프 높이
+};
+
+JumpState jumpState;
+const float floorHeight = -15.0f;
+
+void jumpTimer(int value) {
+   // 점프 중인지 확인
+    if (!jumpState.jumping) {
+        return; // 점프 중이 아니면 타이머 종료
+    }
+
+    // 현재 Y 좌표 계산 (몸체 기준)
+    float currentY = Body::models[0].modelMatrix[3].y;
+
+    // 속도 업데이트 (중력 적용)
+    jumpState.velocity -= jumpState.gravity;
+
+    // 새로운 Y 좌표 계산
+    float newY = currentY + jumpState.velocity;
+
+    // 충돌 감지 (바닥과의 충돌)
+    bool hitGround = false;
+    for (auto& wall : Wall::models) {
+        if (wall.name != "bottom") continue;
+        if (!wall.rigidBody || !Body::models[0].rigidBody) continue;
+
+        CustomContactResultCallback resultCallback;
+        dynamicsWorld->contactPairTest(Body::models[1].rigidBody, wall.rigidBody, resultCallback);
+        if (resultCallback.hitDetected && newY <= floorHeight) { // 바닥 높이에 닿았는지 확인
+            hitGround = true;
+            break;
+        }
+    }
+
+    if (hitGround) {
+        // 착지 처리
+        jumpState.jumping = false;    // 점프 종료
+        jumpState.velocity = 0.0f;    // 속도 초기화
+        newY = floorHeight;           // 바닥 높이에 정렬
+    }
+
+    // 모든 모델 이동 처리 (캐릭터의 모든 파츠를 동기화)
+    for (auto& body : Body::models) {
+        glm::mat4 matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(0.0f, newY - currentY, 0.0f));
+        body.modelMatrix = matrix * body.modelMatrix;
+    }
+
+    // 점프가 여전히 진행 중이라면 타이머를 다시 설정
+    if (jumpState.jumping) {
+        glutTimerFunc(16, jumpTimer, 0);
+    }
+
+}
+
+void collisionCheck() {
+    for (auto& bodyModel : Body::models) {
+        for (auto& wallModel : Wall::models) {
+            if (bodyModel.rigidBody && wallModel.rigidBody) {
+                CustomContactResultCallback resultCallback;
+                dynamicsWorld->contactPairTest(bodyModel.rigidBody, wallModel.rigidBody, resultCallback);
+                if (resultCallback.hitDetected) {
+                    cout << "충돌!!!" << endl;
+                }
+            }
+        }
+    }
+}
+
 void openDoorTimer(int value) {
 
     for (auto& model : Wall::models) {
@@ -173,7 +248,11 @@ void keyDown(unsigned char key, int x, int y) {
 
     switch (key)
     {
-    
+    case 'j':
+        // 점프 초기화
+        jumpState = { true, 1.0f, 0.05f, 10.0f }; // 초기 속도와 중력 설정
+        glutTimerFunc(0, jumpTimer, 0);
+        break;
     case 'o':
         glutTimerFunc(0, openDoorTimer, 0);
         glutTimerFunc(0, timer, 0);
@@ -210,20 +289,6 @@ void keySpecial(int key, int x, int y) {
     cameraPos = glm::vec3(rotationMatrix * glm::vec4(cameraPos, 1.0f));
 
     glutPostRedisplay();
-}
-
-void collisionCheck() {
-    for (auto& bodyModel : Body::models) {
-        for (auto& wallModel: Wall::models) {
-            if (bodyModel.rigidBody && wallModel.rigidBody) {
-                CustomContactResultCallback resultCallback;
-                dynamicsWorld->contactPairTest(bodyModel.rigidBody, wallModel.rigidBody, resultCallback);
-                if (resultCallback.hitDetected) {
-                    cout << "충돌!!!" << endl;
-                }
-            }
-        }
-    }
 }
 
 int main(int argc, char** argv) {

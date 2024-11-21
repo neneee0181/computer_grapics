@@ -134,7 +134,7 @@ namespace Wall{
                 transform = glm::translate(transform, glm::vec3(posX, -25.0f, posZ));
                 model.modelMatrix = transform * model.modelMatrix;
                 model.name = "bottom";
-                model.rigid_status = false;
+                //model.rigid_status = false;
                 // ¸ðµ¨ º¤ÅÍ¿¡ Ãß°¡
                 models.push_back(model);
             }
