@@ -106,30 +106,34 @@ void move_arm_leg(Model& model) {
 
 }
 
+glm::mat4 bodyRo = glm::mat4(1.0f);
+
 void timer(int value) {
-    //collisionCheck();
 
     for (auto& model : Body::models) {
         if (keyState['w']) {
             glm::mat4 matrix = glm::mat4(1.0f);
             matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, speed));
             model.modelMatrix = matrix * model.modelMatrix;
-           
+            bodyRo = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0, 1.0, 0.0));
         }
         if (keyState['a']) {
             glm::mat4 matrix = glm::mat4(1.0f);
             matrix = glm::translate(matrix, glm::vec3(-speed, 0.0, 0.0));
             model.modelMatrix = matrix * model.modelMatrix;
+            bodyRo = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0, 1.0, 0.0));
         }
         if (keyState['s']) {
             glm::mat4 matrix = glm::mat4(1.0f);
             matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, -speed));
             model.modelMatrix = matrix * model.modelMatrix;
+            bodyRo = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
         }
         if (keyState['d']) {
             glm::mat4 matrix = glm::mat4(1.0f);
             matrix = glm::translate(matrix, glm::vec3(speed, 0.0, 0.0));
             model.modelMatrix = matrix * model.modelMatrix;
+            bodyRo = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
         }
     }
     
@@ -363,12 +367,9 @@ GLvoid drawScene() {
     glUniform3fv(lightPosLoc, 1, glm::value_ptr(-glm::vec3(900.0, -900.0, -900.0)));
     glUniform3fv(lightColorLoc, 1, glm::value_ptr(glm::vec3(0.6f, 0.65f, 0.6f)));
 
-    GLint modelStatus = glGetUniformLocation(shaderProgramID, "modelStatus");
-    GLint modelLoc = glGetUniformLocation(shaderProgramID, "model");
-
     glEnable(GL_DEPTH_TEST);
-    Wall::draw(modelLoc, modelStatus, isKeyPressed_s);
-    Body::draw(modelLoc, modelStatus, isKeyPressed_s);
+    Wall::draw(shaderProgramID, isKeyPressed_s);
+    Body::draw(shaderProgramID, isKeyPressed_s, bodyRo);
     glDisable(GL_DEPTH_TEST);
 
     Body::draw_rigidBody(shaderProgramID);

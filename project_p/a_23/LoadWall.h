@@ -155,7 +155,11 @@ namespace Wall{
         }
     }
 
-    void draw(GLint modelLoc, GLint modelStatus, bool (*isKeyPressed_s)(const char&)) {
+    void draw(GLuint shaderProgramID, bool (*isKeyPressed_s)(const char&)) {
+
+        GLint modelStatus = glGetUniformLocation(shaderProgramID, "modelStatus");
+        GLint modelLoc = glGetUniformLocation(shaderProgramID, "model");
+
         for (size_t i = 0; i < models.size(); ++i) {
 
             if (models[i].model_status) {
