@@ -99,6 +99,22 @@ void keySpecial(int key, int x, int y) {
     glutPostRedisplay();
 }
 
+void collisionTimer(int value) {
+
+    for (auto& bodyModel : Body::models) {
+        for (auto& wallModel: Wall::models) {
+            CustomContactResultCallback resultCallback;
+            dynamicsWorld->contactPairTest(bodyModel.rigidBody, wallModel.rigidBody, resultCallback);
+            if (resultCallback.hitDetected) {
+                cout << "Ãæµ¹!!!" << endl;
+            }
+        }
+    }
+
+    glutPostRedisplay();
+    glutTimerFunc(16, collisionTimer, 0);
+}
+
 int main(int argc, char** argv) {
 
     width = 800;
@@ -136,6 +152,7 @@ int main(int argc, char** argv) {
     glutKeyboardFunc(keyDown);
     glutKeyboardUpFunc(keyUp);
     glutSpecialFunc(keySpecial);
+    glutTimerFunc(0, collisionTimer, 0);
     glutMainLoop();
 
     return 0;
