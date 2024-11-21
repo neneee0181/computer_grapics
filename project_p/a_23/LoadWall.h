@@ -43,7 +43,7 @@ namespace Wall{
         model_left = model_1;
         matrix = glm::mat4(1.0f);
         matrix = glm::scale(matrix, glm::vec3(5.0, 5.0, 5.0));
-        matrix = glm::translate(matrix, glm::vec3(-5.0, 5.0, 0.0));
+        matrix = glm::translate(matrix, glm::vec3(-5.0, 0.0, 0.0));
         matrix = glm::rotate(matrix, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0f));
         model_left.modelMatrix = matrix * model_left.modelMatrix;
         model_left.material.Ka = glm::vec3(0.8, 0.1, 0.1);
@@ -54,7 +54,7 @@ namespace Wall{
         model_right = model_1;
         matrix = glm::mat4(1.0f);
         matrix = glm::scale(matrix, glm::vec3(5.0, 5.0, 5.0));
-        matrix = glm::translate(matrix, glm::vec3(5.0, 5.0, 0.0));
+        matrix = glm::translate(matrix, glm::vec3(5.0, 0.0, 0.0));
         matrix = glm::rotate(matrix, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0f));
         model_right.modelMatrix = matrix * model_right.modelMatrix;
         model_right.material.Ka = glm::vec3(0.1, 0.8, 0.1);
@@ -65,7 +65,7 @@ namespace Wall{
         model_back = model_1;
         matrix = glm::mat4(1.0f);
         matrix = glm::scale(matrix, glm::vec3(5.0, 5.0, 5.0));
-        matrix = glm::translate(matrix, glm::vec3(0.0, 5.0, -5.0));
+        matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, -5.0));
         matrix = glm::rotate(matrix, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0f));
         model_back.modelMatrix = matrix * model_back.modelMatrix;
         model_back.material.Ka = glm::vec3(0.1, 0.1, 0.8);
@@ -76,13 +76,35 @@ namespace Wall{
         model_top = model_1;
         matrix = glm::mat4(1.0f);
         matrix = glm::scale(matrix, glm::vec3(5.0, 5.0, 5.0));
-        matrix = glm::translate(matrix, glm::vec3(0.0, 10.0, 0.0));
+        matrix = glm::translate(matrix, glm::vec3(0.0, 5.0, 0.0));
         model_top.modelMatrix = matrix * model_top.modelMatrix;
         model_top.material.Ka = glm::vec3(0.5, 0.5, 0.5);
         model_top.name = "top";
         model_top.rigid_status = false;
         models.push_back(model_top);
 
+        model_front1 = model_1;
+        matrix = glm::mat4(1.0f);
+        matrix = glm::scale(matrix, glm::vec3(2.5, 5.0, 5.0));
+        matrix = glm::translate(matrix, glm::vec3(-5.0, 0.0, 5.0));
+        matrix = glm::rotate(matrix, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0f));
+        model_front1.modelMatrix = matrix * model_front1.modelMatrix;
+        model_front1.material.Ka = glm::vec3(0.8, 0.8, 0.8);
+        model_front1.name = "front1";
+        model_front1.rigid_status = false;
+        models.push_back(model_front1);
+
+
+        model_front2 = model_1;
+        matrix = glm::mat4(1.0f);
+        matrix = glm::scale(matrix, glm::vec3(2.5, 5.0, 5.0));
+        matrix = glm::translate(matrix, glm::vec3(5.0, 0.0, 5.0));
+        matrix = glm::rotate(matrix, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0f));
+        model_front2.modelMatrix = matrix * model_front2.modelMatrix;
+        model_front2.material.Ka = glm::vec3(0.8, 0.8, 0.8);
+        model_front2.name = "front2";
+        model_front2.rigid_status = false;
+        models.push_back(model_front2);
 
         // 5x5 크기의 바닥 설치
         const float spacing = 10; // 각 plane의 크기 (x와 z 간 간격)
@@ -109,7 +131,7 @@ namespace Wall{
 
                 // 변환 행렬 생성
                 glm::mat4 transform = glm::mat4(1.0f);
-                transform = glm::translate(transform, glm::vec3(posX, 0.0f, posZ));
+                transform = glm::translate(transform, glm::vec3(posX, -25.0f, posZ));
                 model.modelMatrix = transform * model.modelMatrix;
                 model.name = "bottom";
                 model.rigid_status = false;

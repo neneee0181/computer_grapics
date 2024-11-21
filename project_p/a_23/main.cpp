@@ -51,12 +51,36 @@ void keyUp(unsigned char key, int x, int y) {
     keyUp_s(key);
 }
 
+void openDoorTimer(int value) {
+
+    for (auto& model : Wall::models) {
+        if (model.name == "front1") {
+            glm::mat4 matrix = glm::mat4(1.0f);
+            matrix = glm::translate(matrix, glm::vec3(-0.1, 0.0, 0.0));
+            model.modelMatrix = matrix * model.modelMatrix;
+        }
+        else if (model.name == "front2") {
+            glm::mat4 matrix = glm::mat4(1.0f);
+            matrix = glm::translate(matrix, glm::vec3(0.1, 0.0, 0.0));
+            model.modelMatrix = matrix * model.modelMatrix;
+        }
+    }
+
+    glutPostRedisplay();
+    if (value < 250) {
+        glutTimerFunc(16, openDoorTimer, ++value);
+    }
+}
+
 void keyDown(unsigned char key, int x, int y) {
 
     keyDown_s(key);
 
     switch (key)
     {
+    case 'o':
+        glutTimerFunc(0, openDoorTimer, 0);
+        break;
     case 'q':
         cout << " 프로그램 종료 " << endl;
         exit(0);
