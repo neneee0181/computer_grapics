@@ -1,0 +1,17 @@
+﻿  filetobuf.cpp
+  main.cpp
+main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp___glewUseProgram
+main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp___glewGetShaderiv
+main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp___glewCompileShader
+main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp___glewCreateShader
+main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp___glewCreateProgram
+main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp___glewGetShaderInfoLog
+main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp___glewGetProgramiv
+main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp___glewAttachShader
+main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp___glewShaderSource
+main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp_glewExperimental
+main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp___glewGetProgramInfoLog
+main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp___glewDeleteShader
+main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp___glewLinkProgram
+main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp_glewInit
+C:\Users\kevin\mine\computer_grapics\project_p\x64\Release\glsl_p_2.exe : fatal error LNK1120: 14개의 확인할 수 없는 외부 참조입니다.

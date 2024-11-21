@@ -3,11 +3,11 @@
 #include <limits>  // std::numeric_limits 사용을 위한 헤더 추가
 #include <gl/glm/glm/glm.hpp>
 
-#include "Model.h"
 #include "CustomContactResultCallback.h"
 
 #include"include/btBulletCollisionCommon.h"
 #include"include/btBulletDynamicsCommon.h"
+#include "Model.h"
 
 void removeRigidBodyFromModel(Model& model);
 
@@ -69,10 +69,6 @@ void alignModelToOrigin(Model& model) {
     }
 
     glm::vec3 center = (min + max) * 0.5f; // AABB의 중심 계산
-    if (model.type == "box")
-        center.y -= 10.0f; // 중심의 Y축을 -20으로 내림
-    else if (model.type == "body")
-        center.y -= 25.0f;
 
     // 2. 모든 정점을 중심 기준으로 이동
     for (auto& vertex : model.vertices) {
@@ -93,14 +89,8 @@ void addModelToPhysicsWorld(Model& model) {
     // 충돌 박스 생성
     btCollisionShape* shape = nullptr;
 
-    if (model.type == "box" || model.type == "body" || model.name =="bbox") {
-        if (model.name == "box_bottom" || model.name == "box_front" || model.name == "box_top") {
-            return; // 제외 조건
-        }
-
-        // Box 형태의 충돌 경계 생성 (0.5배로 크기 설정)
-        shape = new btBoxShape(btVector3(size.x * 0.5f, size.y * 0.5f, size.z * 0.5f));
-    }
+    // Box 형태의 충돌 경계 생성 (0.5배로 크기 설정)
+    shape = new btBoxShape(btVector3(size.x * 0.5f, size.y * 0.5f, size.z * 0.5f));
 
     if (!shape) {
         std::cerr << "Failed to create collision shape for model: " << model.name << std::endl;
@@ -230,27 +220,8 @@ void removeRigidBodyFromModel(Model& model) {
 void UpdateRigidBodyTransform(Model& model) {
     if (!model.rigidBody) return; // 물리 객체가 없으면 건너뜀
     glm::mat4 modelMatrix;
-    if (model.type == "box") {
-        // ModelMatrix에서 Bullet Transform으로 변환
-        modelMatrix = model.modelMatrix; // 변환 & 회전 적용
-        if (model.name == "box_back") {
-            modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0, 40.0, -20.0));
-        }
-        if (model.name == "box_right") {
-            modelMatrix = glm::translate(modelMatrix, glm::vec3(20.0, 40.0, 0.0));
-        }
-        if (model.name == "box_left") {
-            modelMatrix = glm::translate(modelMatrix, glm::vec3(-20.0, 40.0, 0.0));
-        }
-        if (model.name == "bbox") {
-            modelMatrix = model.modelMatrix;
-            modelMatrix = glm::translate(modelMatrix, glm::vec3(-10.0, 5.0, 10.0));
-        }
-    }
-    else if (model.type == "body") {
-        modelMatrix = model.modelMatrix * model.rotationMatrix; // 변환 & 회전 적용
-        modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0, 70.0, 0.0));
-    }
+  
+    modelMatrix = model.modelMatrix;
    
     btTransform transform;
 

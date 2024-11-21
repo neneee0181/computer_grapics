@@ -111,7 +111,9 @@ int main(int argc, char** argv) {
 
     make_shaderProgram();
 
-    load_wall_obj();
+    initPhysics(); // Bullet 초기화 함수 호출
+
+    load_wall_obj(); // 벽 obj 불러옴
 
     InitBuffer();
 
@@ -157,6 +159,7 @@ GLvoid drawScene() {
     glUniform3fv(lightColorLoc, 1, glm::value_ptr(glm::vec3(0.6f, 0.65f, 0.6f)));
 
     draw_wall(shaderProgramID, isKeyPressed_s);
+    draw_rigidBody();
 
     glutSwapBuffers();
     GLenum err;

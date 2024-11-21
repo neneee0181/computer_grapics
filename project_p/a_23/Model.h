@@ -5,6 +5,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include"include/btBulletDynamicsCommon.h"
 
 struct Vertex {
     float x, y, z;
@@ -56,4 +57,6 @@ struct Model {
     GLuint textureID;  // 텍스처 ID 필드 추가
 
     bool model_status = true;
+    btRigidBody* rigidBody = nullptr;  // 각 모델의 강체
+
 };
