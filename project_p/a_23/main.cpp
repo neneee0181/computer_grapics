@@ -194,6 +194,7 @@ GLvoid drawScene() {
         cameraDirection,
         cameraUp
     );
+
     unsigned int viewLocation = glGetUniformLocation(shaderProgramID, "viewTransform");
     glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
 
@@ -212,10 +213,10 @@ GLvoid drawScene() {
 
     glEnable(GL_DEPTH_TEST);
     Wall::draw(modelLoc, modelStatus, isKeyPressed_s);
-    //Body::draw(modelLoc, modelStatus, isKeyPressed_s);
+    Body::draw(modelLoc, modelStatus, isKeyPressed_s);
     glDisable(GL_DEPTH_TEST);
 
-    //Body::draw_rigidBody(shaderProgramID);
+    Body::draw_rigidBody(shaderProgramID);
     Wall::draw_rigidBody(shaderProgramID);
 
     glutSwapBuffers();

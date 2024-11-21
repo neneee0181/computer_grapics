@@ -22,14 +22,50 @@ namespace Body {
 
     void load_obj() {
 
-        Model model_box;
-        read_obj_file("obj/body.obj", model_box, "body1", "box");
+        Model model_body, model_box;
+        read_obj_file("obj/body.obj", model_body, "body", "box");
+        read_obj_file("obj/box1.obj", model_box, "box", "box");
 
-        glm::mat4 matrix_box = glm::mat4(1.0f);
-        matrix_box = glm::translate(matrix_box, glm::vec3(0.0, 0.0, 0.0));
-        model_box.modelMatrix = matrix_box * model_box.modelMatrix;
+        glm::mat4 matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(0.0, -15.2, 0.0));
+        matrix = glm::scale(matrix, glm::vec3(0.6, 0.6, 0.6));
+        model_body.modelMatrix = matrix * model_body.modelMatrix;
+        models.push_back(model_body);
 
-        models.push_back(model_box);
+        //¿ÞÂÊ ¹ß
+        matrix = glm::mat4(1.0f);
+        Model model_left_leg = model_box;
+        matrix = glm::translate(matrix, glm::vec3(-2.0, -23.0, 0.0));
+        matrix = glm::scale(matrix, glm::vec3(1.5, 1.9, 1.5));
+        model_left_leg.modelMatrix = matrix * model_left_leg.modelMatrix;
+        models.push_back(model_left_leg);
+
+        //¿À¸¥ÂÊ ¹ß
+        matrix = glm::mat4(1.0f);
+        Model model_right_leg = model_box;
+        matrix = glm::translate(matrix, glm::vec3(2.0, -23.0, 0.0));
+        matrix = glm::scale(matrix, glm::vec3(1.5, 1.9, 1.5));
+        model_right_leg.modelMatrix = matrix * model_right_leg.modelMatrix;
+        models.push_back(model_right_leg);
+
+        //¿ÞÂÊ ÆÈ
+        matrix = glm::mat4(1.0f);
+        Model model_left_arm = model_box;
+        matrix = glm::translate(matrix, glm::vec3(-4.0, -16.0, 0.0));
+        matrix = glm::scale(matrix, glm::vec3(1.5, 1.9, 1.5));
+        matrix = glm::rotate(matrix, glm::radians(-45.0f), glm::vec3(0.0, 0.0, 1.0));
+        model_left_arm.modelMatrix = matrix * model_left_arm.modelMatrix;
+        models.push_back(model_left_arm);
+
+        //¿ÞÂÊ ÆÈ
+        matrix = glm::mat4(1.0f);
+        Model model_right_arm = model_box;
+        matrix = glm::translate(matrix, glm::vec3(4.0, -16.0, 0.0));
+        matrix = glm::scale(matrix, glm::vec3(1.5, 1.9, 1.5));
+        matrix = glm::rotate(matrix, glm::radians(45.0f), glm::vec3(0.0, 0.0, 1.0));
+        model_right_arm.modelMatrix = matrix * model_right_arm.modelMatrix;
+        models.push_back(model_right_arm);
+
 
         for (auto& model : models) {
             if (!model.material.map_Kd.empty()) {
