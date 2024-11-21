@@ -47,7 +47,42 @@ namespace Wall{
         matrix = glm::rotate(matrix, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0f));
         model_left.modelMatrix = matrix * model_left.modelMatrix;
         model_left.material.Ka = glm::vec3(0.8, 0.1, 0.1);
+        model_left.name = "left";
         models.push_back(model_left);
+
+        //우측 벽
+        model_right = model_1;
+        matrix = glm::mat4(1.0f);
+        matrix = glm::scale(matrix, glm::vec3(5.0, 5.0, 5.0));
+        matrix = glm::translate(matrix, glm::vec3(5.0, 5.0, 0.0));
+        matrix = glm::rotate(matrix, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0f));
+        model_right.modelMatrix = matrix * model_right.modelMatrix;
+        model_right.material.Ka = glm::vec3(0.1, 0.8, 0.1);
+        model_right.name = "right";
+        models.push_back(model_right);
+
+        //뒤쪽 벽
+        model_back = model_1;
+        matrix = glm::mat4(1.0f);
+        matrix = glm::scale(matrix, glm::vec3(5.0, 5.0, 5.0));
+        matrix = glm::translate(matrix, glm::vec3(0.0, 5.0, -5.0));
+        matrix = glm::rotate(matrix, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0f));
+        model_back.modelMatrix = matrix * model_back.modelMatrix;
+        model_back.material.Ka = glm::vec3(0.1, 0.1, 0.8);
+        model_back.name = "back";
+        models.push_back(model_back);
+
+        //위쪽 벽
+        model_top = model_1;
+        matrix = glm::mat4(1.0f);
+        matrix = glm::scale(matrix, glm::vec3(5.0, 5.0, 5.0));
+        matrix = glm::translate(matrix, glm::vec3(0.0, 10.0, 0.0));
+        model_top.modelMatrix = matrix * model_top.modelMatrix;
+        model_top.material.Ka = glm::vec3(0.5, 0.5, 0.5);
+        model_top.name = "top";
+        model_top.rigid_status = false;
+        models.push_back(model_top);
+
 
         // 5x5 크기의 바닥 설치
         const float spacing = 10; // 각 plane의 크기 (x와 z 간 간격)
@@ -77,6 +112,7 @@ namespace Wall{
                 transform = glm::translate(transform, glm::vec3(posX, 0.0f, posZ));
                 model.modelMatrix = transform * model.modelMatrix;
                 model.name = "bottom";
+                model.rigid_status = false;
                 // 모델 벡터에 추가
                 models.push_back(model);
             }
@@ -89,6 +125,10 @@ namespace Wall{
             }
             else {
                 model.material.hasTexture = false;
+            }
+            
+            if (model.rigid_status) {
+                addModelToPhysicsWorld(model);
             }
         }
     }

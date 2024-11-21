@@ -95,10 +95,12 @@ void collisionTimer(int value) {
 
     for (auto& bodyModel : Body::models) {
         for (auto& wallModel: Wall::models) {
-            CustomContactResultCallback resultCallback;
-            dynamicsWorld->contactPairTest(bodyModel.rigidBody, wallModel.rigidBody, resultCallback);
-            if (resultCallback.hitDetected) {
-                cout << "충돌!!!" << endl;
+            if (bodyModel.rigidBody && wallModel.rigidBody) {
+                CustomContactResultCallback resultCallback;
+                dynamicsWorld->contactPairTest(bodyModel.rigidBody, wallModel.rigidBody, resultCallback);
+                if (resultCallback.hitDetected) {
+                    cout << "충돌!!!" << endl;
+                }
             }
         }
     }
@@ -135,7 +137,6 @@ int main(int argc, char** argv) {
     Wall::load_obj(); // 벽 obj 불러옴
 
     initializeModelsWithPhysics(Body::models);
-    initializeModelsWithPhysics(Wall::models);
 
     InitBuffer();
 
