@@ -281,7 +281,7 @@ void RenderCollisionBox(const Model& model, GLuint shaderProgram) {
 
     // AABB 박스 렌더링
     glBindVertexArray(vao);
-    glDrawElements(GL_LINES, 24, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_LINES, 24, GL_UNSIGNED_INT, 0);   
 
     // 상태 복원: Rigid body 플래그 끄기
     glUniform1i(isRigidBodyLoc, 0);
