@@ -51,6 +51,33 @@ void keyUp(unsigned char key, int x, int y) {
     keyUp_s(key);
 }
 
+float speed = 0.5f;
+
+void timer(int value) {
+
+    for (auto& model : Body::models) {
+        if (keyState['w']) {
+            glm::mat4 matrix = glm::mat4(1.0f);
+            matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, speed));
+            model.modelMatrix = matrix * model.modelMatrix;
+        }
+        if (keyState['a']) {
+
+        }
+        if (keyState['s']) {
+
+        }
+        if (keyState['d']) {
+
+        }
+    }
+
+    UpdateRigidBodyTransforms(Body::models);
+    
+    glutPostRedisplay();
+    glutTimerFunc(16, timer, 0);
+}
+
 void openDoorTimer(int value) {
 
     for (auto& model : Wall::models) {
@@ -78,8 +105,10 @@ void keyDown(unsigned char key, int x, int y) {
 
     switch (key)
     {
+    
     case 'o':
         glutTimerFunc(0, openDoorTimer, 0);
+        glutTimerFunc(0, timer, 0);
         break;
     case 'q':
         cout << " ÇÁ·Î±×·¥ Á¾·á " << endl;
@@ -159,8 +188,6 @@ int main(int argc, char** argv) {
    
     Body::load_obj(); // ¸ö obj ºÒ·¯¿È
     Wall::load_obj(); // º® obj ºÒ·¯¿È
-
-    initializeModelsWithPhysics(Body::models);
 
     InitBuffer();
 

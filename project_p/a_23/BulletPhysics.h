@@ -32,16 +32,30 @@ void initPhysics() {
 
 // Model의 AABB를 계산하여 크기를 반환하는 함수
 glm::vec3 calculateModelSize(const Model& model) {
-    // 초기 최소, 최대값을 설정
     glm::vec3 min(std::numeric_limits<float>::max());
     glm::vec3 max(std::numeric_limits<float>::lowest());
 
-    // 모든 정점 순회
-    for (const Vertex& vertex : model.vertices) {
-        // 정점 위치를 월드 공간으로 변환
-        glm::vec4 transformedVertex = model.modelMatrix * glm::vec4(vertex.x, vertex.y, vertex.z, 1.0f);
+    // OpenGL의 modelMatrix에서 위치, 회전, 스케일 추출
+    glm::vec3 translation, scale, skew;
+    glm::quat rotation;
+    glm::vec4 perspective;
+    glm::decompose(model.modelMatrix, scale, rotation, translation, skew, perspective);
 
-        // 최소값과 최대값 갱신
+    // 회전 행렬 계산 (쿼터니언 -> 행렬 변환)
+    glm::mat4 rotationMatrix = glm::mat4_cast(rotation);
+
+    // 모델 정점들을 변환하여 AABB 계산
+    for (const Vertex& vertex : model.vertices) {
+        // 1. 정점에 스케일 적용
+        glm::vec3 scaledVertex = glm::vec3(vertex.x * scale.x, vertex.y * scale.y, vertex.z * scale.z);
+
+        // 2. 스케일된 정점에 회전 적용
+        glm::vec3 rotatedVertex = glm::vec3(rotationMatrix * glm::vec4(scaledVertex, 1.0f));
+
+        // 3. 회전된 정점에 위치(translation) 적용
+        glm::vec3 transformedVertex = translation + rotatedVertex;
+
+        // 4. AABB 갱신
         min.x = std::min(min.x, transformedVertex.x);
         min.y = std::min(min.y, transformedVertex.y);
         min.z = std::min(min.z, transformedVertex.z);
@@ -51,7 +65,7 @@ glm::vec3 calculateModelSize(const Model& model) {
         max.z = std::max(max.z, transformedVertex.z);
     }
 
-    // 폭, 높이, 깊이를 계산
+    // AABB 크기 반환
     return max - min;
 }
 
@@ -69,10 +83,10 @@ void addModelToPhysicsWorld(Model& model) {
         }
     }
     else if (model.type == "sphere") {
-        
+        shape = new btSphereShape(std::max(size.x, std::max(size.y, size.z)) * 0.5f);
     }
     else if (model.type == "cylinder") {
-
+        shape = new btCylinderShape(btVector3(size.x * 0.5f, size.y * 0.5f, size.z * 0.5f));
     }
     
 
@@ -164,41 +178,60 @@ void removeRigidBodyFromModel(Model& model) {
     }
 }
 
-void UpdateRigidBodyTransforms(std::vector<Model>models) {
-
+void UpdateRigidBodyTransforms(std::vector<Model>& models) {
     for (auto& model : models) {
+        if (!model.rigidBody) continue; // RigidBody가 없는 경우 건너뜀
 
-        if (!model.rigidBody) return;
+        // OpenGL의 modelMatrix에서 변환 정보 추출
+        glm::vec3 translation, scale, skew;
+        glm::quat rotation;
+        glm::vec4 perspective;
+        glm::decompose(model.modelMatrix, scale, rotation, translation, skew, perspective);
 
-        glm::mat4 modelMatrix = model.modelMatrix;
+        // Bullet Physics의 Transform으로 변환
         btTransform transform;
-        transform.setFromOpenGLMatrix(glm::value_ptr(modelMatrix));
+        transform.setIdentity();
+        transform.setOrigin(btVector3(translation.x, translation.y, translation.z));
+        transform.setRotation(btQuaternion(rotation.x, rotation.y, rotation.z, rotation.w));
 
-        // 디버깅 로그
-        std::cout << "Updating RigidBody for Model: " << model.name
-            << " | OpenGL Position: (" << modelMatrix[3][0] << ", "
-            << modelMatrix[3][1] << ", " << modelMatrix[3][2] << ")"
-            << std::endl;
-
+        // RigidBody의 Transform 업데이트
         model.rigidBody->setWorldTransform(transform);
+
+        // MotionState도 동기화 (필수)
+        if (model.rigidBody->getMotionState()) {
+            model.rigidBody->getMotionState()->setWorldTransform(transform);
+        }
+
+        // 디버깅 로그 출력
+        /*std::cout << "Updated RigidBody: " << model.name
+            << " | Position: (" << translation.x << ", "
+            << translation.y << ", " << translation.z << ")"
+            << " | Rotation: (" << rotation.x << ", " << rotation.y
+            << ", " << rotation.z << ", " << rotation.w << ")\n";*/
     }
-
 }
-
 void UpdateRigidBodyTransform(Model& model) {
-    if (!model.rigidBody) return;
+    if (!model.rigidBody) return; // RigidBody가 없는 경우 건너뜀
 
-    glm::mat4 modelMatrix = model.modelMatrix;
+    // OpenGL의 modelMatrix에서 변환 정보 추출
+    glm::vec3 translation, scale, skew;
+    glm::quat rotation;
+    glm::vec4 perspective;
+    glm::decompose(model.modelMatrix, scale, rotation, translation, skew, perspective);
+
+    // Bullet Physics의 Transform으로 변환
     btTransform transform;
-    transform.setFromOpenGLMatrix(glm::value_ptr(modelMatrix));
+    transform.setIdentity();
+    transform.setOrigin(btVector3(translation.x, translation.y, translation.z));
+    transform.setRotation(btQuaternion(rotation.x, rotation.y, rotation.z, rotation.w));
 
-    // 디버깅 로그
-    std::cout << "Updating RigidBody for Model: " << model.name
-        << " | OpenGL Position: (" << modelMatrix[3][0] << ", "
-        << modelMatrix[3][1] << ", " << modelMatrix[3][2] << ")"
-        << std::endl;
-
+    // RigidBody의 Transform 업데이트
     model.rigidBody->setWorldTransform(transform);
+
+    // MotionState도 동기화 (필수)
+    if (model.rigidBody->getMotionState()) {
+        model.rigidBody->getMotionState()->setWorldTransform(transform);
+    }
 }
 
 void RenderCollisionBox(const Model& model, GLuint shaderProgram) {

@@ -75,6 +75,10 @@ namespace Body {
             else {
                 model.material.hasTexture = false;
             }
+
+            if (model.rigid_status) {
+                addModelToPhysicsWorld(model);
+            }
         }
     }
 
