@@ -144,6 +144,7 @@
     <ClInclude Include="BulletPhysics.h" />
     <ClInclude Include="CustomContactResultCallback.h" />
     <ClInclude Include="filetobuf.h" />
+    <ClInclude Include="LoadBody.h" />
     <ClInclude Include="LoadMtl.h" />
     <ClInclude Include="LoadObj.h" />
     <ClInclude Include="LoadTexture.h" />

@@ -11,6 +11,7 @@
 
 #include "shaderMaker.h"
 #include "LoadWall.h"
+#include "LoadBody.h"
 
 using namespace std;
 
@@ -113,7 +114,8 @@ int main(int argc, char** argv) {
 
     initPhysics(); // Bullet 초기화 함수 호출
 
-    load_wall_obj(); // 벽 obj 불러옴
+    Wall::load_obj(); // 벽 obj 불러옴
+    Body::load_obj(); // 몸 obj 불러옴
 
     InitBuffer();
 
@@ -158,10 +160,12 @@ GLvoid drawScene() {
     glUniform3fv(lightPosLoc, 1, glm::value_ptr(-glm::vec3(900.0, -900.0, -900.0)));
     glUniform3fv(lightColorLoc, 1, glm::value_ptr(glm::vec3(0.6f, 0.65f, 0.6f)));
 
-    draw_wall(shaderProgramID, isKeyPressed_s);
+    Wall::draw(shaderProgramID, isKeyPressed_s);
+    Body::draw(shaderProgramID, isKeyPressed_s);
 
-    draw_rigidBody(shaderProgramID);
 
+    Wall::draw_rigidBody(shaderProgramID);
+    Body::draw_rigidBody(shaderProgramID);
     glutSwapBuffers();
     GLenum err;
     while ((err = glGetError()) != GL_NO_ERROR) {
@@ -172,5 +176,6 @@ GLvoid drawScene() {
 // 버퍼 초기화 함수
 void InitBuffer() {
     //-----------------------------------------------------------------------------------------------------------
-    initBuffer_wall();
+    Wall::initBuffer();
+    Body::initBuffer();
 }
