@@ -23,7 +23,7 @@ namespace Body {
     void load_obj() {
 
         Model model_box;
-        read_obj_file("obj/body.obj", model_box, "body1");
+        read_obj_file("obj/body.obj", model_box, "body1", "box");
 
         glm::mat4 matrix_box = glm::mat4(1.0f);
         matrix_box = glm::translate(matrix_box, glm::vec3(0.0, 0.0, 0.0));

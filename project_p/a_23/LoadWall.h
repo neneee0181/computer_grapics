@@ -24,7 +24,7 @@ namespace Wall{
     void load_obj() {
 
         Model model_box;
-        read_obj_file("obj/big_box.obj", model_box, "wall");
+        read_obj_file("obj/big_box.obj", model_box, "wall", "box");
 
         glm::mat4 matrix_box = glm::mat4(1.0f);
         matrix_box = glm::translate(matrix_box, glm::vec3(0.0, 0.0, 0.0));
