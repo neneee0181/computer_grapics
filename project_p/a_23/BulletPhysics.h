@@ -230,47 +230,47 @@ void UpdateRigidBodyTransform(Model& model) {
     model.rigidBody->setWorldTransform(transform); // Bullet 물리 객체 갱신
 }
 
-
-
 void RenderCollisionBox(const Model& model) {
     if (!model.rigidBody) return; // 물리 객체가 없으면 건너뜀
+
+    // OpenGL 상태 저장
+    glPushAttrib(GL_CURRENT_BIT);
 
     // AABB 계산
     btVector3 aabbMin, aabbMax;
     model.rigidBody->getCollisionShape()->getAabb(model.rigidBody->getWorldTransform(), aabbMin, aabbMax);
 
-    // AABB를 glm::vec3로 변환
     glm::vec3 min = glm::vec3(aabbMin.getX(), aabbMin.getY(), aabbMin.getZ());
     glm::vec3 max = glm::vec3(aabbMax.getX(), aabbMax.getY(), aabbMax.getZ());
 
-    // AABB의 8개 꼭짓점 계산
     glm::vec3 corners[8] = {
-        glm::vec3(min.x, min.y, min.z), // 0: (xmin, ymin, zmin)
-        glm::vec3(max.x, min.y, min.z), // 1: (xmax, ymin, zmin)
-        glm::vec3(max.x, max.y, min.z), // 2: (xmax, ymax, zmin)
-        glm::vec3(min.x, max.y, min.z), // 3: (xmin, ymax, zmin)
-        glm::vec3(min.x, min.y, max.z), // 4: (xmin, ymin, zmax)
-        glm::vec3(max.x, min.y, max.z), // 5: (xmax, ymin, zmax)
-        glm::vec3(max.x, max.y, max.z), // 6: (xmax, ymax, zmax)
-        glm::vec3(min.x, max.y, max.z)  // 7: (xmin, ymax, zmax)
+        glm::vec3(min.x, min.y, min.z),
+        glm::vec3(max.x, min.y, min.z),
+        glm::vec3(max.x, max.y, min.z),
+        glm::vec3(min.x, max.y, min.z),
+        glm::vec3(min.x, min.y, max.z),
+        glm::vec3(max.x, min.y, max.z),
+        glm::vec3(max.x, max.y, max.z),
+        glm::vec3(min.x, max.y, max.z)
     };
 
-    // 충돌 박스를 그리는 선분 인덱스
     GLuint indices[24] = {
-        0, 1, 1, 2, 2, 3, 3, 0, // 아래쪽 사각형
-        4, 5, 5, 6, 6, 7, 7, 4, // 위쪽 사각형
-        0, 4, 1, 5, 2, 6, 3, 7  // 아래-위 연결
+        0, 1, 1, 2, 2, 3, 3, 0,
+        4, 5, 5, 6, 6, 7, 7, 4,
+        0, 4, 1, 5, 2, 6, 3, 7
     };
 
-    // OpenGL로 충돌 박스 렌더링
-    glLineWidth(2.0f); // 선 굵기
-    glColor3f(0.0f, 1.0f, 0.0f);
-    glBegin(GL_LINES);
+    glLineWidth(2.0f);
+    glColor3f(1.0f, 0.0f, 0.0f); // 빨간색
 
+    glBegin(GL_LINES);
     for (int i = 0; i < 24; i += 2) {
         glVertex3fv(glm::value_ptr(corners[indices[i]]));
         glVertex3fv(glm::value_ptr(corners[indices[i + 1]]));
     }
-
     glEnd();
+
+    // OpenGL 상태 복원
+    glPopAttrib();
 }
+
