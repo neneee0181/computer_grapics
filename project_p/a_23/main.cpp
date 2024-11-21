@@ -144,7 +144,7 @@ void timer(int value) {
         }
     }
 
-    UpdateRigidBodyTransforms(Body::models);
+    UpdateRigidBodyTransforms(Body::models, bodyRo);
     
     glutPostRedisplay();
     glutTimerFunc(16, timer, 0);

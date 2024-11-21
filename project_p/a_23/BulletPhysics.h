@@ -178,7 +178,7 @@ void removeRigidBodyFromModel(Model& model) {
     }
 }
 
-void UpdateRigidBodyTransforms(std::vector<Model>& models) {
+void UpdateRigidBodyTransforms(std::vector<Model>& models, glm::mat4 bodyRo) {
     for (auto& model : models) {
         if (!model.rigidBody) continue; // RigidBody가 없는 경우 건너뜀
 
@@ -186,7 +186,17 @@ void UpdateRigidBodyTransforms(std::vector<Model>& models) {
         glm::vec3 translation, scale, skew;
         glm::quat rotation;
         glm::vec4 perspective;
-        glm::decompose(model.modelMatrix, scale, rotation, translation, skew, perspective);
+        if (model.name == "body") {
+            glm::decompose(model.modelMatrix * bodyRo, scale, rotation, translation, skew, perspective);
+        }
+        else {
+            glm::mat4 matrix = glm::mat4(1.0f);
+            matrix = glm::translate(matrix, glm::vec3(models[0].modelMatrix[3]));
+            matrix = matrix * bodyRo;
+            matrix = glm::translate(matrix, glm::vec3(-models[0].modelMatrix[3]));
+            matrix = matrix * model.modelMatrix;
+            glm::decompose(matrix, scale, rotation, translation, skew, perspective);
+        }
 
         // Bullet Physics의 Transform으로 변환
         btTransform transform;
@@ -198,9 +208,9 @@ void UpdateRigidBodyTransforms(std::vector<Model>& models) {
         model.rigidBody->setWorldTransform(transform);
 
         // MotionState도 동기화 (필수)
-        if (model.rigidBody->getMotionState()) {
+        /*if (model.rigidBody->getMotionState()) {
             model.rigidBody->getMotionState()->setWorldTransform(transform);
-        }
+        }*/
 
         // 디버깅 로그 출력
         /*std::cout << "Updated RigidBody: " << model.name
