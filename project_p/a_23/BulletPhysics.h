@@ -2,11 +2,13 @@
 
 #include <limits>  // std::numeric_limits 사용을 위한 헤더 추가
 #include <gl/glm/glm/glm.hpp>
+#include <gl/glm/glm/gtx/matrix_decompose.hpp>
 
 #include "CustomContactResultCallback.h"
 
 #include"include/btBulletCollisionCommon.h"
 #include"include/btBulletDynamicsCommon.h"
+
 #include "Model.h"
 
 void removeRigidBodyFromModel(Model& model);
@@ -53,58 +55,28 @@ glm::vec3 calculateModelSize(const Model& model) {
     return max - min;
 }
 
-void alignModelToOrigin(Model& model) {
-    glm::vec3 min(std::numeric_limits<float>::max());
-    glm::vec3 max(std::numeric_limits<float>::lowest());
-
-    // 1. AABB 계산 (모델의 최소/최대 정점 찾기)
-    for (const Vertex& vertex : model.vertices) {
-        min.x = std::min(min.x, vertex.x);
-        min.y = std::min(min.y, vertex.y);
-        min.z = std::min(min.z, vertex.z);
-
-        max.x = std::max(max.x, vertex.x);
-        max.y = std::max(max.y, vertex.y);
-        max.z = std::max(max.z, vertex.z);
-    }
-
-    glm::vec3 center = (min + max) * 0.5f; // AABB의 중심 계산
-
-    // 2. 모든 정점을 중심 기준으로 이동
-    for (auto& vertex : model.vertices) {
-        vertex.x -= center.x;
-        vertex.y -= center.y;
-        vertex.z -= center.z;
-    }
-
-    // 3. 모델 행렬에 중심 이동 추가
-    model.modelMatrix = glm::translate(model.modelMatrix, center);
-}
-
 // 모델에 대한 충돌 객체와 강체 생성 및 물리 세계에 추가
 void addModelToPhysicsWorld(Model& model) {
     // 모델의 크기 계산 (AABB)
     glm::vec3 size = calculateModelSize(model);
 
-    // 충돌 박스 생성
-    btCollisionShape* shape = nullptr;
-
-    // Box 형태의 충돌 경계 생성 (0.5배로 크기 설정)
-    shape = new btBoxShape(btVector3(size.x * 0.5f, size.y * 0.5f, size.z * 0.5f));
-
+    // 각 모델에 독립적인 충돌 박스 생성
+    btCollisionShape* shape = new btBoxShape(btVector3(size.x * 0.5f, size.y * 0.5f, size.z * 0.5f));
     if (!shape) {
         std::cerr << "Failed to create collision shape for model: " << model.name << std::endl;
         return;
     }
 
-    // 시작 위치 설정
+    // OpenGL의 modelMatrix에서 위치, 회전, 스케일 추출
+    glm::vec3 translation, scale, skew;
+    glm::vec4 perspective;
+    glm::quat rotation;
+    glm::decompose(model.modelMatrix, scale, rotation, translation, skew, perspective);
+
+    // Bullet Physics에서 사용하는 btTransform으로 변환
     btTransform startTransform;
     startTransform.setIdentity();
-    startTransform.setOrigin(btVector3(
-        model.modelMatrix[3].x,
-        model.modelMatrix[3].y,
-        model.modelMatrix[3].z
-    ));
+    startTransform.setOrigin(btVector3(translation.x, translation.y, translation.z));
 
     // 질량 및 관성 설정
     btScalar mass = 1.0f;
@@ -122,45 +94,11 @@ void addModelToPhysicsWorld(Model& model) {
     model.rigidBody = body;
 }
 
+
 // 모든 모델에 대한 물리 세계 충돌 객체 초기화
 void initializeModelsWithPhysics(std::vector<Model>& models) {
     for (auto& model : models) {
         addModelToPhysicsWorld(model);
-    }
-}
-
-void updatePhysics(std::vector<Model>& models, Model& model_basket) {
-    CustomContactResultCallback resultCallback;
-
-    // 각 모델에 대해 애니메이션된 위치와 회전 상태를 Bullet Physics에 동기화
-    for (auto& model : models) {
-        if (model.rigidBody) {
-            btTransform transform;
-            transform.setFromOpenGLMatrix(glm::value_ptr(model.modelMatrix)); // modelMatrix에 회전 포함
-            model.rigidBody->setWorldTransform(transform);
-            model.rigidBody->getMotionState()->setWorldTransform(transform);
-        }
-    }
-
-    // 바구니 모델 위치 및 회전 동기화
-    if (model_basket.rigidBody) {
-        btTransform basketTransform;
-        basketTransform.setFromOpenGLMatrix(glm::value_ptr(model_basket.modelMatrix)); // modelMatrix에 회전 포함
-        model_basket.rigidBody->setWorldTransform(basketTransform);
-        model_basket.rigidBody->getMotionState()->setWorldTransform(basketTransform);
-    }
-
-    // 모델들 각각과 바구니 모델 사이의 충돌 검사 수행
-    for (auto& model : models) {
-        if (model.rigidBody && model_basket.rigidBody) {
-            resultCallback.reset();  // 이전 충돌 상태를 초기화
-            dynamicsWorld->contactPairTest(model.rigidBody, model_basket.rigidBody, resultCallback);
-
-            // 충돌이 감지되었는지 확인
-            if (resultCallback.hitDetected) {
-                //
-            }
-        }
     }
 }
 
@@ -218,17 +156,21 @@ void removeRigidBodyFromModel(Model& model) {
 }
 
 void UpdateRigidBodyTransform(Model& model) {
-    if (!model.rigidBody) return; // 물리 객체가 없으면 건너뜀
-    glm::mat4 modelMatrix;
-  
-    modelMatrix = model.modelMatrix;
-   
-    btTransform transform;
+    if (!model.rigidBody) return;
 
-    // glm::mat4 -> btTransform 변환
+    glm::mat4 modelMatrix = model.modelMatrix;
+    btTransform transform;
     transform.setFromOpenGLMatrix(glm::value_ptr(modelMatrix));
-    model.rigidBody->setWorldTransform(transform); // Bullet 물리 객체 갱신
+
+    // 디버깅 로그
+    std::cout << "Updating RigidBody for Model: " << model.name
+        << " | OpenGL Position: (" << modelMatrix[3][0] << ", "
+        << modelMatrix[3][1] << ", " << modelMatrix[3][2] << ")"
+        << std::endl;
+
+    model.rigidBody->setWorldTransform(transform);
 }
+
 void RenderCollisionBox(const Model& model, GLuint shaderProgram) {
     if (!model.rigidBody) return; // 물리 객체가 없으면 건너뜀
 

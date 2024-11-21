@@ -57,6 +57,12 @@ void keyDown(unsigned char key, int x, int y) {
 
     switch (key)
     {
+    case 'a':
+        Body::models[0].modelMatrix = glm::translate(Body::models[0].modelMatrix, glm::vec3(-1.0f, 0.0, 0.0));
+        break;
+    case 'd':
+        Wall::models[0].modelMatrix = glm::translate(Wall::models[0].modelMatrix, glm::vec3(1.0f, 0.0, 0.0));
+        break;
     case 'q':
         cout << " 프로그램 종료 " << endl;
         exit(0);
@@ -114,8 +120,9 @@ int main(int argc, char** argv) {
 
     initPhysics(); // Bullet 초기화 함수 호출
 
-    Wall::load_obj(); // 벽 obj 불러옴
+   
     Body::load_obj(); // 몸 obj 불러옴
+    Wall::load_obj(); // 벽 obj 불러옴
 
     InitBuffer();
 
@@ -130,6 +137,7 @@ int main(int argc, char** argv) {
 }
 
 GLvoid drawScene() {
+
     glClearColor(1.0, 1.0, 1.0, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -163,10 +171,10 @@ GLvoid drawScene() {
     Wall::draw(shaderProgramID, isKeyPressed_s);
     Body::draw(shaderProgramID, isKeyPressed_s);
 
-
     Wall::draw_rigidBody(shaderProgramID);
     Body::draw_rigidBody(shaderProgramID);
     glutSwapBuffers();
+
     GLenum err;
     while ((err = glGetError()) != GL_NO_ERROR) {
         cout << "OpenGL error: " << err << endl;
