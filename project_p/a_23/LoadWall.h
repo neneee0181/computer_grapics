@@ -33,9 +33,21 @@ namespace Wall{
 
         model_2 = model_1;
         matrix = glm::mat4(1.0f);
-        matrix = glm::translate(matrix, glm::vec3(-20.0, 0.0, 0.0));
+        matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, 0.0));
         model_2.modelMatrix = matrix * model_2.modelMatrix;
         model_2.material.Ka = glm::vec3(0.0, 0.0, 0.0f);
+
+        Model model_left, model_right, model_back, model_top, model_front1, model_front2;
+        
+        //왼쪽 벽
+        model_left = model_1;
+        matrix = glm::mat4(1.0f);
+        matrix = glm::scale(matrix, glm::vec3(5.0, 5.0, 5.0));
+        matrix = glm::translate(matrix, glm::vec3(-5.0, 5.0, 0.0));
+        matrix = glm::rotate(matrix, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0f));
+        model_left.modelMatrix = matrix * model_left.modelMatrix;
+        model_left.material.Ka = glm::vec3(0.8, 0.1, 0.1);
+        models.push_back(model_left);
 
         // 5x5 크기의 바닥 설치
         const float spacing = 10; // 각 plane의 크기 (x와 z 간 간격)
@@ -55,7 +67,6 @@ namespace Wall{
                 // 번갈아가며 다른 재질 적용 및 위치 보정
                 if ((x + z) % 2 == 0) {
                     model = model_2; // model_1은 위치 보정 없음
-                    posX += 20; // model_2를 오른쪽으로 이동
                 }
                 else {
                     model = model_1;
@@ -65,7 +76,7 @@ namespace Wall{
                 glm::mat4 transform = glm::mat4(1.0f);
                 transform = glm::translate(transform, glm::vec3(posX, 0.0f, posZ));
                 model.modelMatrix = transform * model.modelMatrix;
-
+                model.name = "bottom";
                 // 모델 벡터에 추가
                 models.push_back(model);
             }
