@@ -24,7 +24,7 @@ namespace Wall{
     void load_obj() {
 
         Model model_box;
-        read_obj_file("obj/big_box.obj", model_box, "box");
+        read_obj_file("obj/big_box.obj", model_box, "wall");
 
         glm::mat4 matrix_box = glm::mat4(1.0f);
         matrix_box = glm::translate(matrix_box, glm::vec3(0.0, 0.0, 0.0));
@@ -40,16 +40,10 @@ namespace Wall{
             else {
                 model.material.hasTexture = false;
             }
-            addModelToPhysicsWorld(model);
         }
     }
 
-    void draw(GLuint& shaderProgramID, bool (*isKeyPressed_s)(const char&)) {
-        glEnable(GL_DEPTH_TEST);
-
-        GLint modelStatus = glGetUniformLocation(shaderProgramID, "modelStatus");
-        GLint modelLoc = glGetUniformLocation(shaderProgramID, "model");
-
+    void draw(GLint modelLoc, GLint modelStatus, bool (*isKeyPressed_s)(const char&)) {
         for (size_t i = 0; i < models.size(); ++i) {
 
             if (models[i].model_status) {
@@ -60,6 +54,7 @@ namespace Wall{
                     glBindTexture(GL_TEXTURE_2D, models[i].material.textureID);
                     glUniform1i(glGetUniformLocation(shaderProgramID, "texture1"), 0);
                     glUniform1i(glGetUniformLocation(shaderProgramID, "hasTexture"), 1);
+                    glBindTexture(GL_TEXTURE_2D, 0);
                 }
                 else {
                     glUniform1i(glGetUniformLocation(shaderProgramID, "hasTexture"), 0);
@@ -84,10 +79,13 @@ namespace Wall{
                     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
                 glDrawElements(GL_TRIANGLES, models[i].faces.size() * 3, GL_UNSIGNED_INT, 0);
 
+                // 렌더링 이후 기본값으로 초기화
+                glm::mat4 identity = glm::mat4(1.0f);
+                glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(identity));
+
                 glBindVertexArray(0);
             }
         }
-        glDisable(GL_DEPTH_TEST);
     }
 
     void draw_rigidBody(GLuint shaderProgramID) {
@@ -144,6 +142,8 @@ namespace Wall{
             glGenBuffers(1, &ebo);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+
+            glBindVertexArray(0);
         }
     }
 }

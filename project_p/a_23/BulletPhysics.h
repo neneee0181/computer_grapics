@@ -155,6 +155,27 @@ void removeRigidBodyFromModel(Model& model) {
     }
 }
 
+void UpdateRigidBodyTransforms(std::vector<Model>models) {
+
+    for (auto& model : models) {
+
+        if (!model.rigidBody) return;
+
+        glm::mat4 modelMatrix = model.modelMatrix;
+        btTransform transform;
+        transform.setFromOpenGLMatrix(glm::value_ptr(modelMatrix));
+
+        // 디버깅 로그
+        std::cout << "Updating RigidBody for Model: " << model.name
+            << " | OpenGL Position: (" << modelMatrix[3][0] << ", "
+            << modelMatrix[3][1] << ", " << modelMatrix[3][2] << ")"
+            << std::endl;
+
+        model.rigidBody->setWorldTransform(transform);
+    }
+
+}
+
 void UpdateRigidBodyTransform(Model& model) {
     if (!model.rigidBody) return;
 
@@ -193,12 +214,12 @@ void RenderCollisionBox(const Model& model, GLuint shaderProgram) {
     };
 
     GLuint indices[24] = {
-        0, 1, 1, 2, 2, 3, 3, 0,
-        4, 5, 5, 6, 6, 7, 7, 4,
-        0, 4, 1, 5, 2, 6, 3, 7
+        0, 1, 1, 2, 2, 3, 3, 0,  // 앞면
+        4, 5, 5, 6, 6, 7, 7, 4,  // 뒷면
+        0, 4, 1, 5, 2, 6, 3, 7   // 앞면-뒷면 연결
     };
 
-    // AABB 데이터를 VBO에 업로드
+    // VAO/VBO/EBO 설정
     GLuint vao, vbo, ebo;
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);
@@ -223,12 +244,10 @@ void RenderCollisionBox(const Model& model, GLuint shaderProgram) {
 
     // AABB 박스 렌더링
     glBindVertexArray(vao);
-    glDrawElements(GL_LINES, 24, GL_UNSIGNED_INT, 0);   
+    glDrawElements(GL_LINES, 24, GL_UNSIGNED_INT, 0);
 
-    // 상태 복원: Rigid body 플래그 끄기
+    // 상태 복원 및 리소스 정리
     glUniform1i(isRigidBodyLoc, 0);
-
-    // VAO/VBO 정리
     glBindVertexArray(0);
     glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(1, &vbo);

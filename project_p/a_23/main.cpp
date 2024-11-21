@@ -59,9 +59,11 @@ void keyDown(unsigned char key, int x, int y) {
     {
     case 'a':
         Body::models[0].modelMatrix = glm::translate(Body::models[0].modelMatrix, glm::vec3(-1.0f, 0.0, 0.0));
+        UpdateRigidBodyTransform(Body::models[0]);
         break;
     case 'd':
         Wall::models[0].modelMatrix = glm::translate(Wall::models[0].modelMatrix, glm::vec3(1.0f, 0.0, 0.0));
+        UpdateRigidBodyTransform(Wall::models[0]);
         break;
     case 'q':
         cout << " ÇÁ·Î±×·¥ Á¾·á " << endl;
@@ -124,6 +126,9 @@ int main(int argc, char** argv) {
     Body::load_obj(); // ¸ö obj ºÒ·¯¿È
     Wall::load_obj(); // º® obj ºÒ·¯¿È
 
+    initializeModelsWithPhysics(Body::models);
+    initializeModelsWithPhysics(Wall::models);
+
     InitBuffer();
 
     glutDisplayFunc(drawScene);
@@ -168,11 +173,17 @@ GLvoid drawScene() {
     glUniform3fv(lightPosLoc, 1, glm::value_ptr(-glm::vec3(900.0, -900.0, -900.0)));
     glUniform3fv(lightColorLoc, 1, glm::value_ptr(glm::vec3(0.6f, 0.65f, 0.6f)));
 
-    Wall::draw(shaderProgramID, isKeyPressed_s);
-    Body::draw(shaderProgramID, isKeyPressed_s);
+    GLint modelStatus = glGetUniformLocation(shaderProgramID, "modelStatus");
+    GLint modelLoc = glGetUniformLocation(shaderProgramID, "model");
 
-    Wall::draw_rigidBody(shaderProgramID);
+    glEnable(GL_DEPTH_TEST);
+    Wall::draw(modelLoc, modelStatus, isKeyPressed_s);
+    Body::draw(modelLoc, modelStatus, isKeyPressed_s);
+    glDisable(GL_DEPTH_TEST);
+
     Body::draw_rigidBody(shaderProgramID);
+    Wall::draw_rigidBody(shaderProgramID);
+
     glutSwapBuffers();
 
     GLenum err;
