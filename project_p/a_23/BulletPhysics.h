@@ -74,7 +74,7 @@ void addModelToPhysicsWorld(Model& model) {
     else if (model.type == "cylinder") {
 
     }
-   
+    
 
     // OpenGL의 modelMatrix에서 위치, 회전, 스케일 추출
     glm::vec3 translation, scale, skew;
