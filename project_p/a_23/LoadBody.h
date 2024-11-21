@@ -38,6 +38,7 @@ namespace Body {
         matrix = glm::translate(matrix, glm::vec3(-2.0, -23.0, 0.0));
         matrix = glm::scale(matrix, glm::vec3(1.5, 1.9, 1.5));
         model_left_leg.modelMatrix = matrix * model_left_leg.modelMatrix;
+        model_left_leg.name = "left_leg";
         models.push_back(model_left_leg);
 
         //¿À¸¥ÂÊ ¹ß
@@ -46,6 +47,7 @@ namespace Body {
         matrix = glm::translate(matrix, glm::vec3(2.0, -23.0, 0.0));
         matrix = glm::scale(matrix, glm::vec3(1.5, 1.9, 1.5));
         model_right_leg.modelMatrix = matrix * model_right_leg.modelMatrix;
+        model_right_leg.name = "right_leg";
         models.push_back(model_right_leg);
 
         //¿ÞÂÊ ÆÈ
@@ -55,6 +57,7 @@ namespace Body {
         matrix = glm::scale(matrix, glm::vec3(1.5, 1.9, 1.5));
         matrix = glm::rotate(matrix, glm::radians(-45.0f), glm::vec3(0.0, 0.0, 1.0));
         model_left_arm.modelMatrix = matrix * model_left_arm.modelMatrix;
+        model_left_arm.name = "left_arm";
         models.push_back(model_left_arm);
 
         //¿ÞÂÊ ÆÈ
@@ -64,6 +67,7 @@ namespace Body {
         matrix = glm::scale(matrix, glm::vec3(1.5, 1.9, 1.5));
         matrix = glm::rotate(matrix, glm::radians(45.0f), glm::vec3(0.0, 0.0, 1.0));
         model_right_arm.modelMatrix = matrix * model_right_arm.modelMatrix;
+        model_right_arm.name = "right_arm";
         models.push_back(model_right_arm);
 
 

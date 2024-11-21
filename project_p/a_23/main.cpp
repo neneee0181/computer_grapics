@@ -19,6 +19,8 @@ void InitBuffer();
 GLvoid drawScene(GLvoid);
 GLvoid Reshape(int w, int h);
 
+void collisionCheck();
+
 //카메라
 glm::vec3 cameraPos = glm::vec3(0.0, 0.0, 100);
 glm::vec3 cameraDirection = glm::vec3(0.0, 0.0, 0.0);
@@ -53,22 +55,88 @@ void keyUp(unsigned char key, int x, int y) {
 
 float speed = 0.5f;
 
+// 팔과 다리 상태를 추적할 구조체
+struct LimbState {
+    float angle = 0.0f;        // 현재 회전 각도
+    bool movingForward = true; // 앞뒤로 움직이는 상태
+    int status = 1;            // 현재 방향 (1: 앞으로, -1: 뒤로)
+
+    LimbState(int status) {
+        this->status = status;
+    }
+    LimbState() {}
+};
+
+// 팔과 다리의 상태를 저장할 맵
+std::unordered_map<std::string, LimbState> limbStates = {
+    {"left_arm", LimbState(1)},
+    {"right_arm", LimbState(-1)},
+    {"left_leg", LimbState(1)},
+    {"right_leg", LimbState(-1)}
+};
+
+void move_arm_leg(Model& model) {
+    const float rotationSpeed = 2.0f;    // 한 프레임당 회전 속도
+    const float maxRotationAngle = 6.0f; // 최대 회전 각도 (10도)
+
+    // 현재 모델의 상태 가져오기
+    auto& state = limbStates[model.name];
+
+    // 각도 계산: 앞뒤로 움직이게끔 처리
+    state.angle += rotationSpeed * state.status; // `status`에 따라 각도 변화
+    if (state.angle >= maxRotationAngle) {
+        state.angle = maxRotationAngle;  // 최대 각도 제한
+        state.status = -1;               // 방향 반전 (앞 -> 뒤)
+    }
+    else if (state.angle <= -maxRotationAngle) {
+        state.angle = -maxRotationAngle; // 최소 각도 제한
+        state.status = 1;                // 방향 반전 (뒤 -> 앞)
+    }
+
+    glm::vec3 pivot = Body::models[0].modelMatrix[3]; // 어깨의 로컬 좌표
+
+    // 회전 행렬 생성
+    glm::mat4 rotationMatrix = glm::mat4(1.0f);
+    rotationMatrix = glm::translate(rotationMatrix, pivot);                            // 피벗으로 이동
+    rotationMatrix = glm::rotate(rotationMatrix, glm::radians(state.angle), glm::vec3(1.0f, 0.0f, 0.0f)); // x축 기준 회전
+    rotationMatrix = glm::translate(rotationMatrix, -pivot);                           // 원래 위치로 복귀
+
+    // 모델 매트릭스에 변환 적용
+    model.modelMatrix = rotationMatrix * model.modelMatrix;
+
+}
+
 void timer(int value) {
+    collisionCheck();
 
     for (auto& model : Body::models) {
         if (keyState['w']) {
             glm::mat4 matrix = glm::mat4(1.0f);
             matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, speed));
             model.modelMatrix = matrix * model.modelMatrix;
+           
         }
         if (keyState['a']) {
-
+            glm::mat4 matrix = glm::mat4(1.0f);
+            matrix = glm::translate(matrix, glm::vec3(-speed, 0.0, 0.0));
+            model.modelMatrix = matrix * model.modelMatrix;
         }
         if (keyState['s']) {
-
+            glm::mat4 matrix = glm::mat4(1.0f);
+            matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, -speed));
+            model.modelMatrix = matrix * model.modelMatrix;
         }
         if (keyState['d']) {
-
+            glm::mat4 matrix = glm::mat4(1.0f);
+            matrix = glm::translate(matrix, glm::vec3(speed, 0.0, 0.0));
+            model.modelMatrix = matrix * model.modelMatrix;
+        }
+    }
+    
+    if (keyState['w'] || keyState['a'] || keyState['s'] || keyState['d']) {
+        for (auto& model : Body::models) {
+            if (model.name == "right_arm" || model.name == "left_arm" || model.name == "right_leg" || model.name == "left_leg")
+                move_arm_leg(model);
         }
     }
 
@@ -144,8 +212,7 @@ void keySpecial(int key, int x, int y) {
     glutPostRedisplay();
 }
 
-void collisionTimer(int value) {
-
+void collisionCheck() {
     for (auto& bodyModel : Body::models) {
         for (auto& wallModel: Wall::models) {
             if (bodyModel.rigidBody && wallModel.rigidBody) {
@@ -157,9 +224,6 @@ void collisionTimer(int value) {
             }
         }
     }
-
-    glutPostRedisplay();
-    glutTimerFunc(16, collisionTimer, 0);
 }
 
 int main(int argc, char** argv) {
@@ -196,7 +260,6 @@ int main(int argc, char** argv) {
     glutKeyboardFunc(keyDown);
     glutKeyboardUpFunc(keyUp);
     glutSpecialFunc(keySpecial);
-    glutTimerFunc(0, collisionTimer, 0);
     glutMainLoop();
 
     return 0;
