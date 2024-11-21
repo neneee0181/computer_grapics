@@ -23,14 +23,23 @@ namespace Wall{
 
     void load_obj() {
 
-        Model model_box;
-        read_obj_file("obj/big_box.obj", model_box, "wall", "box");
+        Model model_1, model_2;
+        read_obj_file("obj/plane1.obj", model_1, "plane", "box");
 
-        glm::mat4 matrix_box = glm::mat4(1.0f);
-        matrix_box = glm::translate(matrix_box, glm::vec3(0.0, 0.0, 0.0));
-        model_box.modelMatrix = matrix_box * model_box.modelMatrix;
+        glm::mat4 matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, 0.0));
+        model_1.modelMatrix = matrix * model_1.modelMatrix;
+        model_1.material.Ka = glm::vec3(1.0f, 1.0f, 1.0f);
 
-        models.push_back(model_box);
+        model_2 = model_1;
+        matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(-20.0, 0.0, 0.0));
+        model_2.modelMatrix = matrix * model_2.modelMatrix;
+        model_2.material.Ka = glm::vec3(0.0, 0.0, 0.0f);
+
+        models.push_back(model_1);
+        models.push_back(model_2);
+
 
         for (auto& model : models) {
             if (!model.material.map_Kd.empty()) {

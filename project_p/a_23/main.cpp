@@ -57,14 +57,6 @@ void keyDown(unsigned char key, int x, int y) {
 
     switch (key)
     {
-    case 'a':
-        Body::models[0].modelMatrix = glm::translate(Body::models[0].modelMatrix, glm::vec3(-1.0f, 0.0, 0.0));
-        UpdateRigidBodyTransform(Body::models[0]);
-        break;
-    case 'd':
-        Wall::models[0].modelMatrix = glm::translate(Wall::models[0].modelMatrix, glm::vec3(1.0f, 0.0, 0.0));
-        UpdateRigidBodyTransform(Wall::models[0]);
-        break;
     case 'q':
         cout << " 프로그램 종료 " << endl;
         exit(0);
@@ -195,10 +187,10 @@ GLvoid drawScene() {
 
     glEnable(GL_DEPTH_TEST);
     Wall::draw(modelLoc, modelStatus, isKeyPressed_s);
-    Body::draw(modelLoc, modelStatus, isKeyPressed_s);
+    //Body::draw(modelLoc, modelStatus, isKeyPressed_s);
     glDisable(GL_DEPTH_TEST);
 
-    Body::draw_rigidBody(shaderProgramID);
+    //Body::draw_rigidBody(shaderProgramID);
     Wall::draw_rigidBody(shaderProgramID);
 
     glutSwapBuffers();
