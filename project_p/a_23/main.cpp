@@ -19,7 +19,7 @@ void InitBuffer();
 GLvoid drawScene(GLvoid);
 GLvoid Reshape(int w, int h);
 
-void collisionCheck();
+void collision_wall_check(const char key, glm::mat4 matrix, Model& model);
 
 //카메라
 glm::vec3 cameraPos = glm::vec3(0.0, 0.0, 100);
@@ -116,24 +116,28 @@ void timer(int value) {
             matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, speed));
             model.modelMatrix = matrix * model.modelMatrix;
             bodyRo = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0, 1.0, 0.0));
+            collision_wall_check('w', glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, -speed)), model);
         }
         if (keyState['a']) {
             glm::mat4 matrix = glm::mat4(1.0f);
             matrix = glm::translate(matrix, glm::vec3(-speed, 0.0, 0.0));
             model.modelMatrix = matrix * model.modelMatrix;
             bodyRo = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0, 1.0, 0.0));
+            collision_wall_check('a', glm::translate(glm::mat4(1.0f), glm::vec3(speed, 0.0, 0.0)), model);
         }
         if (keyState['s']) {
             glm::mat4 matrix = glm::mat4(1.0f);
             matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, -speed));
             model.modelMatrix = matrix * model.modelMatrix;
             bodyRo = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+            collision_wall_check('s', glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, speed)), model);
         }
         if (keyState['d']) {
             glm::mat4 matrix = glm::mat4(1.0f);
             matrix = glm::translate(matrix, glm::vec3(speed, 0.0, 0.0));
             model.modelMatrix = matrix * model.modelMatrix;
             bodyRo = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+            collision_wall_check('d', glm::translate(glm::mat4(1.0f), glm::vec3(-speed, 0.0, 0.0)), model);
         }
     }
     
@@ -211,14 +215,16 @@ void jumpTimer(int value) {
 
 }
 
-void collisionCheck() {
+void collision_wall_check(const char key, glm::mat4 matrix, Model& model) {
     for (auto& bodyModel : Body::models) {
         for (auto& wallModel : Wall::models) {
+            if (wallModel.name == "bottom") continue;
             if (bodyModel.rigidBody && wallModel.rigidBody) {
                 CustomContactResultCallback resultCallback;
                 dynamicsWorld->contactPairTest(bodyModel.rigidBody, wallModel.rigidBody, resultCallback);
                 if (resultCallback.hitDetected) {
                     cout << "충돌!!!" << endl;
+                    model.modelMatrix = matrix* matrix * model.modelMatrix;
                 }
             }
         }
