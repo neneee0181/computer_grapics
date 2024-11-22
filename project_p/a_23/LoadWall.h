@@ -126,6 +126,33 @@ namespace Wall{
         box_2.name = "barigate2";
         models.push_back(box_2);
 
+        Model box_3 = box;
+        matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(0.0, -13.5, 20.0));
+        matrix = glm::scale(matrix, glm::vec3(0.5, 2.5, 0.5));
+        box_3.modelMatrix = matrix * box_3.modelMatrix;
+        box_3.material.Ka = glm::vec3(0.4, 0.4, 0.4);
+        box_3.name = "barigate3";
+        models.push_back(box_3);
+
+        Model box_4 = box;
+        matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(20.0, -13.5, 20.0));
+        matrix = glm::scale(matrix, glm::vec3(0.5, 2.5, 0.5));
+        box_4.modelMatrix = matrix * box_4.modelMatrix;
+        box_4.material.Ka = glm::vec3(0.4, 0.4, 0.4);
+        box_4.name = "barigate4";
+        models.push_back(box_4);
+
+        Model box_5 = box;
+        matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(10.0, 0.0, 20.0));
+        matrix = glm::scale(matrix, glm::vec3(2.5, 0.5, 0.5));
+        box_5.modelMatrix = matrix * box_5.modelMatrix;
+        box_5.material.Ka = glm::vec3(0.4, 0.4, 0.4);
+        box_5.name = "barigate5";
+        models.push_back(box_5);
+
         // 5x5 크기의 바닥 설치
         const float spacing = 10; // 각 plane의 크기 (x와 z 간 간격)
         const int gridSize = 5;

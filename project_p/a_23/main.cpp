@@ -289,26 +289,27 @@ void collision_wall_check(Model& model) {
                         }
                         
                     }
-
-                    if (keyState['a']) {
-                        glm::mat4 matrix = glm::mat4(1.0f);
-                        matrix = glm::translate(matrix, glm::vec3(speed, 0.0, 0.0));
-                        model.modelMatrix = matrix * model.modelMatrix;
-                    }
-                    if (keyState['w']) {
-                        glm::mat4 matrix = glm::mat4(1.0f);
-                        matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, -speed));
-                        model.modelMatrix = matrix * model.modelMatrix;
-                    }
-                    if (keyState['s']) {
-                        glm::mat4 matrix = glm::mat4(1.0f);
-                        matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, speed));
-                        model.modelMatrix = matrix * model.modelMatrix;
-                    }
-                    if (keyState['d']) {
-                        glm::mat4 matrix = glm::mat4(1.0f);
-                        matrix = glm::translate(matrix, glm::vec3(-speed, 0.0, 0.0));
-                        model.modelMatrix = matrix * model.modelMatrix;
+                    else {
+                        if (keyState['a']) {
+                            glm::mat4 matrix = glm::mat4(1.0f);
+                            matrix = glm::translate(matrix, glm::vec3(speed * 3, 0.0, 0.0));
+                            model.modelMatrix = matrix * model.modelMatrix;
+                        }
+                        if (keyState['w']) {
+                            glm::mat4 matrix = glm::mat4(1.0f);
+                            matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, -speed * 3));
+                            model.modelMatrix = matrix * model.modelMatrix;
+                        }
+                        if (keyState['s']) {
+                            glm::mat4 matrix = glm::mat4(1.0f);
+                            matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, speed * 3));
+                            model.modelMatrix = matrix * model.modelMatrix;
+                        }
+                        if (keyState['d']) {
+                            glm::mat4 matrix = glm::mat4(1.0f);
+                            matrix = glm::translate(matrix, glm::vec3(-speed * 3, 0.0, 0.0));
+                            model.modelMatrix = matrix * model.modelMatrix;
+                        }
                     }
                 }
             }
@@ -461,6 +462,7 @@ GLvoid drawScene() {
     glEnable(GL_DEPTH_TEST);
     Wall::draw(shaderProgramID, isKeyPressed_s);
     Body::draw(shaderProgramID, isKeyPressed_s, bodyRo);
+
     glDisable(GL_DEPTH_TEST);
 
     Body::draw_rigidBody(shaderProgramID);

@@ -19,7 +19,6 @@ namespace Body {
     vector<GLuint> vaos;
     vector<vector<GLuint>> vbos;
 
-
     void load_obj() {
 
         Model model_body, model_box;
