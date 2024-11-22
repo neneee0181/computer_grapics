@@ -83,7 +83,7 @@ namespace Wall{
         model_top.rigid_status = false;
         models.push_back(model_top);
 
-        /*model_front1 = model_1;
+        model_front1 = model_1;
         matrix = glm::mat4(1.0f);
         matrix = glm::scale(matrix, glm::vec3(2.5, 5.0, 5.0));
         matrix = glm::translate(matrix, glm::vec3(-5.0, 0.0, 5.0));
@@ -104,7 +104,7 @@ namespace Wall{
         model_front2.material.Ka = glm::vec3(0.8, 0.8, 0.8);
         model_front2.name = "front2";
         model_front2.rigid_status = false;
-        models.push_back(model_front2);*/
+        models.push_back(model_front2);
 
         // 5x5 크기의 바닥 설치
         const float spacing = 10; // 각 plane의 크기 (x와 z 간 간격)

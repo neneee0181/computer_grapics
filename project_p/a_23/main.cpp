@@ -224,7 +224,7 @@ void collision_wall_check(const char key, glm::mat4 matrix, Model& model) {
                 dynamicsWorld->contactPairTest(bodyModel.rigidBody, wallModel.rigidBody, resultCallback);
                 if (resultCallback.hitDetected) {
                     cout << "Ãæµ¹!!!" << endl;
-                    model.modelMatrix = matrix* matrix * model.modelMatrix;
+                    model.modelMatrix = matrix* matrix * matrix * model.modelMatrix;
                 }
             }
         }
