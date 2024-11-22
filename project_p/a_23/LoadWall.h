@@ -23,8 +23,9 @@ namespace Wall{
 
     void load_obj() {
 
-        Model model_1, model_2;
+        Model model_1, model_2, box;
         read_obj_file("obj/plane1.obj", model_1, "plane", "box");
+        read_obj_file("obj/big_box.obj", box, "box", "box");
 
         glm::mat4 matrix = glm::mat4(1.0f);
         matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, 0.0));
@@ -105,6 +106,25 @@ namespace Wall{
         model_front2.name = "front2";
         model_front2.rigid_status = false;
         models.push_back(model_front2);
+
+
+        Model box_1 = box;
+        matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(-10.0, -22.5, 10.0));
+        matrix = glm::scale(matrix, glm::vec3(0.5, 0.5, 0.5));
+        box_1.modelMatrix = matrix * box_1.modelMatrix;
+        box_1.material.Ka = glm::vec3(0.0, 0.0, 0.0);
+        box_1.name = "barigate1";
+        models.push_back(box_1);
+
+        Model box_2 = box;
+        matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(-10.0, -18.5, 10.0));
+        matrix = glm::scale(matrix, glm::vec3(0.5, 0.5, 0.5));
+        box_2.modelMatrix = matrix * box_2.modelMatrix;
+        box_2.material.Ka = glm::vec3(0.4, 0.4, 0.4);
+        box_2.name = "barigate2";
+        models.push_back(box_2);
 
         // 5x5 크기의 바닥 설치
         const float spacing = 10; // 각 plane의 크기 (x와 z 간 간격)

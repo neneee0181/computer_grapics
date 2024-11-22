@@ -220,14 +220,24 @@ void UpdateRigidBodyTransforms(std::vector<Model>& models, glm::mat4 bodyRo) {
             << ", " << rotation.z << ", " << rotation.w << ")\n";*/
     }
 }
-void UpdateRigidBodyTransform(Model& model) {
+void UpdateRigidBodyTransform(Model& model, glm::mat4 bodyRo) {
     if (!model.rigidBody) return; // RigidBody가 없는 경우 건너뜀
 
     // OpenGL의 modelMatrix에서 변환 정보 추출
     glm::vec3 translation, scale, skew;
     glm::quat rotation;
     glm::vec4 perspective;
-    glm::decompose(model.modelMatrix, scale, rotation, translation, skew, perspective);
+    if (model.name == "body") {
+        glm::decompose(model.modelMatrix * bodyRo, scale, rotation, translation, skew, perspective);
+    }
+    else {
+        glm::mat4 matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(model.modelMatrix[3]));
+        matrix = matrix * bodyRo;
+        matrix = glm::translate(matrix, glm::vec3(-model.modelMatrix[3]));
+        matrix = matrix * model.modelMatrix;
+        glm::decompose(matrix, scale, rotation, translation, skew, perspective);
+    }
 
     // Bullet Physics의 Transform으로 변환
     btTransform transform;
@@ -237,11 +247,6 @@ void UpdateRigidBodyTransform(Model& model) {
 
     // RigidBody의 Transform 업데이트
     model.rigidBody->setWorldTransform(transform);
-
-    // MotionState도 동기화 (필수)
-    if (model.rigidBody->getMotionState()) {
-        model.rigidBody->getMotionState()->setWorldTransform(transform);
-    }
 }
 
 void RenderCollisionBox(const Model& model, GLuint shaderProgram) {

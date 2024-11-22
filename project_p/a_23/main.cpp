@@ -19,7 +19,7 @@ void InitBuffer();
 GLvoid drawScene(GLvoid);
 GLvoid Reshape(int w, int h);
 
-void collision_wall_check(const char key, glm::mat4 matrix, Model& model);
+void collision_wall_check(Model& model);
 
 //카메라
 glm::vec3 cameraPos = glm::vec3(0.0, 0.0, 100);
@@ -107,38 +107,47 @@ void move_arm_leg(Model& model) {
 }
 
 glm::mat4 bodyRo = glm::mat4(1.0f);
+bool isGround = false;
 
 void timer(int value) {
 
+
     for (auto& model : Body::models) {
+
+        if (!isGround) {
+            glm::mat4 grav_matrix = glm::mat4(1.0f);
+            grav_matrix = glm::translate(grav_matrix, glm::vec3(0.0, -speed, 0.0));
+            model.modelMatrix = grav_matrix * model.modelMatrix;
+        }
+        
+
         if (keyState['w']) {
             glm::mat4 matrix = glm::mat4(1.0f);
             matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, speed));
             model.modelMatrix = matrix * model.modelMatrix;
             bodyRo = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0, 1.0, 0.0));
-            collision_wall_check('w', glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, -speed)), model);
         }
         if (keyState['a']) {
             glm::mat4 matrix = glm::mat4(1.0f);
             matrix = glm::translate(matrix, glm::vec3(-speed, 0.0, 0.0));
             model.modelMatrix = matrix * model.modelMatrix;
             bodyRo = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0, 1.0, 0.0));
-            collision_wall_check('a', glm::translate(glm::mat4(1.0f), glm::vec3(speed, 0.0, 0.0)), model);
         }
         if (keyState['s']) {
             glm::mat4 matrix = glm::mat4(1.0f);
             matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, -speed));
             model.modelMatrix = matrix * model.modelMatrix;
             bodyRo = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
-            collision_wall_check('s', glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, speed)), model);
         }
         if (keyState['d']) {
             glm::mat4 matrix = glm::mat4(1.0f);
             matrix = glm::translate(matrix, glm::vec3(speed, 0.0, 0.0));
             model.modelMatrix = matrix * model.modelMatrix;
             bodyRo = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
-            collision_wall_check('d', glm::translate(glm::mat4(1.0f), glm::vec3(-speed, 0.0, 0.0)), model);
         }
+
+        collision_wall_check(model);
+
     }
     
     if (keyState['w'] || keyState['a'] || keyState['s'] || keyState['d']) {
@@ -163,7 +172,7 @@ struct JumpState {
 };
 
 JumpState jumpState;
-const float floorHeight = -15.0f;
+const float floorHeight = -18.0f;
 
 void jumpTimer(int value) {
    // 점프 중인지 확인
@@ -214,17 +223,93 @@ void jumpTimer(int value) {
     }
 
 }
+int bari_s = 0;
 
-void collision_wall_check(const char key, glm::mat4 matrix, Model& model) {
+void bariTimer2(int value) {
+    for (auto& model : Wall::models) {
+        if (model.name == "barigate2") {
+
+            glm::mat4 matrix = glm::mat4(1.0f);
+            matrix = glm::translate(matrix, glm::vec3(0.0, -0.01, 0.0));
+            model.modelMatrix = matrix * model.modelMatrix;
+            UpdateRigidBodyTransform(model, bodyRo);
+        }
+    }
+    glutPostRedisplay();
+    if (value < 400) {
+        glutTimerFunc(16, bariTimer2, ++value);
+    }
+    else {
+        bari_s = 2;
+    }
+}
+
+void bariTimer1(int value) {
+    for (auto& model : Wall::models) {
+        if (model.name == "barigate1" || model.name == "barigate2") {
+
+            glm::mat4 matrix = glm::mat4(1.0f);
+            matrix = glm::translate(matrix, glm::vec3(0.0, -0.01, 0.0));
+            model.modelMatrix = matrix * model.modelMatrix;
+            UpdateRigidBodyTransform(model, bodyRo);
+        }
+    }
+    glutPostRedisplay();
+    if (value < 400) {
+        glutTimerFunc(16, bariTimer1, ++value);
+    }
+    else {
+        bari_s = 4;
+    }
+}
+
+void collision_wall_check(Model& model) {
     for (auto& bodyModel : Body::models) {
         for (auto& wallModel : Wall::models) {
-            if (wallModel.name == "bottom") continue;
             if (bodyModel.rigidBody && wallModel.rigidBody) {
                 CustomContactResultCallback resultCallback;
                 dynamicsWorld->contactPairTest(bodyModel.rigidBody, wallModel.rigidBody, resultCallback);
                 if (resultCallback.hitDetected) {
-                    cout << "충돌!!!" << endl;
-                    model.modelMatrix = matrix* matrix * matrix * model.modelMatrix;
+
+                    if (wallModel.name == "bottom" || wallModel.name == "barigate1" || wallModel.name == "barigate2") {
+                        // 중력 멈춤 상태로 설정
+                        isGround = true;
+
+                        // 위치 조정 (필요시 모델이 바닥 위에 정확히 위치하도록)
+                        glm::mat4 grav_matrix = glm::mat4(1.0f);
+                        grav_matrix = glm::translate(grav_matrix, glm::vec3(0.0, speed, 0.0));
+                        model.modelMatrix = grav_matrix * model.modelMatrix;
+                        if (wallModel.name == "barigate2" && bari_s == 0) {
+                            bari_s = 1;
+                            glutTimerFunc(0, bariTimer2, 0);
+                        }
+                        if (wallModel.name == "barigate1" && bari_s == 2) {
+                            bari_s = 3;
+                            glutTimerFunc(0, bariTimer1, 0);
+                        }
+                        
+                    }
+
+                    if (keyState['a']) {
+                        glm::mat4 matrix = glm::mat4(1.0f);
+                        matrix = glm::translate(matrix, glm::vec3(speed, 0.0, 0.0));
+                        model.modelMatrix = matrix * model.modelMatrix;
+                    }
+                    if (keyState['w']) {
+                        glm::mat4 matrix = glm::mat4(1.0f);
+                        matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, -speed));
+                        model.modelMatrix = matrix * model.modelMatrix;
+                    }
+                    if (keyState['s']) {
+                        glm::mat4 matrix = glm::mat4(1.0f);
+                        matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, speed));
+                        model.modelMatrix = matrix * model.modelMatrix;
+                    }
+                    if (keyState['d']) {
+                        glm::mat4 matrix = glm::mat4(1.0f);
+                        matrix = glm::translate(matrix, glm::vec3(-speed, 0.0, 0.0));
+                        model.modelMatrix = matrix * model.modelMatrix;
+                    }
                 }
             }
         }
