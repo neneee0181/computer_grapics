@@ -54,5 +54,6 @@ void main() {
     vec3 result = ambient + diffuse + specular;
 
     // 최종 출력
-    FragColor = vec4(result, 1.0);
+    //FragColor = vec4(result, 1.0);
+    FragColor = vec4(Normal * 0.5 + 0.5, 1.0); // 법선을 (0, 1) 범위로 변환
 }
