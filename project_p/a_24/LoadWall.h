@@ -13,7 +13,7 @@
 
 using namespace std;
 
-namespace Wall{
+namespace SQU{
 
     // 벽
     vector<Model> models;
@@ -23,100 +23,14 @@ namespace Wall{
 
     void load_obj() {
 
-        Model model_1, model_2;
-        read_obj_file("obj/plane1.obj", model_1, "plane", "box");
+        Model model_1;
+        read_obj_file("obj/big_box.obj", model_1, "box", "box");
 
         glm::mat4 matrix = glm::mat4(1.0f);
         matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, 0.0));
         model_1.modelMatrix = matrix * model_1.modelMatrix;
-        model_1.material.Ka = glm::vec3(1.0f, 1.0f, 1.0f);
-
-        model_2 = model_1;
-        matrix = glm::mat4(1.0f);
-        matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, 0.0));
-        model_2.modelMatrix = matrix * model_2.modelMatrix;
-        model_2.material.Ka = glm::vec3(0.0, 0.0, 0.0f);
-
-        Model model_left, model_right, model_back, model_top, model_front1, model_front2;
-        
-        //왼쪽 벽
-        model_left = model_1;
-        matrix = glm::mat4(1.0f);
-        matrix = glm::scale(matrix, glm::vec3(5.0, 5.0, 5.0));
-        matrix = glm::translate(matrix, glm::vec3(-5.0, 5.0, 0.0));
-        matrix = glm::rotate(matrix, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0f));
-        model_left.modelMatrix = matrix * model_left.modelMatrix;
-        model_left.material.Ka = glm::vec3(0.8, 0.1, 0.1);
-        model_left.name = "left";
-        models.push_back(model_left);
-
-        //우측 벽
-        model_right = model_1;
-        matrix = glm::mat4(1.0f);
-        matrix = glm::scale(matrix, glm::vec3(5.0, 5.0, 5.0));
-        matrix = glm::translate(matrix, glm::vec3(5.0, 5.0, 0.0));
-        matrix = glm::rotate(matrix, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0f));
-        model_right.modelMatrix = matrix * model_right.modelMatrix;
-        model_right.material.Ka = glm::vec3(0.1, 0.8, 0.1);
-        model_right.name = "right";
-        models.push_back(model_right);
-
-        //뒤쪽 벽
-        model_back = model_1;
-        matrix = glm::mat4(1.0f);
-        matrix = glm::scale(matrix, glm::vec3(5.0, 5.0, 5.0));
-        matrix = glm::translate(matrix, glm::vec3(0.0, 5.0, -5.0));
-        matrix = glm::rotate(matrix, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0f));
-        model_back.modelMatrix = matrix * model_back.modelMatrix;
-        model_back.material.Ka = glm::vec3(0.1, 0.1, 0.8);
-        model_back.name = "back";
-        models.push_back(model_back);
-
-        //위쪽 벽
-        model_top = model_1;
-        matrix = glm::mat4(1.0f);
-        matrix = glm::scale(matrix, glm::vec3(5.0, 5.0, 5.0));
-        matrix = glm::translate(matrix, glm::vec3(0.0, 10.0, 0.0));
-        model_top.modelMatrix = matrix * model_top.modelMatrix;
-        model_top.material.Ka = glm::vec3(0.5, 0.5, 0.5);
-        model_top.name = "top";
-        model_top.rigid_status = false;
-        models.push_back(model_top);
-
-
-        // 5x5 크기의 바닥 설치
-        const float spacing = 10; // 각 plane의 크기 (x와 z 간 간격)
-        const int gridSize = 5;
-
-        // 중심 계산 (그리드 전체 크기의 절반만큼 이동)
-        const float offset = (gridSize - 1) * spacing * 0.5f;
-
-        for (int z = 0; z < gridSize; ++z) {
-            for (int x = 0; x < gridSize; ++x) {
-                Model model;
-
-                // x와 z 위치 계산
-                float posX = x * spacing - offset; // x 좌표를 중심으로 조정
-                float posZ = z * spacing - offset; // z 좌표를 중심으로 조정
-
-                // 번갈아가며 다른 재질 적용 및 위치 보정
-                if ((x + z) % 2 == 0) {
-                    model = model_2; // model_1은 위치 보정 없음
-                }
-                else {
-                    model = model_1;
-                }
-
-                // 변환 행렬 생성
-                glm::mat4 transform = glm::mat4(1.0f);
-                transform = glm::translate(transform, glm::vec3(posX, 0.0f, posZ));
-                model.modelMatrix = transform * model.modelMatrix;
-                model.name = "bottom";
-                model.rigid_status = false;
-                // 모델 벡터에 추가
-                models.push_back(model);
-            }
-        }
+        model_1.material.Ka = glm::vec3(0.5f, 0.5f, 0.5f);
+        models.push_back(model_1);
 
         for (auto& model : models) {
             if (!model.material.map_Kd.empty()) {
@@ -126,14 +40,14 @@ namespace Wall{
             else {
                 model.material.hasTexture = false;
             }
-            
-            if (model.rigid_status) {
-                addModelToPhysicsWorld(model);
-            }
         }
     }
 
-    void draw(GLint modelLoc, GLint modelStatus, bool (*isKeyPressed_s)(const char&)) {
+    void draw(GLint shaderProgramID, bool (*isKeyPressed_s)(const char&)) {
+
+        GLint modelStatus = glGetUniformLocation(shaderProgramID, "modelStatus");
+        GLint modelLoc = glGetUniformLocation(shaderProgramID, "model");
+
         for (size_t i = 0; i < models.size(); ++i) {
 
             if (models[i].model_status) {

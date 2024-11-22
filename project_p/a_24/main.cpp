@@ -91,24 +91,6 @@ void keySpecial(int key, int x, int y) {
     glutPostRedisplay();
 }
 
-void collisionTimer(int value) {
-
-    for (auto& bodyModel : Body::models) {
-        for (auto& wallModel: Wall::models) {
-            if (bodyModel.rigidBody && wallModel.rigidBody) {
-                CustomContactResultCallback resultCallback;
-                dynamicsWorld->contactPairTest(bodyModel.rigidBody, wallModel.rigidBody, resultCallback);
-                if (resultCallback.hitDetected) {
-                    cout << "Ãæµ¹!!!" << endl;
-                }
-            }
-        }
-    }
-
-    glutPostRedisplay();
-    glutTimerFunc(16, collisionTimer, 0);
-}
-
 int main(int argc, char** argv) {
 
     width = 800;
@@ -133,10 +115,10 @@ int main(int argc, char** argv) {
     initPhysics(); // Bullet ÃÊ±âÈ­ ÇÔ¼ö È£Ãâ
 
    
-    Body::load_obj(); // ¸ö obj ºÒ·¯¿È
-    Wall::load_obj(); // º® obj ºÒ·¯¿È
+    PIRA::load_obj(); // ¸ö obj ºÒ·¯¿È
+    SQU::load_obj(); // º® obj ºÒ·¯¿È
 
-    initializeModelsWithPhysics(Body::models);
+    initializeModelsWithPhysics(PIRA::models);
 
     InitBuffer();
 
@@ -145,7 +127,6 @@ int main(int argc, char** argv) {
     glutKeyboardFunc(keyDown);
     glutKeyboardUpFunc(keyUp);
     glutSpecialFunc(keySpecial);
-    glutTimerFunc(0, collisionTimer, 0);
     glutMainLoop();
 
     return 0;
@@ -183,16 +164,13 @@ GLvoid drawScene() {
     glUniform3fv(lightPosLoc, 1, glm::value_ptr(-glm::vec3(900.0, -900.0, -900.0)));
     glUniform3fv(lightColorLoc, 1, glm::value_ptr(glm::vec3(0.6f, 0.65f, 0.6f)));
 
-    GLint modelStatus = glGetUniformLocation(shaderProgramID, "modelStatus");
-    GLint modelLoc = glGetUniformLocation(shaderProgramID, "model");
-
     glEnable(GL_DEPTH_TEST);
-    Wall::draw(modelLoc, modelStatus, isKeyPressed_s);
-    //Body::draw(modelLoc, modelStatus, isKeyPressed_s);
+    //SQU::draw(shaderProgramID, isKeyPressed_s);
+    PIRA::draw(shaderProgramID, isKeyPressed_s);
     glDisable(GL_DEPTH_TEST);
 
     //Body::draw_rigidBody(shaderProgramID);
-    Wall::draw_rigidBody(shaderProgramID);
+    //PIRA::draw_rigidBody(shaderProgramID);
 
     glutSwapBuffers();
 
@@ -205,6 +183,6 @@ GLvoid drawScene() {
 // ¹öÆÛ ÃÊ±âÈ­ ÇÔ¼ö
 void InitBuffer() {
     //-----------------------------------------------------------------------------------------------------------
-    Wall::initBuffer();
-    Body::initBuffer();
+    SQU::initBuffer();
+    PIRA::initBuffer();
 }
