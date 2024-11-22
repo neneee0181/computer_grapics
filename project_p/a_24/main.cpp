@@ -26,6 +26,8 @@ glm::vec3 cameraUp = glm::vec3(0.0, 1.0, 0.0);
 glm::mat4 projection = glm::mat4(1.0f);
 glm::mat4 view = glm::mat4(1.0f);
 
+vector<Model> models;
+
 //Ű
 unordered_map<char, bool> keyState;
 
@@ -49,6 +51,7 @@ GLvoid Reshape(int w, int h) {
 
 void keyUp(unsigned char key, int x, int y) {
     keyUp_s(key);
+    glutPostRedisplay();
 }
 
 void keyDown(unsigned char key, int x, int y) {
@@ -161,12 +164,16 @@ GLvoid drawScene() {
 
     GLint lightPosLoc = glGetUniformLocation(shaderProgramID, "lightPos");
     GLint lightColorLoc = glGetUniformLocation(shaderProgramID, "lightColor");
-    glUniform3fv(lightPosLoc, 1, glm::value_ptr(-glm::vec3(900.0, -900.0, -900.0)));
+    GLint objColorLocation = glGetUniformLocation(shaderProgramID, "objectColor");
+    glUniform3fv(lightPosLoc, 1, glm::value_ptr(glm::vec3(10.0, 10.0, 10.0)));
     glUniform3fv(lightColorLoc, 1, glm::value_ptr(glm::vec3(0.6f, 0.65f, 0.6f)));
-
+    glUniform3f(objColorLocation, 1.0, 0.5, 0.3);
     glEnable(GL_DEPTH_TEST);
-    //SQU::draw(shaderProgramID, isKeyPressed_s);
-    PIRA::draw(shaderProgramID, isKeyPressed_s);
+    if (keyState['n'])
+        PIRA::draw(shaderProgramID, isKeyPressed_s);
+    else
+        SQU::draw(shaderProgramID, isKeyPressed_s);
+
     glDisable(GL_DEPTH_TEST);
 
     //Body::draw_rigidBody(shaderProgramID);

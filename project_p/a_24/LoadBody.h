@@ -22,15 +22,33 @@ namespace PIRA {
 
     void load_obj() {
 
-        Model model_Pyramid;
+        Model model_Pyramid, model_sphere, model_box;
         read_obj_file("obj/squarePyramid.obj", model_Pyramid, "squarePyramid", "box");
+        read_obj_file("obj/big_box1.obj", model_box, "box", "box");
+        read_obj_file("obj/sphere1.obj", model_sphere, "sphere", "box");
 
         glm::mat4 matrix = glm::mat4(1.0f);
-        matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, 0.0));
+        matrix = glm::translate(matrix, glm::vec3(0.0, -10.0, 0.0));
+        matrix = glm::scale(matrix, glm::vec3(25.0, 25.0, 25.0));
         model_Pyramid.modelMatrix = matrix * model_Pyramid.modelMatrix;
-        model_Pyramid.material.Ka = glm::vec3(0.5f, 0.5f, 0.5f);
+        model_Pyramid.material.Ka = glm::vec3(1.0f, 0.5f, 0.5f);
 
         models.push_back(model_Pyramid);
+
+        matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(20.0, 0.0, 0.0));
+        matrix = glm::scale(matrix, glm::vec3(0.5, 0.3, 0.3));
+        model_box.modelMatrix = matrix * model_box.modelMatrix;
+        model_box.material.Ka = glm::vec3(0.5f, 0.5f, 0.5f);
+        models.push_back(model_box);
+
+        matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(10.0, 10.0, 10.0));
+        //matrix = glm::scale(matrix, glm::vec3(25.0, 25.0, 25.0));
+        model_sphere.modelMatrix = matrix * model_sphere.modelMatrix;
+        model_sphere.material.Ka = glm::vec3(0.0f, 0.0f, 1.0f);
+
+        models.push_back(model_sphere);
 
         for (auto& model : models) {
             if (!model.material.map_Kd.empty()) {

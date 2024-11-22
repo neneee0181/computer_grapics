@@ -23,14 +23,32 @@ namespace SQU{
 
     void load_obj() {
 
-        Model model_1;
-        read_obj_file("obj/big_box.obj", model_1, "box", "box");
+        Model model_1, model_2, model_sphere;
+        read_obj_file("obj/big_box1.obj", model_1, "box", "box");
+        read_obj_file("obj/big_box1.obj", model_2, "box", "box");
+        read_obj_file("obj/sphere1.obj", model_sphere, "sphere", "box");
 
         glm::mat4 matrix = glm::mat4(1.0f);
         matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, 0.0));
+        matrix = glm::scale(matrix, glm::vec3(0.5, 0.5, 0.5));
         model_1.modelMatrix = matrix * model_1.modelMatrix;
-        model_1.material.Ka = glm::vec3(0.5f, 0.5f, 0.5f);
+        model_1.material.Ka = glm::vec3(1.0f, 0.5f, 0.5f);
         models.push_back(model_1);
+
+        matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(20.0, 0.0, 0.0));
+        matrix = glm::scale(matrix, glm::vec3(0.5, 0.3, 0.3));
+        model_2.modelMatrix = matrix * model_2.modelMatrix;
+        model_2.material.Ka = glm::vec3(0.5f, 0.5f, 0.5f);
+        models.push_back(model_2);
+
+        matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(10.0, 10.0, 10.0));
+        //matrix = glm::scale(matrix, glm::vec3(25.0, 25.0, 25.0));
+        model_sphere.modelMatrix = matrix * model_sphere.modelMatrix;
+        model_sphere.material.Ka = glm::vec3(0.0f, 0.0f, 1.0f);
+
+        models.push_back(model_sphere);
 
         for (auto& model : models) {
             if (!model.material.map_Kd.empty()) {
