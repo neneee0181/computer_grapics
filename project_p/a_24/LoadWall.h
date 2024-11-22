@@ -24,26 +24,26 @@ namespace SQU{
     void load_obj() {
 
         Model model_1, model_2, model_sphere;
-        read_obj_file("obj/big_box1.obj", model_1, "box", "box");
-        read_obj_file("obj/big_box1.obj", model_2, "box", "box");
+        read_obj_file("obj/big_box.obj", model_1, "box", "box");
+        read_obj_file("obj/big_box.obj", model_2, "box", "box");
         read_obj_file("obj/sphere1.obj", model_sphere, "sphere", "box");
 
         glm::mat4 matrix = glm::mat4(1.0f);
         matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, 0.0));
-        matrix = glm::scale(matrix, glm::vec3(0.5, 0.5, 0.5));
+        matrix = glm::scale(matrix, glm::vec3(1.0, 1.0, 1.0));
         model_1.modelMatrix = matrix * model_1.modelMatrix;
         model_1.material.Ka = glm::vec3(1.0f, 0.5f, 0.5f);
         models.push_back(model_1);
 
         matrix = glm::mat4(1.0f);
         matrix = glm::translate(matrix, glm::vec3(20.0, 0.0, 0.0));
-        matrix = glm::scale(matrix, glm::vec3(0.5, 0.3, 0.3));
+        matrix = glm::scale(matrix, glm::vec3(1.0, 0.7, 0.7));
         model_2.modelMatrix = matrix * model_2.modelMatrix;
         model_2.material.Ka = glm::vec3(0.5f, 0.5f, 0.5f);
         models.push_back(model_2);
 
         matrix = glm::mat4(1.0f);
-        matrix = glm::translate(matrix, glm::vec3(10.0, 10.0, 10.0));
+        matrix = glm::translate(matrix, glm::vec3(10.0, 0.0, 0.0));
         //matrix = glm::scale(matrix, glm::vec3(25.0, 25.0, 25.0));
         model_sphere.modelMatrix = matrix * model_sphere.modelMatrix;
         model_sphere.material.Ka = glm::vec3(0.0f, 0.0f, 1.0f);
@@ -135,22 +135,43 @@ namespace SQU{
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);  // location 0에 정점 할당
             glEnableVertexAttribArray(0);
 
-            // 색상 버퍼 설정
-            //glBindBuffer(GL_ARRAY_BUFFER, vbos[i][1]);
-            //glBufferData(GL_ARRAY_BUFFER, models[i].colors.size() * sizeof(glm::vec3), models[i].colors.data(), GL_STATIC_DRAW);
-            //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);  // location 1에 색상 할당
-            //glEnableVertexAttribArray(1);
+            // **법선 데이터를 normalFaces 기반으로 재구성**
+            vector<glm::vec3> restructuredNormals; // Face에 맞는 법선을 저장할 벡터
+            for (size_t j = 0; j < models[i].normalFaces.size(); ++j) {
+                unsigned int normalIndex = models[i].normalFaces[j]; // normalFaces에서 법선 인덱스 가져오기
+                const Normal& normal = models[i].normals[normalIndex]; // 인덱스에 해당하는 법선 가져오기
+                restructuredNormals.push_back(glm::vec3(normal.nx, normal.ny, normal.nz)); // glm::vec3로 변환 후 추가
+            }
 
+            // 법선 버퍼 설정
             glBindBuffer(GL_ARRAY_BUFFER, vbos[i][2]);  // 법선용 VBO
-            glBufferData(GL_ARRAY_BUFFER, models[i].normals.size() * sizeof(glm::vec3), models[i].normals.data(), GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, restructuredNormals.size() * sizeof(glm::vec3), restructuredNormals.data(), GL_STATIC_DRAW);
             glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);  // location 1에 법선 할당
             glEnableVertexAttribArray(1);
 
             // 텍스처 좌표 VBO 설정
-            glBindBuffer(GL_ARRAY_BUFFER, vbos[i][3]);  // 4번째 VBO가 텍스처 좌표용이라고 가정
-            glBufferData(GL_ARRAY_BUFFER, models[i].texCoords.size() * sizeof(glm::vec2), models[i].texCoords.data(), GL_STATIC_DRAW);
-            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);  // location 2에 텍스처 좌표 할당
-            glEnableVertexAttribArray(2);
+            //vector<glm::vec2> faceTexCoords; // Face에 맞는 텍스처 좌표를 저장
+            //if (!models[i].texCoords.empty()) {
+            //    for (const Face& face : models[i].faces) {
+            //        faceTexCoords.push_back(glm::vec2(
+            //            models[i].texCoords[face.t1].u,
+            //            models[i].texCoords[face.t1].v
+            //        ));
+            //        faceTexCoords.push_back(glm::vec2(
+            //            models[i].texCoords[face.t2].u,
+            //            models[i].texCoords[face.t2].v
+            //        ));
+            //        faceTexCoords.push_back(glm::vec2(
+            //            models[i].texCoords[face.t3].u,
+            //            models[i].texCoords[face.t3].v
+            //        ));
+            //    }
+
+            //    glBindBuffer(GL_ARRAY_BUFFER, vbos[i][3]);  // 텍스처 좌표용 VBO
+            //    glBufferData(GL_ARRAY_BUFFER, faceTexCoords.size() * sizeof(glm::vec2), faceTexCoords.data(), GL_STATIC_DRAW);
+            //    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);  // location 2에 텍스처 좌표 할당
+            //    glEnableVertexAttribArray(2);
+            //}
 
             // 면 인덱스 데이터 (EBO) 설정
             vector<unsigned int> indices;
@@ -165,7 +186,7 @@ namespace SQU{
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
-            glBindVertexArray(0);
+            glBindVertexArray(0); // VAO 바인딩 해제
         }
     }
 }

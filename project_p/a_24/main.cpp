@@ -20,7 +20,7 @@ GLvoid drawScene(GLvoid);
 GLvoid Reshape(int w, int h);
 
 //Ä«¸Þ¶ó
-glm::vec3 cameraPos = glm::vec3(0.0, 0.0, 100);
+glm::vec3 cameraPos = glm::vec3(0.0, 0.0, 70);
 glm::vec3 cameraDirection = glm::vec3(0.0, 0.0, 0.0);
 glm::vec3 cameraUp = glm::vec3(0.0, 1.0, 0.0);
 glm::mat4 projection = glm::mat4(1.0f);
@@ -165,7 +165,7 @@ GLvoid drawScene() {
     GLint lightPosLoc = glGetUniformLocation(shaderProgramID, "lightPos");
     GLint lightColorLoc = glGetUniformLocation(shaderProgramID, "lightColor");
     GLint objColorLocation = glGetUniformLocation(shaderProgramID, "objectColor");
-    glUniform3fv(lightPosLoc, 1, glm::value_ptr(glm::vec3(10.0, 10.0, 10.0)));
+    glUniform3fv(lightPosLoc, 1, glm::value_ptr(glm::vec3(10.0, 0.0, 0.0)));
     glUniform3fv(lightColorLoc, 1, glm::value_ptr(glm::vec3(0.6f, 0.65f, 0.6f)));
     glUniform3f(objColorLocation, 1.0, 0.5, 0.3);
     glEnable(GL_DEPTH_TEST);

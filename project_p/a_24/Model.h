@@ -44,6 +44,8 @@ struct Model {
     std::vector<TextureCoord> texCoords;  // 텍스처 좌표 배열 (추가)
     std::vector<Normal> normals;   // 법선 벡터 배열
     std::vector<Face> faces;       // 면 배열
+    std::vector<unsigned int> normalFaces; // Face에 맞는 법선 인덱스
+
 
     glm::mat4 modelMatrix = glm::mat4(1.0f);
     glm::mat4 translateMatrix = glm::mat4(1.0f);  // 모델이 이동한 위치를 저장할 벡터
