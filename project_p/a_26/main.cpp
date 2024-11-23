@@ -16,6 +16,31 @@ GLvoid Reshape(int w, int h);
 //¸ðµ¨
 vector<Model*> models;
 
+void timer(int value) {
+
+    if (keyState['y']) {
+        glm::mat4 matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(-100.0, 0.0, 150.0));
+        matrix = glm::rotate(matrix, glm::radians(0.5f), glm::vec3(0.0, 1.0, 0.0));
+        matrix = glm::translate(matrix, glm::vec3(100.0, 0.0, -150.0));
+        lightPos = matrix * glm::vec4(lightPos, 1.0f);
+        models[7]->matrix = matrix * models[7]->matrix;
+    }
+    else if (keyState['Y']) {
+        glm::mat4 matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(-100.0, 0.0, 150.0));
+        matrix = glm::rotate(matrix, glm::radians(-0.5f), glm::vec3(0.0, 1.0, 0.0));
+        matrix = glm::translate(matrix, glm::vec3(100.0, 0.0, -150.0));
+        lightPos = matrix * glm::vec4(lightPos, 1.0f);
+        models[7]->matrix = matrix * models[7]->matrix;
+    }
+
+    UpdateRigidBodyTransforms(models);
+
+    glutPostRedisplay();
+    glutTimerFunc(16, timer, 0);
+}
+
 int main(int argc, char** argv) {
 
     width = 800;
@@ -73,6 +98,7 @@ int main(int argc, char** argv) {
     glutKeyboardFunc(keyDown);
     glutKeyboardUpFunc(keyUp);
     glutSpecialFunc(keySpecial);
+    glutTimerFunc(0, timer, 0);
     glutMainLoop();
 
     return 0;
