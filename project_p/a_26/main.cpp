@@ -110,8 +110,23 @@ GLvoid drawScene() {
     glUniform3fv(lightPosLoc, 1, glm::value_ptr(lightPos));
     glUniform3fv(lightColorLoc, 1, glm::value_ptr(lightColor));
    
+    if (keyState['m']) {
+        GLint lightEnabledLoc = glGetUniformLocation(shaderProgramID, "lightEnabled");
+        glUniform1i(lightEnabledLoc, 1); // true: 1, false: 0으로 전달
+
+    }
+    else {
+        GLint lightEnabledLoc = glGetUniformLocation(shaderProgramID, "lightEnabled");
+        glUniform1i(lightEnabledLoc, 0); // true: 1, false: 0으로 전달
+    }
+
     glEnable(GL_DEPTH_TEST);
     for (const auto& model : models) { // 실제 모델 draw
+        if (model->name == "sphere") {
+            if(!keyState['m'])
+                model->draw(shaderProgramID, isKeyPressed_s);
+            continue;
+        }
         model->draw(shaderProgramID, isKeyPressed_s);
     }
     glDisable(GL_DEPTH_TEST);
