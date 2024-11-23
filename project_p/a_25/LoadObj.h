@@ -10,7 +10,7 @@
 #include "LoadMtl.h"
 
 // OBJ 파일을 읽어와서 모델 데이터를 파싱하는 함수
-void read_obj_file(const std::string& filename, Model& model, std::string name, std::string type) {
+void read_obj_file(const std::string& filename, Model* model, std::string name, std::string type) {
     std::ifstream file(filename);  // 파일 읽기 모드로 열기
     if (!file.is_open()) {  // 파일을 열지 못한 경우
         std::cerr << "Error opening file: " << filename << std::endl;
@@ -29,17 +29,17 @@ void read_obj_file(const std::string& filename, Model& model, std::string name, 
         if (prefix == "v") {  // 정점 데이터를 읽을 때
             Vertex vertex;
             ss >> vertex.x >> vertex.y >> vertex.z;
-            model.vertices.push_back(vertex);
+            model->vertices.push_back(vertex);
         }
         else if (prefix == "vt") {  // 텍스처 좌표 데이터를 읽을 때
             TextureCoord texCoord;
             ss >> texCoord.u >> texCoord.v;
-            model.texCoords.push_back(texCoord);
+            model->texCoords.push_back(texCoord);
         }
         else if (prefix == "vn") {  // 법선 벡터 데이터를 읽을 때
             Normal normal;
             ss >> normal.nx >> normal.ny >> normal.nz;
-            model.normals.push_back(normal);
+            model->normals.push_back(normal);
         }
         else if (prefix == "f") {  // Face 데이터를 읽을 때
             std::vector<unsigned int> vertexIndices, texCoordIndices, normalIndices;
@@ -85,10 +85,10 @@ void read_obj_file(const std::string& filename, Model& model, std::string name, 
                 face.n3 = normalIndices.size() > 2 ? normalIndices[2] : 0;
 
                 // Face와 normalFaces 추가
-                model.faces.push_back(face);
-                model.normalFaces.push_back(face.n1); // n1
-                model.normalFaces.push_back(face.n2); // n2
-                model.normalFaces.push_back(face.n3); // n3
+                model->faces.push_back(face);
+                model->normalFaces.push_back(face.n1); // n1
+                model->normalFaces.push_back(face.n2); // n2
+                model->normalFaces.push_back(face.n3); // n3
             }
             // 사각형 Face 처리 (두 개의 삼각형으로 분할)
             else if (vertexIndices.size() == 4) {
@@ -107,10 +107,10 @@ void read_obj_file(const std::string& filename, Model& model, std::string name, 
                 face1.n2 = normalIndices.size() > 1 ? normalIndices[1] : 0;
                 face1.n3 = normalIndices.size() > 2 ? normalIndices[2] : 0;
 
-                model.faces.push_back(face1);
-                model.normalFaces.push_back(face1.n1); // n1
-                model.normalFaces.push_back(face1.n2); // n2
-                model.normalFaces.push_back(face1.n3); // n3
+                model->faces.push_back(face1);
+                model->normalFaces.push_back(face1.n1); // n1
+                model->normalFaces.push_back(face1.n2); // n2
+                model->normalFaces.push_back(face1.n3); // n3
 
                 // 두 번째 삼각형 (v1, v3, v4)
                 Face face2;
@@ -127,10 +127,10 @@ void read_obj_file(const std::string& filename, Model& model, std::string name, 
                 face2.n2 = normalIndices.size() > 2 ? normalIndices[2] : 0;
                 face2.n3 = normalIndices.size() > 3 ? normalIndices[3] : 0;
 
-                model.faces.push_back(face2);
-                model.normalFaces.push_back(face2.n1); // n1
-                model.normalFaces.push_back(face2.n2); // n2
-                model.normalFaces.push_back(face2.n3); // n3
+                model->faces.push_back(face2);
+                model->normalFaces.push_back(face2.n1); // n1
+                model->normalFaces.push_back(face2.n2); // n2
+                model->normalFaces.push_back(face2.n3); // n3
             }
         }
         else if (prefix == "mtllib") {  // MTL 파일 참조
@@ -139,12 +139,12 @@ void read_obj_file(const std::string& filename, Model& model, std::string name, 
     }
 
     // 모델 이름 및 타입 설정
-    model.name = name;
-    model.type = type;
+    model->name = name;
+    model->type = type;
 
     // MTL 파일 처리
     if (!mtlFilename.empty()) {
-        read_mtl_file(mtlFilename, model.material);  // MTL 파일 로드
+        read_mtl_file(mtlFilename, model->material);  // MTL 파일 로드
     }
 
     file.close();  // 파일 닫기

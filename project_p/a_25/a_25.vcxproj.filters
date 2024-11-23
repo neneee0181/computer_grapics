@@ -31,6 +31,9 @@
     <Filter Include="소스 파일\Load">
       <UniqueIdentifier>{d1e0e2bd-aba8-4f25-83f0-9fba523a232e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="헤더 파일\key">
+      <UniqueIdentifier>{8bb47035-3184-4901-abf7-5f5af779cd40}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vertex.glsl">
@@ -59,7 +62,7 @@
     <ClInclude Include="LoadTexture.h">
       <Filter>헤더 파일\Load</Filter>
     </ClInclude>
-    <ClInclude Include="LoadWall.h">
+    <ClInclude Include="DefaultModel.h">
       <Filter>헤더 파일\Object</Filter>
     </ClInclude>
     <ClInclude Include="Model.h">

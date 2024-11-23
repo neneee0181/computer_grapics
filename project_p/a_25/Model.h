@@ -39,7 +39,8 @@ struct Material {
     bool hasTexture;  // 텍스처가 있는지 여부
 };
 
-struct Model {
+class Model {
+public:
     std::vector<Vertex> vertices;  // 정점 배열
     std::vector<TextureCoord> texCoords;  // 텍스처 좌표 배열 (추가)
     std::vector<Normal> normals;   // 법선 벡터 배열
@@ -60,4 +61,14 @@ struct Model {
     bool model_status = true;
     btRigidBody* rigidBody = nullptr;  // 각 모델의 강체
     bool rigid_status = true;
+
+    GLuint vao;
+    GLuint vbos[4];
+
+    virtual void load_obj(string name, string obj_name, string obj_type, glm::mat4 start_matrix = glm::mat4(1.0f)) = 0;
+    virtual const void draw(GLint shaderProgramID, bool (*isKeyPressed_s)(const char&)) = 0;
+    virtual const void draw_rigidBody(GLuint shaderProgramID) = 0;
+    virtual void initBuffer() = 0;
+
+    virtual ~Model() = default; // 가상 소멸자
 };

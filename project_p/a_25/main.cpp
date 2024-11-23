@@ -10,7 +10,7 @@
 #include <random>
 
 #include "shaderMaker.h"
-#include "LoadWall.h"
+#include "DefaultModel.h"
 
 using namespace std;
 
@@ -33,7 +33,7 @@ glm::vec3 lightColor = glm::vec3(0.6f, 0.65f, 0.6f);
 unordered_map<char, bool> keyState;
 
 //모델
-vector<Model> models;
+vector<Model*> models;
 
 void keyDown_s(const char& key) {
     keyState[key] = !keyState[key];
@@ -121,9 +121,10 @@ int main(int argc, char** argv) {
 
     initPhysics(); // Bullet 초기화 함수 호출
 
-    SQU::load_obj(); // 벽 obj 불러옴
+    DefaultModel* default_model = new DefaultModel("obj/big_box1.obj", "box", "box");
+    models.push_back(default_model);
 
-    initializeModelsWithPhysics(SQU::models);
+    initializeModelsWithPhysics(models);
 
     InitBuffer();
 
@@ -170,11 +171,15 @@ GLvoid drawScene() {
     glUniform3fv(lightColorLoc, 1, glm::value_ptr(lightColor));
    
     glEnable(GL_DEPTH_TEST);
-    SQU::draw(shaderProgramID, isKeyPressed_s);
+    for (const auto& model : models) {
+        model->draw(shaderProgramID, isKeyPressed_s);
+    }
 
     glDisable(GL_DEPTH_TEST);
 
-    //SQU::draw_rigidBody(shaderProgramID);
+    /*for (const auto& model : models) {
+        model->draw_rigidBody(shaderProgramID);
+    }*/
 
     glutSwapBuffers();
 
@@ -187,5 +192,7 @@ GLvoid drawScene() {
 // 버퍼 초기화 함수
 void InitBuffer() {
     //-----------------------------------------------------------------------------------------------------------
-    SQU::initBuffer();
+    for (const auto& model : models) {
+        model->initBuffer();
+    }
 }

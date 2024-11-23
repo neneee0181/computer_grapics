@@ -24,8 +24,8 @@ namespace SQU{
     void load_obj() {
 
         Model model_1, model_2, model_sphere;
-        read_obj_file("obj/big_box.obj", model_1, "box", "box");
-        read_obj_file("obj/big_box.obj", model_2, "box", "box");
+        read_obj_file("obj/big_box1.obj", model_1, "box", "box");
+        read_obj_file("obj/big_box1.obj", model_2, "box", "box");
         read_obj_file("obj/sphere1.obj", model_sphere, "sphere", "box");
 
         glm::mat4 matrix = glm::mat4(1.0f);

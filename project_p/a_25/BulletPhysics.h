@@ -31,15 +31,15 @@ void initPhysics() {
 }
 
 // Model의 AABB를 계산하여 크기를 반환하는 함수
-glm::vec3 calculateModelSize(const Model& model) {
+glm::vec3 calculateModelSize(const Model* model) {
     // 초기 최소, 최대값을 설정
     glm::vec3 min(std::numeric_limits<float>::max());
     glm::vec3 max(std::numeric_limits<float>::lowest());
 
     // 모든 정점 순회
-    for (const Vertex& vertex : model.vertices) {
+    for (const Vertex& vertex : model->vertices) {
         // 정점 위치를 월드 공간으로 변환
-        glm::vec4 transformedVertex = model.matrix * glm::vec4(vertex.x, vertex.y, vertex.z, 1.0f);
+        glm::vec4 transformedVertex = model->matrix * glm::vec4(vertex.x, vertex.y, vertex.z, 1.0f);
 
         // 최소값과 최대값 갱신
         min.x = std::min(min.x, transformedVertex.x);
@@ -56,22 +56,22 @@ glm::vec3 calculateModelSize(const Model& model) {
 }
 
 // 모델에 대한 충돌 객체와 강체 생성 및 물리 세계에 추가
-void addModelToPhysicsWorld(Model& model) {
+void addModelToPhysicsWorld(Model*& model) {
     // 모델의 크기 계산 (AABB)
     glm::vec3 size = calculateModelSize(model);
     btCollisionShape* shape = nullptr;
-    if (model.type == "box") {
+    if (model->type == "box") {
         // 각 모델에 독립적인 충돌 박스 생성
         shape = new btBoxShape(btVector3(size.x * 0.5f, size.y * 0.5f, size.z * 0.5f));
         if (!shape) {
-            std::cerr << "Failed to create collision shape for model: " << model.name << std::endl;
+            std::cerr << "Failed to create collision shape for model: " << model->name << std::endl;
             return;
         }
     }
-    else if (model.type == "sphere") {
+    else if (model->type == "sphere") {
         
     }
-    else if (model.type == "cylinder") {
+    else if (model->type == "cylinder") {
 
     }
     
@@ -80,7 +80,7 @@ void addModelToPhysicsWorld(Model& model) {
     glm::vec3 translation, scale, skew;
     glm::vec4 perspective;
     glm::quat rotation;
-    glm::decompose(model.matrix, scale, rotation, translation, skew, perspective);
+    glm::decompose(model->matrix, scale, rotation, translation, skew, perspective);
 
     // Bullet Physics에서 사용하는 btTransform으로 변환
     btTransform startTransform;
@@ -100,12 +100,12 @@ void addModelToPhysicsWorld(Model& model) {
     btRigidBody* body = new btRigidBody(rbInfo);
 
     dynamicsWorld->addRigidBody(body);
-    model.rigidBody = body;
+    model->rigidBody = body;
 }
 
 
 // 모든 모델에 대한 물리 세계 충돌 객체 초기화
-void initializeModelsWithPhysics(std::vector<Model>& models) {
+void initializeModelsWithPhysics(std::vector<Model*>& models) {
     for (auto& model : models) {
         addModelToPhysicsWorld(model);
     }
@@ -201,12 +201,12 @@ void UpdateRigidBodyTransform(Model& model) {
     model.rigidBody->setWorldTransform(transform);
 }
 
-void RenderCollisionBox(const Model& model, GLuint shaderProgram) {
-    if (!model.rigidBody) return; // 물리 객체가 없으면 건너뜀
+void RenderCollisionBox(const Model* model, GLuint shaderProgram) {
+    if (!model->rigidBody) return; // 물리 객체가 없으면 건너뜀
 
     // AABB 계산
     btVector3 aabbMin, aabbMax;
-    model.rigidBody->getCollisionShape()->getAabb(model.rigidBody->getWorldTransform(), aabbMin, aabbMax);
+    model->rigidBody->getCollisionShape()->getAabb(model->rigidBody->getWorldTransform(), aabbMin, aabbMax);
 
     glm::vec3 min = glm::vec3(aabbMin.getX(), aabbMin.getY(), aabbMin.getZ());
     glm::vec3 max = glm::vec3(aabbMax.getX(), aabbMax.getY(), aabbMax.getZ());
