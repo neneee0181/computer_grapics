@@ -42,6 +42,10 @@ int main(int argc, char** argv) {
     DefaultModel* default_model = new DefaultModel("obj/board.obj", "board", "plane", glm::scale(glm::mat4(1.0f), glm::vec3(20.0, 20.0, 20.0)));
     models.push_back(default_model);
 
+    DefaultModel* light_model = new DefaultModel("obj/sphere.obj", "sphere", "sphere", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2, 0.2, 0.2)), lightPos));
+    light_model->material.Ka = lightColor;
+    models.push_back(light_model);
+
     initializeModelsWithPhysics(models); // 모든 모델 Bullet world에 추가
 
     InitBuffer();   
@@ -58,7 +62,7 @@ int main(int argc, char** argv) {
 
 GLvoid drawScene() {
 
-    glClearColor(1.0, 1.0, 1.0, 1.0f);
+    glClearColor(0.5, 0.5, 0.5, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
