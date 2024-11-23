@@ -39,8 +39,20 @@ int main(int argc, char** argv) {
 
     initPhysics(); // Bullet 초기화 함수 호출
 
-    DefaultModel* default_model = new DefaultModel("obj/sphere1.obj", "sphere1", "sphere", glm::scale(glm::mat4(1.0f), glm::vec3(20.0, 20.0, 20.0))); // 실제 모델 가져오기
-    models.push_back(default_model);
+    DefaultModel* default_model1 = new DefaultModel("obj/sphere.obj", "sphere1", "sphere"); // 실제 모델 가져오기
+    default_model1->material.Ka = glm::vec3(1.0, 0.0, 0.0);
+    DefaultModel* default_model2 = new DefaultModel("obj/sphere.obj", "sphere1", "sphere", glm::translate(glm::mat4(1.0f), glm::vec3(-30.0, 0.0, -40.0)));
+    default_model2->material.Ka = glm::vec3(0.0, 1.0, 0.0);
+    DefaultModel* default_model3 = new DefaultModel("obj/sphere.obj", "sphere1", "sphere", glm::translate(glm::mat4(1.0f), glm::vec3(-60.0, 0.0, -80.0)));
+    default_model3->material.Ka = glm::vec3(0.0, 0.0, 1.0);
+
+    DefaultModel* default_model4 = new DefaultModel("obj/sphere.obj", "sphere1", "sphere", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2, 0.2, 0.2)), lightPos));
+    default_model4->material.Ka = lightColor;
+
+    models.push_back(default_model1);
+    models.push_back(default_model2);
+    models.push_back(default_model3);
+    models.push_back(default_model4);
 
     initializeModelsWithPhysics(models); // 모든 모델 Bullet world에 추가
 
@@ -58,7 +70,7 @@ int main(int argc, char** argv) {
 
 GLvoid drawScene() {
 
-    glClearColor(1.0, 1.0, 1.0, 1.0f);
+    glClearColor(0.0, 0.0, 0.0, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
