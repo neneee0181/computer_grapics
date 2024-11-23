@@ -1,5 +1,4 @@
 #pragma once
-
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -65,7 +64,7 @@ public:
     GLuint vao;
     GLuint vbos[4];
 
-    virtual void load_obj(string name, string obj_name, string obj_type, glm::mat4 start_matrix = glm::mat4(1.0f)) = 0;
+    virtual void load_obj(std::string name, std::string obj_name, std::string obj_type, glm::mat4 start_matrix = glm::mat4(1.0f)) = 0;
     virtual const void draw(GLint shaderProgramID, bool (*isKeyPressed_s)(const char&)) = 0;
     virtual const void draw_rigidBody(GLuint shaderProgramID) = 0;
     virtual void initBuffer() = 0;
