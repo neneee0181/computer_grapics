@@ -35,12 +35,12 @@ namespace SQU{
         model_1.material.Ka = glm::vec3(1.0f, 0.5f, 0.5f);
         models.push_back(model_1);
 
-        matrix = glm::mat4(1.0f);
+        /*matrix = glm::mat4(1.0f);
         matrix = glm::translate(matrix, glm::vec3(20.0, 0.0, 0.0));
         matrix = glm::scale(matrix, glm::vec3(1.0, 0.7, 0.7));
         model_2.modelMatrix = matrix * model_2.modelMatrix;
         model_2.material.Ka = glm::vec3(0.5f, 0.5f, 0.5f);
-        models.push_back(model_2);
+        models.push_back(model_2);*/
 
         matrix = glm::mat4(1.0f);
         matrix = glm::translate(matrix, glm::vec3(10.0, 0.0, 0.0));
@@ -65,6 +65,7 @@ namespace SQU{
 
         GLint modelStatus = glGetUniformLocation(shaderProgramID, "modelStatus");
         GLint modelLoc = glGetUniformLocation(shaderProgramID, "model");
+        GLint normalLoc = glGetUniformLocation(shaderProgramID, "normalMatrix");
 
         for (size_t i = 0; i < models.size(); ++i) {
 
@@ -94,6 +95,9 @@ namespace SQU{
 
 
                 glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
+                glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(models[i].modelMatrix)));
+                glUniformMatrix3fv(normalLoc, 1, GL_FALSE, glm::value_ptr(normalMatrix));
+
                 glUniform1i(modelStatus, 0);
                 if (isKeyPressed_s('1'))
                     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

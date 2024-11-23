@@ -11,6 +11,7 @@ out vec2 TexCoords;    // 텍스처 좌표를 프래그먼트 셰이더로 전달
 uniform mat4 model;              // 모델 변환 행렬
 uniform mat4 viewTransform;      // 뷰 변환 행렬
 uniform mat4 projectionTransform; // 투영 변환 행렬
+uniform mat3 normalMatrix;       // 법선 변환 행렬 (C++에서 계산하여 전달)
 
 void main() {
     // 클립 좌표 계산
@@ -19,8 +20,8 @@ void main() {
     // 월드 공간에서의 정점 위치 계산
     FragPos = vec3(model * vec4(in_Position, 1.0));
 
-    // 월드 공간에서의 법선 변환
-    Normal = normalize(mat3(transpose(inverse(model))) * in_Normal);
+    // 법선 벡터를 법선 행렬로 변환
+    Normal = normalize(normalMatrix * in_Normal);
 
     // 텍스처 좌표 전달
     TexCoords = aTexCoords;

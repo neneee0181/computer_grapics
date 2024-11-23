@@ -32,7 +32,7 @@ vector<Model> models;
 unordered_map<char, bool> keyState;
 
 void keyDown_s(const char& key) {
-    keyState[key] = true;
+    keyState[key] = !keyState[key];
 }
 
 void keyUp_s(const char& key) {
@@ -50,8 +50,22 @@ GLvoid Reshape(int w, int h) {
 }
 
 void keyUp(unsigned char key, int x, int y) {
-    keyUp_s(key);
+    //keyUp_s(key);
     glutPostRedisplay();
+}
+
+void timer(int value) {
+
+    //y -> ÀÚÀü
+    if (keyState['y']) {
+        glm::mat4 matrix = glm::mat4(1.0f);
+        matrix = glm::rotate(matrix, glm::radians(0.3f), glm::vec3(0.0, 1.0, 0.0));
+        SQU::models[0].modelMatrix = matrix * SQU::models[0].modelMatrix;
+        PIRA::models[0].modelMatrix = matrix * PIRA::models[0].modelMatrix;
+    }
+
+    glutPostRedisplay();
+    glutTimerFunc(16, timer, 0);
 }
 
 void keyDown(unsigned char key, int x, int y) {
@@ -130,6 +144,7 @@ int main(int argc, char** argv) {
     glutKeyboardFunc(keyDown);
     glutKeyboardUpFunc(keyUp);
     glutSpecialFunc(keySpecial);
+    glutTimerFunc(0, timer, 0);
     glutMainLoop();
 
     return 0;
