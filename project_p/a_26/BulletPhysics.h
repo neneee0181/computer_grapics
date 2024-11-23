@@ -161,7 +161,7 @@ void removeModelFromWorld(std::vector<Model*>& models, Model*& modelToDelete) {
     }
 
     // models º¤ÅÍ¿¡¼­ ÇØ´ç ¸ðµ¨ Á¦°Å
-    auto it = std::find_if(models.begin(), models.end(), [&](const Model*& model) {
+    auto it = std::find_if(models.begin(), models.end(), [&](const Model* model) {
         return *&model == *&modelToDelete;
         });
 
