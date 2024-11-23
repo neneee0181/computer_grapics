@@ -6,6 +6,7 @@
 #include <gl/glm/glm/gtc/matrix_transform.hpp>
 #include <unordered_map>
 
+#include "Light.h"
 #include "Camera.h"
 
 //키
@@ -34,12 +35,19 @@ void keyUp(unsigned char key, int x, int y) {
     glutPostRedisplay();
 }
 
+random_device rd;
+mt19937 gen(rd());
+uniform_real_distribution<> dist(0.0, 1.0);
+
 void keyDown(unsigned char key, int x, int y) {
 
     keyDown_s(key);
 
     switch (key)
     {
+    case 'c':
+        lightColor = glm::vec3(dist(gen), dist(gen), dist(gen));
+        break;
     case 'q':
         std::cout << " 프로그램 종료 " << std::endl;
         exit(0);

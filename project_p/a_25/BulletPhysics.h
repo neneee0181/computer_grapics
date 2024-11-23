@@ -183,23 +183,23 @@ void removeRigidBodyFromModel(Model& model) {
     }
 }
 
-void UpdateRigidBodyTransforms(std::vector<Model>models) {
+void UpdateRigidBodyTransforms(std::vector<Model*>& models) {
 
     for (auto& model : models) {
 
-        if (!model.rigidBody) return;
+        if (!model->rigidBody) return;
 
-        glm::mat4 modelMatrix = model.matrix;
+        glm::mat4 modelMatrix = model->matrix;
         btTransform transform;
         transform.setFromOpenGLMatrix(glm::value_ptr(modelMatrix));
 
         // µð¹ö±ë ·Î±×
-        std::cout << "Updating RigidBody for Model: " << model.name
+        std::cout << "Updating RigidBody for Model: " << model->name
             << " | OpenGL Position: (" << modelMatrix[3][0] << ", "
             << modelMatrix[3][1] << ", " << modelMatrix[3][2] << ")"
             << std::endl;
 
-        model.rigidBody->setWorldTransform(transform);
+        model->rigidBody->setWorldTransform(transform);
     }
 
 }

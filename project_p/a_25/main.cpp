@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector> 
+#include <random>
 
 #include "shaderMaker.h"
 #include "DefaultModel.h"
@@ -15,6 +16,31 @@ GLvoid Reshape(int w, int h);
 
 //¸ðµ¨
 vector<Model*> models;
+
+void timer(int value) {
+    
+    if (keyState['r']) {
+        glm::mat4 matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(-30.0, 0.0, -40.0));
+        matrix = glm::rotate(matrix, glm::radians(0.5f), glm::vec3(0.0, 1.0, 0.0));
+        matrix = glm::translate(matrix, glm::vec3(30.0, 0.0, 40.0));
+        lightPos = matrix * glm::vec4(lightPos, 1.0f);
+        models[3]->matrix = matrix * models[3]->matrix;
+    }
+    else if (keyState['R']) {
+        glm::mat4 matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(-30.0, 0.0, -40.0));
+        matrix = glm::rotate(matrix, glm::radians(-0.5f), glm::vec3(0.0, 1.0, 0.0));
+        matrix = glm::translate(matrix, glm::vec3(30.0, 0.0, 40.0));
+        lightPos = matrix * glm::vec4(lightPos, 1.0f);
+        models[3]->matrix = matrix * models[3]->matrix;
+    }
+
+    UpdateRigidBodyTransforms(models);
+
+    glutPostRedisplay();
+    glutTimerFunc(16, timer, 0);
+}
 
 int main(int argc, char** argv) {
 
@@ -63,6 +89,7 @@ int main(int argc, char** argv) {
     glutKeyboardFunc(keyDown);
     glutKeyboardUpFunc(keyUp);
     glutSpecialFunc(keySpecial);
+    glutTimerFunc(0, timer, 0);
     glutMainLoop();
 
     return 0;
