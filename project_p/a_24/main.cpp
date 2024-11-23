@@ -69,9 +69,9 @@ void timer(int value) {
 
     if (keyState['r']) {
         glm::mat4 matrix = glm::mat4(1.0f);
-        matrix = glm::translate(matrix, glm::vec3(-15.0, 0.0, 0.0));
+        matrix = glm::translate(matrix, glm::vec3(-SQU::models[0].modelMatrix[3].x, 0.0, 0.0));
         matrix = glm::rotate(matrix, glm::radians(0.3f), glm::vec3(0.0, 1.0, 0.0));
-        matrix = glm::translate(matrix, glm::vec3(15.0, 0.0, 0.0));
+        matrix = glm::translate(matrix, glm::vec3(SQU::models[0].modelMatrix[3].x, 0.0, 0.0));
 
         // 조명 위치 업데이트
         lightPos = glm::vec3(matrix * glm::vec4(lightPos, 1.0));
@@ -79,7 +79,6 @@ void timer(int value) {
         SQU::models[1].modelMatrix = matrix * SQU::models[1].modelMatrix;
         PIRA::models[1].modelMatrix = matrix * PIRA::models[1].modelMatrix;
     }
-
 
 
     glutPostRedisplay();
@@ -92,6 +91,29 @@ void keyDown(unsigned char key, int x, int y) {
 
     switch (key)
     {
+    case 'z':
+    {
+        keyState['r'] = false;
+        float x = SQU::models[1].modelMatrix[3].x;
+        glm::mat4 matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(x - 0.05, 0.0, 0.0));
+        SQU::models[1].modelMatrix = matrix;
+        PIRA::models[1].modelMatrix = matrix;
+        lightPos = glm::vec3(glm::vec4(glm::vec3(PIRA::models[1].modelMatrix[3]), 1.0));
+        break;
+    }
+    case 'Z':
+    {
+        keyState['r'] = false;
+        float x = SQU::models[1].modelMatrix[3].x;
+        glm::mat4 matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(x + 0.05, 0.0, 0.0));
+        SQU::models[1].modelMatrix = matrix;
+        PIRA::models[1].modelMatrix = matrix;
+        lightPos = glm::vec3(glm::vec4(glm::vec3(PIRA::models[1].modelMatrix[3]), 1.0));
+
+        break;
+    }
     case 'q':
         cout << " 프로그램 종료 " << endl;
         exit(0);
