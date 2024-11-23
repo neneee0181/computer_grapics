@@ -43,7 +43,7 @@ namespace SQU{
         models.push_back(model_2);*/
 
         matrix = glm::mat4(1.0f);
-        matrix = glm::translate(matrix, glm::vec3(10.0, 0.0, 0.0));
+        matrix = glm::translate(matrix, glm::vec3(15.0, 0.0, 0.0));
         //matrix = glm::scale(matrix, glm::vec3(25.0, 25.0, 25.0));
         model_sphere.modelMatrix = matrix * model_sphere.modelMatrix;
         model_sphere.material.Ka = glm::vec3(0.0f, 0.0f, 1.0f);

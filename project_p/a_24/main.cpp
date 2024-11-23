@@ -26,6 +26,9 @@ glm::vec3 cameraUp = glm::vec3(0.0, 1.0, 0.0);
 glm::mat4 projection = glm::mat4(1.0f);
 glm::mat4 view = glm::mat4(1.0f);
 
+//조명
+glm::vec3 lightPos = glm::vec3(15.0, 0.0, 0.0);
+
 vector<Model> models;
 
 //키
@@ -63,6 +66,21 @@ void timer(int value) {
         SQU::models[0].modelMatrix = matrix * SQU::models[0].modelMatrix;
         PIRA::models[0].modelMatrix = matrix * PIRA::models[0].modelMatrix;
     }
+
+    if (keyState['r']) {
+        glm::mat4 matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(-15.0, 0.0, 0.0));
+        matrix = glm::rotate(matrix, glm::radians(0.3f), glm::vec3(0.0, 1.0, 0.0));
+        matrix = glm::translate(matrix, glm::vec3(15.0, 0.0, 0.0));
+
+        // 조명 위치 업데이트
+        lightPos = glm::vec3(matrix * glm::vec4(lightPos, 1.0));
+
+        SQU::models[1].modelMatrix = matrix * SQU::models[1].modelMatrix;
+        PIRA::models[1].modelMatrix = matrix * PIRA::models[1].modelMatrix;
+    }
+
+
 
     glutPostRedisplay();
     glutTimerFunc(16, timer, 0);
@@ -189,7 +207,7 @@ GLvoid drawScene() {
     GLint lightPosLoc = glGetUniformLocation(shaderProgramID, "lightPos");
     GLint lightColorLoc = glGetUniformLocation(shaderProgramID, "lightColor");
     GLint objColorLocation = glGetUniformLocation(shaderProgramID, "objectColor");
-    glUniform3fv(lightPosLoc, 1, glm::value_ptr(glm::vec3(10.0, 0.0, 0.0)));
+    glUniform3fv(lightPosLoc, 1, glm::value_ptr(lightPos));
     glUniform3fv(lightColorLoc, 1, glm::value_ptr(glm::vec3(0.6f, 0.65f, 0.6f)));
     glUniform3f(objColorLocation, 1.0, 0.5, 0.3);
    
