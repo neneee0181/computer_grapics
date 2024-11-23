@@ -1,59 +1,59 @@
-ï»¿#version 330 core
+#version 330 core
 
-in vec3 FragPos;   // í”„ë˜ê·¸ë¨¼íŠ¸ ìœ„ì¹˜ (vertex shaderì—ì„œ ì „ë‹¬)
-in vec3 Normal;    // ì •ì ì˜ ë²•ì„  ë²¡í„° (vertex shaderì—ì„œ ì „ë‹¬)
-in vec2 TexCoords; // í…ìŠ¤ì²˜ ì¢Œí‘œ (vertex shaderì—ì„œ ì „ë‹¬)
+in vec3 FragPos;   // ÇÁ·¡±×¸ÕÆ® À§Ä¡ (vertex shader¿¡¼­ Àü´Ş)
+in vec3 Normal;    // Á¤Á¡ÀÇ ¹ı¼± º¤ÅÍ (vertex shader¿¡¼­ Àü´Ş)
+in vec2 TexCoords; // ÅØ½ºÃ³ ÁÂÇ¥ (vertex shader¿¡¼­ Àü´Ş)
 
-out vec4 FragColor; // ìµœì¢… ì¶œë ¥ ìƒ‰ìƒ
+out vec4 FragColor; // ÃÖÁ¾ Ãâ·Â »ö»ó
 
-// ì¹´ë©”ë¼ì™€ ê´‘ì› ê´€ë ¨ Uniform ë³€ìˆ˜
-uniform vec3 viewPos;      // ì¹´ë©”ë¼(ë·°ì–´) ìœ„ì¹˜
-uniform vec3 lightPos;     // ê´‘ì›ì˜ ìœ„ì¹˜
-uniform vec3 lightColor;   // ê´‘ì›ì˜ ìƒ‰ìƒ
+// Ä«¸Ş¶ó¿Í ±¤¿ø °ü·Ã Uniform º¯¼ö
+uniform vec3 viewPos;      // Ä«¸Ş¶ó(ºä¾î) À§Ä¡
+uniform vec3 lightPos;     // ±¤¿øÀÇ À§Ä¡
+uniform vec3 lightColor;   // ±¤¿øÀÇ »ö»ó
 
-// ì¬ì§ˆ ì†ì„±
-uniform vec3 Ka;           // í™˜ê²½ê´‘ ê³„ìˆ˜ (Ambient)
-uniform vec3 Ks;           // ë°˜ì‚¬ê´‘ ê³„ìˆ˜ (Specular)
-uniform float Ns;          // ë°˜ì§ì„ ê°•ë„ (Shininess)
+// ÀçÁú ¼Ó¼º
+uniform vec3 Ka;           // È¯°æ±¤ °è¼ö (Ambient)
+uniform vec3 Ks;           // ¹İ»ç±¤ °è¼ö (Specular)
+uniform float Ns;          // ¹İÂ¦ÀÓ °­µµ (Shininess)
 
-// í…ìŠ¤ì²˜ ê´€ë ¨ Uniform ë³€ìˆ˜
-uniform sampler2D texture1; // í…ìŠ¤ì²˜ ìƒ˜í”ŒëŸ¬
-uniform bool hasTexture;    // í…ìŠ¤ì²˜ ìœ ë¬´ í”Œë˜ê·¸
+// ÅØ½ºÃ³ °ü·Ã Uniform º¯¼ö
+uniform sampler2D texture1; // ÅØ½ºÃ³ »ùÇÃ·¯
+uniform bool hasTexture;    // ÅØ½ºÃ³ À¯¹« ÇÃ·¡±×
 
-// ë Œë”ë§ ìƒíƒœ
-uniform bool isRigidBody;   // trueë©´ rigid body ìƒíƒœë¡œ ë Œë”ë§
+// ·»´õ¸µ »óÅÂ
+uniform bool isRigidBody;   // true¸é rigid body »óÅÂ·Î ·»´õ¸µ
 
 void main() {
-    // ê°•ì²´ ìƒíƒœ (Rigid Body)ë¼ë©´ ë¹¨ê°„ìƒ‰ìœ¼ë¡œ ì¶œë ¥
+    // °­Ã¼ »óÅÂ (Rigid Body)¶ó¸é »¡°£»öÀ¸·Î Ãâ·Â
     if (isRigidBody) {
         FragColor = vec4(1.0, 0.0, 0.0, 1.0);
         return;
     }
 
-    // ì›”ë“œ ê³µê°„ì—ì„œì˜ ë²•ì„  ë²¡í„° ì •ê·œí™”
+    // ¿ùµå °ø°£¿¡¼­ÀÇ ¹ı¼± º¤ÅÍ Á¤±ÔÈ­
     vec3 norm = normalize(Normal);
 
-    // ê´‘ì› ë°©í–¥ ê³„ì‚°
+    // ±¤¿ø ¹æÇâ °è»ê
     vec3 lightDir = normalize(lightPos - FragPos);
 
-    // 1. **í™˜ê²½ê´‘ (Ambient)**: ê³ ì • ê°’ìœ¼ë¡œ ì„¤ì •
+    // 1. **È¯°æ±¤ (Ambient)**: °íÁ¤ °ªÀ¸·Î ¼³Á¤
     vec3 ambient = Ka * lightColor;
 
-    // 2. **ë‚œë°˜ì‚¬ê´‘ (Diffuse)**: Lambert's cosine law
+    // 2. **³­¹İ»ç±¤ (Diffuse)**: Lambert's cosine law
     float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuseColor = hasTexture ? texture(texture1, TexCoords).rgb : vec3(1.0, 1.0, 1.0); // í…ìŠ¤ì²˜ ìœ ë¬´ í™•ì¸
+    vec3 diffuseColor = hasTexture ? texture(texture1, TexCoords).rgb : vec3(1.0, 1.0, 1.0); // ÅØ½ºÃ³ À¯¹« È®ÀÎ
     vec3 diffuse = diffuseColor * diff * lightColor;
 
-    // 3. **ë°˜ì‚¬ê´‘ (Specular)**: Phong reflection model
+    // 3. **¹İ»ç±¤ (Specular)**: Phong reflection model
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 reflectDir = reflect(-lightDir, norm);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), clamp(Ns, 1.0, 128.0)); // Ns í´ë¨í•‘
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), clamp(Ns, 1.0, 128.0)); // Ns Å¬·¥ÇÎ
     vec3 specular = Ks * spec * lightColor;
 
-    // ìµœì¢… ìƒ‰ìƒ ê³„ì‚° (í™˜ê²½ê´‘ + ë‚œë°˜ì‚¬ê´‘ + ë°˜ì‚¬ê´‘)
+    // ÃÖÁ¾ »ö»ó °è»ê (È¯°æ±¤ + ³­¹İ»ç±¤ + ¹İ»ç±¤)
     vec3 result = ambient + diffuse + specular;
 
-    // ìµœì¢… ì¶œë ¥
+    // ÃÖÁ¾ Ãâ·Â
     FragColor = vec4(result, 1.0);
-    //FragColor = vec4(Normal * 0.5 + 0.5, 1.0); // ë²•ì„ ì„ (0, 1) ë²”ìœ„ë¡œ ë³€í™˜
+    //FragColor = vec4(Normal * 0.5 + 0.5, 1.0); // ¹ı¼±À» (0, 1) ¹üÀ§·Î º¯È¯
 }

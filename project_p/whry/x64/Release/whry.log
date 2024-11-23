@@ -1,10 +1,10 @@
 ﻿  main.cpp
-C:\Users\neneee\computer_grapics-main\project_p\whry\main.cpp(253,30): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\whry\main.cpp(268,70): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\whry\main.cpp(529,52): warning C4553: '==': 식의 결과가 사용되지 않습니다. '='을(를) 의도했습니까?
-C:\Users\neneee\computer_grapics-main\project_p\whry\main.cpp(554,5): warning C4065: switch문에 'default'가 있으나 'case' 레이블이 없습니다.
-C:\Users\neneee\computer_grapics-main\project_p\whry\main.cpp(560,15): warning C4244: '인수': 'time_t'에서 'unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\neneee\computer_grapics-main\project_p\whry\main.cpp(585,44): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\kevin\mine\computer_grapics\project_p\whry\main.cpp(253,30): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\kevin\mine\computer_grapics\project_p\whry\main.cpp(268,70): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\kevin\mine\computer_grapics\project_p\whry\main.cpp(529,52): warning C4553: '==': 식의 결과가 사용되지 않습니다. '='을(를) 의도했습니까?
+C:\Users\kevin\mine\computer_grapics\project_p\whry\main.cpp(554,5): warning C4065: switch문에 'default'가 있으나 'case' 레이블이 없습니다.
+C:\Users\kevin\mine\computer_grapics\project_p\whry\main.cpp(560,15): warning C4244: '인수': 'time_t'에서 'unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\kevin\mine\computer_grapics\project_p\whry\main.cpp(585,44): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
 main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp___glewEnableVertexAttribArray
 main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp___glewBindVertexArray
 main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp___glewUseProgram
@@ -29,4 +29,4 @@ main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp___glewDeleteS
 main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp___glewLinkProgram
 main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp___glewUniform4f
 main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp_glewInit
-C:\Users\neneee\computer_grapics-main\project_p\x64\Release\whry.exe : fatal error LNK1120: 24개의 확인할 수 없는 외부 참조입니다.
+C:\Users\kevin\mine\computer_grapics\project_p\x64\Release\whry.exe : fatal error LNK1120: 24개의 확인할 수 없는 외부 참조입니다.

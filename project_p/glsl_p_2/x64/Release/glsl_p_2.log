@@ -14,4 +14,4 @@ main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp___glewGetProg
 main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp___glewDeleteShader
 main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp___glewLinkProgram
 main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp_glewInit
-C:\Users\neneee\computer_grapics-main\project_p\x64\Release\glsl_p_2.exe : fatal error LNK1120: 14개의 확인할 수 없는 외부 참조입니다.
+C:\Users\kevin\mine\computer_grapics\project_p\x64\Release\glsl_p_2.exe : fatal error LNK1120: 14개의 확인할 수 없는 외부 참조입니다.

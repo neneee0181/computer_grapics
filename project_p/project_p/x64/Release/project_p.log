@@ -1,5 +1,5 @@
 ﻿  main.cpp
-C:\Users\neneee\computer_grapics-main\project_p\project_p\main.cpp(11,6): warning C4326: 'main'의 반환 형식이 'int'이어야 하는데 'void'입니다.
+C:\Users\kevin\mine\computer_grapics\project_p\project_p\main.cpp(11,6): warning C4326: 'main'의 반환 형식이 'int'이어야 하는데 'void'입니다.
 main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp_glewExperimental
 main.obj : error LNK2001: 확인할 수 없는 외부 기호 __imp_glewInit
-C:\Users\neneee\computer_grapics-main\project_p\x64\Release\project_p.exe : fatal error LNK1120: 2개의 확인할 수 없는 외부 참조입니다.
+C:\Users\kevin\mine\computer_grapics\project_p\x64\Release\project_p.exe : fatal error LNK1120: 2개의 확인할 수 없는 외부 참조입니다.
