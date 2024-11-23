@@ -39,8 +39,26 @@ int main(int argc, char** argv) {
 
     initPhysics(); // Bullet 초기화 함수 호출
 
-    DefaultModel* default_model = new DefaultModel("obj/board.obj", "board", "plane", glm::scale(glm::mat4(1.0f), glm::vec3(20.0, 20.0, 20.0)));
-    models.push_back(default_model);
+    DefaultModel* default_model1 = new DefaultModel("obj/board.obj", "board", "plane", glm::scale(glm::mat4(1.0f), glm::vec3(40.0, 40.0, 40.0)));
+    models.push_back(default_model1);
+
+    DefaultModel* default_model2 = new DefaultModel("obj/box_middle.obj", "box_middle", "box", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(1.0, 1.0, 1.0)), glm::vec3(0.0, 0.0, 0.0)));
+    models.push_back(default_model2);
+
+    DefaultModel* default_model3 = new DefaultModel("obj/box_leg_right.obj", "box_leg_right", "box", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(1.0, 1.0, 1.0)), glm::vec3(0.0, 0.0, 0.0)));
+    models.push_back(default_model3);
+
+    DefaultModel* default_model4 = new DefaultModel("obj/box_leg_left.obj", "box_leg_left", "box", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(1.0, 1.0, 1.0)), glm::vec3(0.0, 0.0, 0.0)));
+    models.push_back(default_model4);
+
+    DefaultModel* default_model5 = new DefaultModel("obj/box_bottom.obj", "box_bottom", "box", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(1.0, 1.0, 1.0)), glm::vec3(0.0, 0.0, 0.0)));
+    models.push_back(default_model5);
+
+   /* DefaultModel* default_model4 = new DefaultModel("obj/box_leg_left.obj", "box_leg_left", "box", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.8, 0.8, 0.8)), glm::vec3(1.0, 0.0, -2.0)));
+    models.push_back(default_model4);
+
+    DefaultModel* default_model4 = new DefaultModel("obj/box_leg_left.obj", "box_leg_left", "box", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.8, 0.8, 0.8)), glm::vec3(1.0, 0.0, -2.0)));
+    models.push_back(default_model4);*/
 
     DefaultModel* light_model = new DefaultModel("obj/sphere.obj", "sphere", "sphere", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.2, 0.2, 0.2)), lightPos));
     light_model->material.Ka = lightColor;
@@ -98,9 +116,9 @@ GLvoid drawScene() {
     }
     glDisable(GL_DEPTH_TEST);
 
-    for (const auto& model : models) { // 모델 bb draw
-        model->draw_rigidBody(shaderProgramID);
-    }
+    //for (const auto& model : models) { // 모델 bb draw
+    //    model->draw_rigidBody(shaderProgramID);
+    //}
 
     glutSwapBuffers();
 
