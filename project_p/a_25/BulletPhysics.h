@@ -63,18 +63,37 @@ void addModelToPhysicsWorld(Model*& model) {
     if (model->type == "box") {
         // 각 모델에 독립적인 충돌 박스 생성
         shape = new btBoxShape(btVector3(size.x * 0.5f, size.y * 0.5f, size.z * 0.5f));
-        if (!shape) {
-            std::cerr << "Failed to create collision shape for model: " << model->name << std::endl;
-            return;
-        }
     }
     else if (model->type == "sphere") {
-        
+        float radius = std::max(std::max(size.x, size.y), size.z) * 0.5f;
+        shape = new btSphereShape(radius);
     }
     else if (model->type == "cylinder") {
-
+        shape = new btCylinderShape(btVector3(size.x * 0.5f, size.y * 0.5f, size.z * 0.5f));
     }
-    
+    else if (model->type == "capsule") {
+        float radius = std::min(size.x, size.z) * 0.5f;
+        float height = size.y - 2 * radius;
+        shape = new btCapsuleShape(radius, height);
+    }
+    else if (model->type == "cone") {
+        float radius = size.x * 0.5f;
+        float height = size.y;
+        shape = new btConeShape(radius, height);
+    }
+    else if (model->type == "plane") {
+        float radius = size.x * 0.5f;
+        float height = size.y;
+        shape = new btConeShape(radius, height);
+    }
+    else {
+        shape = new btBoxShape(btVector3(size.x * 0.5f, 0.01f, size.z * 0.5f));
+    }
+
+    if (!shape) {
+        std::cerr << "Failed to create collision shape for model: " << model->name << std::endl;
+        return;
+    }
 
     // OpenGL의 modelMatrix에서 위치, 회전, 스케일 추출
     glm::vec3 translation, scale, skew;
