@@ -162,12 +162,22 @@ GLvoid drawScene() {
     unsigned int projectionLocation = glGetUniformLocation(shaderProgramID, "projectionTransform");
     glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, &projection[0][0]);
 
+    if (keyState['m']) {
+        GLint lightEnabledLoc = glGetUniformLocation(shaderProgramID, "lightEnabled");
+        glUniform1i(lightEnabledLoc, 1); // true: 1, false: 0으로 전달
+
+    }
+    else {
+        GLint lightEnabledLoc = glGetUniformLocation(shaderProgramID, "lightEnabled");
+        glUniform1i(lightEnabledLoc, 0); // true: 1, false: 0으로 전달
+    }
     GLint lightPosLoc = glGetUniformLocation(shaderProgramID, "lightPos");
     GLint lightColorLoc = glGetUniformLocation(shaderProgramID, "lightColor");
     GLint objColorLocation = glGetUniformLocation(shaderProgramID, "objectColor");
     glUniform3fv(lightPosLoc, 1, glm::value_ptr(glm::vec3(10.0, 0.0, 0.0)));
     glUniform3fv(lightColorLoc, 1, glm::value_ptr(glm::vec3(0.6f, 0.65f, 0.6f)));
     glUniform3f(objColorLocation, 1.0, 0.5, 0.3);
+   
     glEnable(GL_DEPTH_TEST);
     if (keyState['n'])
         PIRA::draw(shaderProgramID, isKeyPressed_s);
