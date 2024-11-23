@@ -11,7 +11,6 @@
 
 #include "shaderMaker.h"
 #include "LoadWall.h"
-#include "LoadBody.h"
 
 using namespace std;
 
@@ -28,6 +27,7 @@ glm::mat4 view = glm::mat4(1.0f);
 
 //조명
 glm::vec3 lightPos = glm::vec3(15.0, 0.0, 0.0);
+glm::vec3 lightColor = glm::vec3(0.6f, 0.65f, 0.6f);
 
 vector<Model> models;
 
@@ -57,63 +57,12 @@ void keyUp(unsigned char key, int x, int y) {
     glutPostRedisplay();
 }
 
-void timer(int value) {
-
-    //y -> 자전
-    if (keyState['y']) {
-        glm::mat4 matrix = glm::mat4(1.0f);
-        matrix = glm::rotate(matrix, glm::radians(0.3f), glm::vec3(0.0, 1.0, 0.0));
-        SQU::models[0].modelMatrix = matrix * SQU::models[0].modelMatrix;
-        PIRA::models[0].modelMatrix = matrix * PIRA::models[0].modelMatrix;
-    }
-
-    if (keyState['r']) {
-        glm::mat4 matrix = glm::mat4(1.0f);
-        matrix = glm::translate(matrix, glm::vec3(-SQU::models[0].modelMatrix[3].x, 0.0, 0.0));
-        matrix = glm::rotate(matrix, glm::radians(0.3f), glm::vec3(0.0, 1.0, 0.0));
-        matrix = glm::translate(matrix, glm::vec3(SQU::models[0].modelMatrix[3].x, 0.0, 0.0));
-
-        // 조명 위치 업데이트
-        lightPos = glm::vec3(matrix * glm::vec4(lightPos, 1.0));
-
-        SQU::models[1].modelMatrix = matrix * SQU::models[1].modelMatrix;
-        PIRA::models[1].modelMatrix = matrix * PIRA::models[1].modelMatrix;
-    }
-
-
-    glutPostRedisplay();
-    glutTimerFunc(16, timer, 0);
-}
-
 void keyDown(unsigned char key, int x, int y) {
 
     keyDown_s(key);
 
     switch (key)
     {
-    case 'z':
-    {
-        keyState['r'] = false;
-        float x = SQU::models[1].modelMatrix[3].x;
-        glm::mat4 matrix = glm::mat4(1.0f);
-        matrix = glm::translate(matrix, glm::vec3(x - 0.05, 0.0, 0.0));
-        SQU::models[1].modelMatrix = matrix;
-        PIRA::models[1].modelMatrix = matrix;
-        lightPos = glm::vec3(glm::vec4(glm::vec3(PIRA::models[1].modelMatrix[3]), 1.0));
-        break;
-    }
-    case 'Z':
-    {
-        keyState['r'] = false;
-        float x = SQU::models[1].modelMatrix[3].x;
-        glm::mat4 matrix = glm::mat4(1.0f);
-        matrix = glm::translate(matrix, glm::vec3(x + 0.05, 0.0, 0.0));
-        SQU::models[1].modelMatrix = matrix;
-        PIRA::models[1].modelMatrix = matrix;
-        lightPos = glm::vec3(glm::vec4(glm::vec3(PIRA::models[1].modelMatrix[3]), 1.0));
-
-        break;
-    }
     case 'q':
         cout << " 프로그램 종료 " << endl;
         exit(0);
@@ -184,7 +133,6 @@ int main(int argc, char** argv) {
     glutKeyboardFunc(keyDown);
     glutKeyboardUpFunc(keyUp);
     glutSpecialFunc(keySpecial);
-    glutTimerFunc(0, timer, 0);
     glutMainLoop();
 
     return 0;
@@ -217,31 +165,16 @@ GLvoid drawScene() {
     unsigned int projectionLocation = glGetUniformLocation(shaderProgramID, "projectionTransform");
     glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, &projection[0][0]);
 
-    if (keyState['m']) {
-        GLint lightEnabledLoc = glGetUniformLocation(shaderProgramID, "lightEnabled");
-        glUniform1i(lightEnabledLoc, 1); // true: 1, false: 0으로 전달
-
-    }
-    else {
-        GLint lightEnabledLoc = glGetUniformLocation(shaderProgramID, "lightEnabled");
-        glUniform1i(lightEnabledLoc, 0); // true: 1, false: 0으로 전달
-    }
     GLint lightPosLoc = glGetUniformLocation(shaderProgramID, "lightPos");
     GLint lightColorLoc = glGetUniformLocation(shaderProgramID, "lightColor");
-    GLint objColorLocation = glGetUniformLocation(shaderProgramID, "objectColor");
     glUniform3fv(lightPosLoc, 1, glm::value_ptr(lightPos));
-    glUniform3fv(lightColorLoc, 1, glm::value_ptr(glm::vec3(0.6f, 0.65f, 0.6f)));
-    glUniform3f(objColorLocation, 1.0, 0.5, 0.3);
+    glUniform3fv(lightColorLoc, 1, glm::value_ptr(lightColor));
    
     glEnable(GL_DEPTH_TEST);
-    if (keyState['n'])
-        PIRA::draw(shaderProgramID, isKeyPressed_s);
-    else
-        SQU::draw(shaderProgramID, isKeyPressed_s);
+    PIRA::draw(shaderProgramID, isKeyPressed_s);
 
     glDisable(GL_DEPTH_TEST);
 
-    //Body::draw_rigidBody(shaderProgramID);
     //PIRA::draw_rigidBody(shaderProgramID);
 
     glutSwapBuffers();
@@ -255,6 +188,5 @@ GLvoid drawScene() {
 // 버퍼 초기화 함수
 void InitBuffer() {
     //-----------------------------------------------------------------------------------------------------------
-    SQU::initBuffer();
     PIRA::initBuffer();
 }

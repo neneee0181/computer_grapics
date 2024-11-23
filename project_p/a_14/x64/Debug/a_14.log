@@ -1,6 +1,6 @@
 ﻿  filetobuf.cpp
   main.cpp
-C:\Mac\Home\Documents\computer_grapics\project_p\a_14\LoadTexture.h(6,10): error C1083: 포함 파일을 열 수 없습니다. 'gl/stb_image.h': No such file or directory
-  (소스 파일 '../a_14/main.cpp'을(를) 컴파일하는 중)
-  
+C:\Users\kevin\mine\computer_grapics\project_p\a_14\main.cpp(240,69): warning C4267: '인수': 'size_t'에서 'GLsizei'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\kevin\mine\computer_grapics\project_p\a_14\main.cpp(246,69): warning C4267: '인수': 'size_t'에서 'GLsizei'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   코드를 생성하고 있습니다...
+  a_14.vcxproj -> C:\Users\kevin\mine\computer_grapics\project_p\x64\Debug\a_14.exe

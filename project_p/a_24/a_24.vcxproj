@@ -141,6 +141,8 @@
     <None Include="vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BulletPhysics.h" />
+    <ClInclude Include="CustomContactResultCallback.h" />
     <ClInclude Include="filetobuf.h" />
     <ClInclude Include="LoadBody.h" />
     <ClInclude Include="LoadMtl.h" />

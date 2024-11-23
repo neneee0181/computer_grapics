@@ -23,18 +23,10 @@ uniform bool hasTexture;    // 텍스처 유무 플래그
 // 렌더링 상태
 uniform bool isRigidBody;   // true면 rigid body 상태로 렌더링
 
-// 조명 상태
-uniform bool lightEnabled;  // 조명 활성화 여부
-
 void main() {
     // 강체 상태 (Rigid Body)라면 빨간색으로 출력
     if (isRigidBody) {
         FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-        return;
-    }
-
-    if (lightEnabled) {
-        FragColor = vec4(Ka, 1.0);
         return;
     }
 

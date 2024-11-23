@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{b29ba38e-5273-42da-8b10-a1c66cb6a4e1}</ProjectGuid>
+    <ProjectGuid>{369d42b0-290d-4183-877e-8a10689781b5}</ProjectGuid>
     <RootNamespace>a_25</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -141,6 +141,8 @@
     <None Include="vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BulletPhysics.h" />
+    <ClInclude Include="CustomContactResultCallback.h" />
     <ClInclude Include="filetobuf.h" />
     <ClInclude Include="LoadBody.h" />
     <ClInclude Include="LoadMtl.h" />
