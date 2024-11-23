@@ -16,6 +16,21 @@
     <Filter Include="Shader">
       <UniqueIdentifier>{f9426bb8-10f9-4723-a5ac-d6eb634f2b89}</UniqueIdentifier>
     </Filter>
+    <Filter Include="헤더 파일\BulletPhysics">
+      <UniqueIdentifier>{2e9190ab-2437-4090-90b4-2d1683d83f70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Load">
+      <UniqueIdentifier>{9ec7e6c4-40ce-46a8-81f8-a19bbdee7679}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Object">
+      <UniqueIdentifier>{7bd31288-bdbb-40c7-9f82-4dc7e007525b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Shader">
+      <UniqueIdentifier>{1667fa76-aa12-4e31-8d32-f12b1dc42280}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Load">
+      <UniqueIdentifier>{d1e0e2bd-aba8-4f25-83f0-9fba523a232e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vertex.glsl">
@@ -26,35 +41,32 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="filetobuf.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="shaderMaker.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="LoadObj.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="LoadMtl.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="LoadTexture.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="LoadWall.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="LoadBody.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="BulletPhysics.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>헤더 파일\BulletPhysics</Filter>
     </ClInclude>
     <ClInclude Include="CustomContactResultCallback.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>헤더 파일\BulletPhysics</Filter>
+    </ClInclude>
+    <ClInclude Include="filetobuf.h">
+      <Filter>헤더 파일\Load</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadMtl.h">
+      <Filter>헤더 파일\Load</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadObj.h">
+      <Filter>헤더 파일\Load</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadTexture.h">
+      <Filter>헤더 파일\Load</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadWall.h">
+      <Filter>헤더 파일\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>헤더 파일\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="shaderMaker.h">
+      <Filter>헤더 파일\Shader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -62,7 +74,7 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="filetobuf.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\Load</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

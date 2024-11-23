@@ -29,10 +29,11 @@ glm::mat4 view = glm::mat4(1.0f);
 glm::vec3 lightPos = glm::vec3(15.0, 0.0, 0.0);
 glm::vec3 lightColor = glm::vec3(0.6f, 0.65f, 0.6f);
 
-vector<Model> models;
-
 //키
 unordered_map<char, bool> keyState;
+
+//모델
+vector<Model> models;
 
 void keyDown_s(const char& key) {
     keyState[key] = !keyState[key];
@@ -120,11 +121,9 @@ int main(int argc, char** argv) {
 
     initPhysics(); // Bullet 초기화 함수 호출
 
-   
-    PIRA::load_obj(); // 몸 obj 불러옴
     SQU::load_obj(); // 벽 obj 불러옴
 
-    initializeModelsWithPhysics(PIRA::models);
+    initializeModelsWithPhysics(SQU::models);
 
     InitBuffer();
 
@@ -171,11 +170,11 @@ GLvoid drawScene() {
     glUniform3fv(lightColorLoc, 1, glm::value_ptr(lightColor));
    
     glEnable(GL_DEPTH_TEST);
-    PIRA::draw(shaderProgramID, isKeyPressed_s);
+    SQU::draw(shaderProgramID, isKeyPressed_s);
 
     glDisable(GL_DEPTH_TEST);
 
-    //PIRA::draw_rigidBody(shaderProgramID);
+    //SQU::draw_rigidBody(shaderProgramID);
 
     glutSwapBuffers();
 
@@ -188,5 +187,5 @@ GLvoid drawScene() {
 // 버퍼 초기화 함수
 void InitBuffer() {
     //-----------------------------------------------------------------------------------------------------------
-    PIRA::initBuffer();
+    SQU::initBuffer();
 }

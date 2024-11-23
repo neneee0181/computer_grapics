@@ -39,7 +39,7 @@ glm::vec3 calculateModelSize(const Model& model) {
     // 모든 정점 순회
     for (const Vertex& vertex : model.vertices) {
         // 정점 위치를 월드 공간으로 변환
-        glm::vec4 transformedVertex = model.modelMatrix * glm::vec4(vertex.x, vertex.y, vertex.z, 1.0f);
+        glm::vec4 transformedVertex = model.matrix * glm::vec4(vertex.x, vertex.y, vertex.z, 1.0f);
 
         // 최소값과 최대값 갱신
         min.x = std::min(min.x, transformedVertex.x);
@@ -80,7 +80,7 @@ void addModelToPhysicsWorld(Model& model) {
     glm::vec3 translation, scale, skew;
     glm::vec4 perspective;
     glm::quat rotation;
-    glm::decompose(model.modelMatrix, scale, rotation, translation, skew, perspective);
+    glm::decompose(model.matrix, scale, rotation, translation, skew, perspective);
 
     // Bullet Physics에서 사용하는 btTransform으로 변환
     btTransform startTransform;
@@ -170,7 +170,7 @@ void UpdateRigidBodyTransforms(std::vector<Model>models) {
 
         if (!model.rigidBody) return;
 
-        glm::mat4 modelMatrix = model.modelMatrix;
+        glm::mat4 modelMatrix = model.matrix;
         btTransform transform;
         transform.setFromOpenGLMatrix(glm::value_ptr(modelMatrix));
 
@@ -188,7 +188,7 @@ void UpdateRigidBodyTransforms(std::vector<Model>models) {
 void UpdateRigidBodyTransform(Model& model) {
     if (!model.rigidBody) return;
 
-    glm::mat4 modelMatrix = model.modelMatrix;
+    glm::mat4 modelMatrix = model.matrix;
     btTransform transform;
     transform.setFromOpenGLMatrix(glm::value_ptr(modelMatrix));
 

@@ -46,13 +46,11 @@ struct Model {
     std::vector<Face> faces;       // 면 배열
     std::vector<unsigned int> normalFaces; // Face에 맞는 법선 인덱스
 
-
-    glm::mat4 modelMatrix = glm::mat4(1.0f);
+    glm::mat4 matrix = glm::mat4(1.0f);
     glm::mat4 translateMatrix = glm::mat4(1.0f);  // 모델이 이동한 위치를 저장할 벡터
     glm::mat4 rotateMatrix = glm::mat4(1.0f);    // 모델의 초기 회전 행렬
 
     Material material;
-    std::vector<glm::vec3> colors;      // **각 정점에 대한 색상 배열**
 
     std::string name;
     std::string type; // 모델 도형 타입 ex) box, sphere, cylinder

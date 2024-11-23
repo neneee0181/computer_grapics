@@ -20,7 +20,6 @@ namespace SQU{
     vector<GLuint> vaos;
     vector<vector<GLuint>> vbos;
 
-
     void load_obj() {
 
         Model model_1, model_2, model_sphere;
@@ -31,21 +30,14 @@ namespace SQU{
         glm::mat4 matrix = glm::mat4(1.0f);
         matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, 0.0));
         matrix = glm::scale(matrix, glm::vec3(1.0, 1.0, 1.0));
-        model_1.modelMatrix = matrix * model_1.modelMatrix;
+        model_1.matrix = matrix * model_1.matrix;
         model_1.material.Ka = glm::vec3(1.0f, 0.5f, 0.5f);
         models.push_back(model_1);
-
-        /*matrix = glm::mat4(1.0f);
-        matrix = glm::translate(matrix, glm::vec3(20.0, 0.0, 0.0));
-        matrix = glm::scale(matrix, glm::vec3(1.0, 0.7, 0.7));
-        model_2.modelMatrix = matrix * model_2.modelMatrix;
-        model_2.material.Ka = glm::vec3(0.5f, 0.5f, 0.5f);
-        models.push_back(model_2);*/
 
         matrix = glm::mat4(1.0f);
         matrix = glm::translate(matrix, glm::vec3(15.0, 0.0, 0.0));
         //matrix = glm::scale(matrix, glm::vec3(25.0, 25.0, 25.0));
-        model_sphere.modelMatrix = matrix * model_sphere.modelMatrix;
+        model_sphere.matrix = matrix * model_sphere.matrix;
         model_sphere.material.Ka = glm::vec3(0.0f, 0.0f, 1.0f);
 
         models.push_back(model_sphere);
@@ -94,8 +86,8 @@ namespace SQU{
                 }
 
 
-                glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix));
-                glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(models[i].modelMatrix)));
+                glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].matrix));
+                glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(models[i].matrix)));
                 glUniformMatrix3fv(normalLoc, 1, GL_FALSE, glm::value_ptr(normalMatrix));
 
                 glUniform1i(modelStatus, 0);
