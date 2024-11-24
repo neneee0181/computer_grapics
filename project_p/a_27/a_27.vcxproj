@@ -153,6 +153,7 @@
     <ClInclude Include="DefaultModel.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="shaderMaker.h" />
+    <ClInclude Include="SierpinskiModel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="filetobuf.cpp" />

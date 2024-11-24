@@ -3,6 +3,7 @@
 
 #include "shaderMaker.h"
 #include "DefaultModel.h"
+#include "SierpinskiModel.h"
 #include "KeyBoard.h"
 #include "Camera.h"
 #include "Light.h"
@@ -39,8 +40,11 @@ int main(int argc, char** argv) {
 
     initPhysics(); // Bullet 초기화 함수 호출
 
-    DefaultModel* default_model = new DefaultModel("obj/sphere1.obj", "sphere1", "sphere", glm::scale(glm::mat4(1.0f), glm::vec3(20.0, 20.0, 20.0))); // 실제 모델 가져오기
-    models.push_back(default_model);
+    //DefaultModel* default_model = new DefaultModel("obj/sphere.obj", "sphere", "sphere", glm::scale(glm::mat4(1.0f), glm::vec3(1.0, 1.0, 1.0))); // 실제 모델 가져오기
+    //models.push_back(default_model);
+    
+    SierpinskiModel* sp_model = new SierpinskiModel();
+    models.push_back(sp_model);
 
     initializeModelsWithPhysics(models); // 모든 모델 Bullet world에 추가
 
