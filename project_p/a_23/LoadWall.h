@@ -92,7 +92,7 @@ namespace Wall{
         model_front1.modelMatrix = matrix * model_front1.modelMatrix;
         model_front1.material.Ka = glm::vec3(0.8, 0.8, 0.8);
         model_front1.name = "front1";
-        model_front1.rigid_status = false;
+        model_front1.rigid_status = true;
         models.push_back(model_front1);
 
 
@@ -104,13 +104,13 @@ namespace Wall{
         model_front2.modelMatrix = matrix * model_front2.modelMatrix;
         model_front2.material.Ka = glm::vec3(0.8, 0.8, 0.8);
         model_front2.name = "front2";
-        model_front2.rigid_status = false;
+        model_front2.rigid_status = true;
         models.push_back(model_front2);
 
 
         Model box_1 = box;
         matrix = glm::mat4(1.0f);
-        matrix = glm::translate(matrix, glm::vec3(-10.0, -22.5, 10.0));
+        matrix = glm::translate(matrix, glm::vec3(-20.0, -22.5, -20.0));
         matrix = glm::scale(matrix, glm::vec3(0.5, 0.5, 0.5));
         box_1.modelMatrix = matrix * box_1.modelMatrix;
         box_1.material.Ka = glm::vec3(0.0, 0.0, 0.0);
@@ -119,7 +119,7 @@ namespace Wall{
 
         Model box_2 = box;
         matrix = glm::mat4(1.0f);
-        matrix = glm::translate(matrix, glm::vec3(-10.0, -18.5, 10.0));
+        matrix = glm::translate(matrix, glm::vec3(-20.0, -18.5, -20.0));
         matrix = glm::scale(matrix, glm::vec3(0.5, 0.5, 0.5));
         box_2.modelMatrix = matrix * box_2.modelMatrix;
         box_2.material.Ka = glm::vec3(0.4, 0.4, 0.4);
@@ -128,7 +128,7 @@ namespace Wall{
 
         Model box_3 = box;
         matrix = glm::mat4(1.0f);
-        matrix = glm::translate(matrix, glm::vec3(0.0, -13.5, 20.0));
+        matrix = glm::translate(matrix, glm::vec3(-10.0, -13.5, 0.0));
         matrix = glm::scale(matrix, glm::vec3(0.5, 2.5, 0.5));
         box_3.modelMatrix = matrix * box_3.modelMatrix;
         box_3.material.Ka = glm::vec3(0.4, 0.4, 0.4);
@@ -137,7 +137,7 @@ namespace Wall{
 
         Model box_4 = box;
         matrix = glm::mat4(1.0f);
-        matrix = glm::translate(matrix, glm::vec3(20.0, -13.5, 20.0));
+        matrix = glm::translate(matrix, glm::vec3(10.0, -13.5, 0.0));
         matrix = glm::scale(matrix, glm::vec3(0.5, 2.5, 0.5));
         box_4.modelMatrix = matrix * box_4.modelMatrix;
         box_4.material.Ka = glm::vec3(0.4, 0.4, 0.4);
@@ -146,7 +146,7 @@ namespace Wall{
 
         Model box_5 = box;
         matrix = glm::mat4(1.0f);
-        matrix = glm::translate(matrix, glm::vec3(10.0, 0.0, 20.0));
+        matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, 0.0));
         matrix = glm::scale(matrix, glm::vec3(2.5, 0.5, 0.5));
         box_5.modelMatrix = matrix * box_5.modelMatrix;
         box_5.material.Ka = glm::vec3(0.4, 0.4, 0.4);
