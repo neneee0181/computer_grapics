@@ -66,7 +66,7 @@ public:
             glUniformMatrix3fv(normalLoc, 1, GL_FALSE, glm::value_ptr(normalMatrix));
 
             glUniform1i(modelStatus, 0);
-            if (isKeyPressed_s('1'))
+            if (isKeyPressed_s('9'))
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             else
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

@@ -108,7 +108,7 @@ public:
             glUniformMatrix3fv(normalLoc, 1, GL_FALSE, glm::value_ptr(normalMatrix));
 
             // 폴리곤 모드 설정 (와이어프레임 / 채우기)
-            if (isKeyPressed_s('1'))
+            if (isKeyPressed_s('9'))
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             else
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -127,6 +127,10 @@ public:
 
     const void draw_rigidBody(GLuint shaderProgramID) override {
         // 시어핀스키 삼각형의 경우 물리 충돌 박스가 필요 없으므로 구현하지 않습니다.
+    }
+
+    void setDepth(int num) {
+        this->depth = num;
     }
 
 private:

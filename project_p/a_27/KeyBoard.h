@@ -7,6 +7,7 @@
 #include <unordered_map>
 
 #include "Camera.h"
+#include "Root.h"
 
 //키
 std::unordered_map<char, bool> keyState;
@@ -40,6 +41,90 @@ void keyDown(unsigned char key, int x, int y) {
 
     switch (key)
     {
+    case '0':
+    {
+        models.pop_back();
+        SierpinskiModel* sp_model = new SierpinskiModel(0);
+        glm::mat4 sp_m = glm::mat4(1.0f);
+        sp_m = glm::scale(sp_m, glm::vec3(0.5, 0.5, 0.5));
+        sp_m = glm::translate(sp_m, glm::vec3(0.0, 0.0, 0.5));
+        sp_m = glm::rotate(sp_m, glm::radians(-30.0f), glm::vec3(1.0, 0.0, 0.0));
+        sp_m = glm::translate(sp_m, glm::vec3(0.0, 0.5, 0.0));
+        sp_model->matrix = sp_m * sp_model->matrix;
+        sp_model->initBuffer();
+        models.push_back(sp_model);
+        break;
+    }
+    case '1':
+    {
+        models.pop_back();
+        SierpinskiModel* sp_model = new SierpinskiModel(1);
+        glm::mat4 sp_m = glm::mat4(1.0f);
+        sp_m = glm::scale(sp_m, glm::vec3(0.5, 0.5, 0.5));
+        sp_m = glm::translate(sp_m, glm::vec3(0.0, 0.0, 0.5));
+        sp_m = glm::rotate(sp_m, glm::radians(-30.0f), glm::vec3(1.0, 0.0, 0.0));
+        sp_m = glm::translate(sp_m, glm::vec3(0.0, 0.5, 0.0));
+        sp_model->matrix = sp_m * sp_model->matrix;
+        sp_model->initBuffer();
+        models.push_back(sp_model);
+        break;
+    }
+    case '2':
+    {
+        models.pop_back();
+        SierpinskiModel* sp_model = new SierpinskiModel(2);
+        glm::mat4 sp_m = glm::mat4(1.0f);
+        sp_m = glm::scale(sp_m, glm::vec3(0.5, 0.5, 0.5));
+        sp_m = glm::translate(sp_m, glm::vec3(0.0, 0.0, 0.5));
+        sp_m = glm::rotate(sp_m, glm::radians(-30.0f), glm::vec3(1.0, 0.0, 0.0));
+        sp_m = glm::translate(sp_m, glm::vec3(0.0, 0.5, 0.0));
+        sp_model->matrix = sp_m * sp_model->matrix;
+        sp_model->initBuffer();
+        models.push_back(sp_model);
+        break;
+    }
+    case '3':
+    {
+        models.pop_back();
+        SierpinskiModel* sp_model = new SierpinskiModel(3);
+        glm::mat4 sp_m = glm::mat4(1.0f);
+        sp_m = glm::scale(sp_m, glm::vec3(0.5, 0.5, 0.5));
+        sp_m = glm::translate(sp_m, glm::vec3(0.0, 0.0, 0.5));
+        sp_m = glm::rotate(sp_m, glm::radians(-30.0f), glm::vec3(1.0, 0.0, 0.0));
+        sp_m = glm::translate(sp_m, glm::vec3(0.0, 0.5, 0.0));
+        sp_model->matrix = sp_m * sp_model->matrix;
+        sp_model->initBuffer();
+        models.push_back(sp_model);
+        break;
+    }
+    case '4':
+    {
+        models.pop_back();
+        SierpinskiModel* sp_model = new SierpinskiModel(4);
+        glm::mat4 sp_m = glm::mat4(1.0f);
+        sp_m = glm::scale(sp_m, glm::vec3(0.5, 0.5, 0.5));
+        sp_m = glm::translate(sp_m, glm::vec3(0.0, 0.0, 0.5));
+        sp_m = glm::rotate(sp_m, glm::radians(-30.0f), glm::vec3(1.0, 0.0, 0.0));
+        sp_m = glm::translate(sp_m, glm::vec3(0.0, 0.5, 0.0));
+        sp_model->matrix = sp_m * sp_model->matrix;
+        sp_model->initBuffer();
+        models.push_back(sp_model);
+        break;
+    }
+    case '5':
+    {
+        models.pop_back();
+        SierpinskiModel* sp_model = new SierpinskiModel(5);
+        glm::mat4 sp_m = glm::mat4(1.0f);
+        sp_m = glm::scale(sp_m, glm::vec3(0.5, 0.5, 0.5));
+        sp_m = glm::translate(sp_m, glm::vec3(0.0, 0.0, 0.5));
+        sp_m = glm::rotate(sp_m, glm::radians(-30.0f), glm::vec3(1.0, 0.0, 0.0));
+        sp_m = glm::translate(sp_m, glm::vec3(0.0, 0.5, 0.0));
+        sp_model->matrix = sp_m * sp_model->matrix;
+        sp_model->initBuffer();
+        models.push_back(sp_model);
+        break;
+    }
     case 'q':
         std::cout << " 프로그램 종료 " << std::endl;
         exit(0);
