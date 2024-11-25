@@ -179,6 +179,8 @@ void bodyMove(std::deque<glm::vec3>& positionHistory, vector<Model>& followerBod
     }
 }
 
+bool sta_f = true;
+
 void timer(int value) {
 
     bodyMove(bodyPositionHistory1, Body1::models, Body::models[0].modelMatrix[3]);
@@ -266,7 +268,8 @@ void timer(int value) {
     UpdateRigidBodyTransforms(Body::models, bodyRo);
 
     glutPostRedisplay();
-    glutTimerFunc(16, timer, 0);
+    if (sta_f)
+        glutTimerFunc(16, timer, 0);
 }
 
 // 점프 상태를 관리하기 위한 구조체 추가
@@ -465,6 +468,8 @@ void keyDown(unsigned char key, int x, int y) {
 
     switch (key)
     {
+    case 'f':
+        break;
     case 'w':
         arrow = 0;
         break;
