@@ -11,8 +11,6 @@
 #include "CustomTimer.h"
 #include "Root.h"
 
-uniform_real_distribution<> snow_location_dis_x(-0.65, 0.65);
-
 using namespace std;
 
 void InitBuffer();
@@ -46,19 +44,10 @@ int main(int argc, char** argv) {
     board_model->material.Ka = glm::vec3(0.4, 0.4, 0.4);
     models.push_back(board_model);
 
-    DefaultModel* pira_model = new DefaultModel("obj/piramid.obj", "pira", "box", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.05, 0.043, 0.05)), glm::vec3(0.0, 5.0, 0.0)));
+    DefaultModel* pira_model = new DefaultModel("obj/piramid.obj", "pira", "sphere", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.05, 0.043, 0.05)), glm::vec3(0.0, 5.0, 0.0)));
     pira_model->material.Ka = glm::vec3(0.1,0.4,0.7);
     pira_model->rigid_status = false;
     models.push_back(pira_model);
-
-    SierpinskiModel* sp_model = new SierpinskiModel(1);
-    glm::mat4 sp_m = glm::mat4(1.0f);
-    sp_m = glm::scale(sp_m, glm::vec3(0.5, 0.5, 0.5));
-    sp_m = glm::translate(sp_m, glm::vec3(0.0, 0.0, 0.5));
-    sp_m = glm::rotate(sp_m, glm::radians(-30.0f), glm::vec3(1.0, 0.0, 0.0));
-    sp_m = glm::translate(sp_m, glm::vec3(0.0, 0.5, 0.0));
-    sp_model->matrix = sp_m * sp_model->matrix;
-    models.push_back(sp_model);
 
     DefaultModel* planet1 = new DefaultModel("obj/sphere.obj", "planet1", "sphere", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-0.6, 0.4, 0.0)), glm::vec3(0.01, 0.01, 0.01)));
     planet1->material.Ka = glm::vec3(1.0, 0.0, 0.0);
@@ -77,12 +66,31 @@ int main(int argc, char** argv) {
 
     DefaultModel* light_sphere = new DefaultModel("obj/sphere.obj", "light_m", "sphere", glm::scale(glm::translate(glm::mat4(1.0f), lightPos), glm::vec3(0.003, 0.003, 0.003)));
     light_sphere->material.Ka = lightColor;
-    light_sphere->rigid_status = false;
+    light_sphere->rigid_status = false; 
     models.push_back(light_sphere);
 
-    DefaultModel* snow = new DefaultModel("obj/Snowflake.obj", "snow", "box", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(snow_location_dis_x(gen), 1.0, snow_location_dis_x(gen))), glm::vec3(0.1, 0.1, 0.1)));
+    std::uniform_real_distribution<> snow_speed_dis(0.005, 0.01);
+
+    DefaultModel* snow = new DefaultModel("obj/Snowflake.obj", "snow", "sphere", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(snow_location_dis_x(gen), 1.5, snow_location_dis_x(gen))), glm::vec3(0.1, 0.1, 0.1)));
     snow->material.Ka = glm::vec3(1.0, 1.0, 1.0);
+    snow->speed = snow_speed_dis(gen);
     models.push_back(snow);
+
+    for (int i = 0; i < 4; ++i) {
+        DefaultModel* snow_ = new DefaultModel(*snow); // snow 객체를 복사하여 새로운 객체 생성
+        snow_->matrix = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(snow_location_dis_x(gen), 1.5, snow_location_dis_x(gen))), glm::vec3(0.1, 0.1, 0.1));
+        snow->speed = snow_speed_dis(gen);
+        models.push_back(snow_);
+    }
+
+    SierpinskiModel* sp_model = new SierpinskiModel(1);
+    glm::mat4 sp_m = glm::mat4(1.0f);
+    sp_m = glm::scale(sp_m, glm::vec3(0.5, 0.5, 0.5));
+    sp_m = glm::translate(sp_m, glm::vec3(0.0, 0.0, 0.5));
+    sp_m = glm::rotate(sp_m, glm::radians(-30.0f), glm::vec3(1.0, 0.0, 0.0));
+    sp_m = glm::translate(sp_m, glm::vec3(0.0, 0.5, 0.0));
+    sp_model->matrix = sp_m * sp_model->matrix;
+    models.push_back(sp_model);
 
     initializeModelsWithPhysics(models); // 모든 모델 Bullet world에 추가
 

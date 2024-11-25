@@ -15,6 +15,7 @@ using namespace std;
 
 class DefaultModel : public Model {
 public:
+
     DefaultModel(){}
 
     DefaultModel(string name, string obj_name, string obj_type, glm::mat4 start_matrix = glm::mat4(1.0f)) {

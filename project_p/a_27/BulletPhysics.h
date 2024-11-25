@@ -188,7 +188,7 @@ void UpdateRigidBodyTransforms(std::vector<Model*>models) {
 
     for (auto& model : models) {
 
-        if (!model->rigidBody) return;
+        if (!model->rigidBody) continue;
 
         glm::mat4 modelMatrix = model->matrix;
         btTransform transform;
