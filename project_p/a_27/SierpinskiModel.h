@@ -12,8 +12,13 @@
 
 class SierpinskiModel : public Model {
 public:
-    SierpinskiModel(int depth = 5) : depth(depth) {
+    SierpinskiModel(glm::mat4 start_matrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)), int depth = 5) : depth(depth) {
         generateSierpinski(); // 시어핀스키 삼각형 데이터 생성
+        //this->material.Ka = glm::vec3(0.1, 0.4, 0.7);
+        this->matrix = start_matrix * this->matrix;
+        this->name = "sierpinski";
+        this->type = "sierpinski";
+        this->rigid_status = false;
     }
 
     ~SierpinskiModel() {
@@ -69,25 +74,55 @@ public:
         GLint modelLoc = glGetUniformLocation(shaderProgramID, "model");
         GLint normalLoc = glGetUniformLocation(shaderProgramID, "normalMatrix");
 
-        glBindVertexArray(vao);
+        if (this->model_status) {
+            glBindVertexArray(this->vao);
+            glLineWidth(1.0f);
+            if (this->material.hasTexture) {
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, this->material.textureID);
+                glUniform1i(glGetUniformLocation(shaderProgramID, "texture1"), 0);
+                glUniform1i(glGetUniformLocation(shaderProgramID, "hasTexture"), 1);
+                glBindTexture(GL_TEXTURE_2D, 0);
+            }
+            else {
+                glUniform1i(glGetUniformLocation(shaderProgramID, "hasTexture"), 0);
 
-        // 모델 행렬 전달
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(matrix));
+                GLint KaLoc = glGetUniformLocation(shaderProgramID, "Ka");
+                GLint KdLoc = glGetUniformLocation(shaderProgramID, "Kd");
+                GLint KsLoc = glGetUniformLocation(shaderProgramID, "Ks");
+                GLint NsLoc = glGetUniformLocation(shaderProgramID, "Ns");
 
-        // 법선 변환 행렬 전달
-        glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(matrix)));
-        glUniformMatrix3fv(normalLoc, 1, GL_FALSE, glm::value_ptr(normalMatrix));
+                glUniform3fv(KaLoc, 1, glm::value_ptr(this->material.Ka));
+                glUniform3fv(KdLoc, 1, glm::value_ptr(this->material.Kd));
+                glUniform3fv(KsLoc, 1, glm::value_ptr(this->material.Ks));
+                glUniform1f(NsLoc, this->material.Ns);
+            }
 
-        // 폴리곤 모드 설정 (와이어프레임 / 채우기)
-        if (isKeyPressed_s('1'))
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        else
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            glBindVertexArray(vao);
 
-        // 렌더링 호출
-        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+            // 모델 행렬 전달
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(matrix));
 
-        glBindVertexArray(0); // VAO 해제
+            // 법선 변환 행렬 전달
+            glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(matrix)));
+            glUniformMatrix3fv(normalLoc, 1, GL_FALSE, glm::value_ptr(normalMatrix));
+
+            // 폴리곤 모드 설정 (와이어프레임 / 채우기)
+            if (isKeyPressed_s('1'))
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            else
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+            // 렌더링 호출
+            glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+
+            // 렌더링 이후 기본값으로 초기화
+           /* glm::mat4 identity = glm::mat4(1.0f);
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(identity));*/
+
+            glBindVertexArray(0); // VAO 해제
+        }
+
     }
 
     const void draw_rigidBody(GLuint shaderProgramID) override {

@@ -40,10 +40,15 @@ int main(int argc, char** argv) {
 
     initPhysics(); // Bullet 초기화 함수 호출
 
-    //DefaultModel* default_model = new DefaultModel("obj/sphere.obj", "sphere", "sphere", glm::scale(glm::mat4(1.0f), glm::vec3(1.0, 1.0, 1.0))); // 실제 모델 가져오기
-    //models.push_back(default_model);
-    
-    SierpinskiModel* sp_model = new SierpinskiModel();
+    DefaultModel* board_model = new DefaultModel("obj/board.obj", "board", "box", glm::scale(glm::mat4(1.0f), glm::vec3(1.0, 1.0, 1.0))); // 실제 모델 가져오기
+    board_model->material.Ka = glm::vec3(0.5, 0.5, 0.5);
+    models.push_back(board_model);
+
+    DefaultModel* pira_model = new DefaultModel("obj/piramid.obj", "pira", "box", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.05, 0.05, 0.05)), glm::vec3(0.0, 5.1, 0.0)));
+    pira_model->material.Ka = glm::vec3(0.1,0.4,0.7);
+    models.push_back(pira_model);
+
+    SierpinskiModel* sp_model = new SierpinskiModel(glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)));
     models.push_back(sp_model);
 
     initializeModelsWithPhysics(models); // 모든 모델 Bullet world에 추가

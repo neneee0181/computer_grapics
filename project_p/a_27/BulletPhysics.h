@@ -126,7 +126,8 @@ void addModelToPhysicsWorld(Model*& model) {
 // 모든 모델에 대한 물리 세계 충돌 객체 초기화
 void initializeModelsWithPhysics(std::vector<Model*>& models) {
     for (auto& model : models) {
-        addModelToPhysicsWorld(model);
+        if (model->rigid_status)
+            addModelToPhysicsWorld(model);
     }
 }
 
