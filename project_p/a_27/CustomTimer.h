@@ -44,7 +44,22 @@ void timer(int value) {
 	}
 
 	if (keyState['r']) { // 조명이 화면 중앙을 기준 공전
+		//물체 이동
+		for (auto& model : models) {
+			if (model->name != "light_m") continue;
 
+			glm::vec3 center = glm::vec3(0.0, 0.0, 0.0); // 회전 중심 설정 (모델의 로컬 중심)
+			glm::mat4 rotation = glm::mat4(1.0f);
+			rotation = glm::translate(rotation, center); // 중심으로 이동
+			rotation = glm::rotate(rotation, glm::radians(1.0f), glm::vec3(0.0, 1.0, 0.0)); // Y축 기준 회전
+			rotation = glm::translate(rotation, -center); // 원래 위치로 복귀
+			model->matrix = rotation * model->matrix; // 이동 + 회전 적용
+
+			// `lightPos`에 회전 적용
+			glm::vec4 lightPos4 = glm::vec4(lightPos, 1.0f); // `vec3`를 `vec4`로 확장
+			lightPos4 = rotation * lightPos4; // 회전 적용
+			lightPos = glm::vec3(lightPos4); // 다시 `vec3`로 변환
+		}
 	}
 
 
