@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector> 
+#include <random>
 
 #include "shaderMaker.h"
 #include "DefaultModel.h"
@@ -7,6 +8,10 @@
 #include "KeyBoard.h"
 #include "Camera.h"
 #include "Light.h"
+
+random_device rd;
+mt19937 gen(rd());
+uniform_real_distribution<> snow_location_dis_x(-0.65, 0.65);
 
 using namespace std;
 
@@ -77,6 +82,10 @@ int main(int argc, char** argv) {
     light_sphere->material.Ka = lightColor;
     light_sphere->rigid_status = false;
     models.push_back(light_sphere);
+
+    DefaultModel* snow = new DefaultModel("obj/Snowflake.obj", "snow", "box", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(snow_location_dis_x(gen), 1.0, snow_location_dis_x(gen))), glm::vec3(0.1, 0.1, 0.1)));
+    snow->material.Ka = glm::vec3(1.0, 1.0, 1.0);
+    models.push_back(snow);
 
     initializeModelsWithPhysics(models); // 모든 모델 Bullet world에 추가
 

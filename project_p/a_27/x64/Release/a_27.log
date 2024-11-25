@@ -9,7 +9,8 @@ C:\Users\kevin\mine\computer_grapics\project_p\a_27\SierpinskiModel.h(166,32): w
   (소스 파일 'main.cpp'을(를) 컴파일하는 중)
   
   코드를 생성하고 있습니다.
-  Previous IPDB and IOBJ mismatch, fall back to full compilation.
-  All 1040 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  7 of 1059 functions ( 0.7%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    5 functions had inline decision re-evaluated but remain unchanged
   코드를 생성했습니다.
   a_27.vcxproj -> C:\Users\kevin\mine\computer_grapics\project_p\x64\Release\a_27.exe
