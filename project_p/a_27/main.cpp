@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
     initPhysics(); // Bullet 초기화 함수 호출
 
     DefaultModel* board_model = new DefaultModel("obj/board.obj", "board", "box", glm::scale(glm::mat4(1.0f), glm::vec3(1.0, 1.0, 1.0))); // 실제 모델 가져오기
-    board_model->material.Ka = glm::vec3(0.7, 0.7, 0.7);
+    board_model->material.Ka = glm::vec3(0.4, 0.4, 0.4);
     models.push_back(board_model);
 
     DefaultModel* pira_model = new DefaultModel("obj/piramid.obj", "pira", "box", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.05, 0.043, 0.05)), glm::vec3(0.0, 5.0, 0.0)));
@@ -57,6 +57,26 @@ int main(int argc, char** argv) {
     sp_m = glm::translate(sp_m, glm::vec3(0.0, 0.5, 0.0));
     sp_model->matrix = sp_m * sp_model->matrix;
     models.push_back(sp_model);
+
+    DefaultModel* planet1 = new DefaultModel("obj/sphere.obj", "planet1", "sphere", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-0.6, 0.4, 0.0)), glm::vec3(0.01, 0.01, 0.01)));
+    planet1->material.Ka = glm::vec3(1.0, 0.0, 0.0);
+    planet1->rigid_status = false;
+    models.push_back(planet1);
+
+    DefaultModel* planet2 = new DefaultModel("obj/sphere.obj", "planet2", "sphere", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.6, 0.7, 0.4)), glm::vec3(0.01, 0.01, 0.01)));
+    planet2->material.Ka = glm::vec3(0.0, 1.0, 0.0);
+    planet2->rigid_status = false;
+    models.push_back(planet2);
+
+    DefaultModel* planet3 = new DefaultModel("obj/sphere.obj", "planet3", "sphere", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.6, 0.5, -0.4)), glm::vec3(0.01, 0.01, 0.01)));
+    planet3->material.Ka = glm::vec3(0.0, 0.0, 1.0);
+    planet3->rigid_status = false;
+    models.push_back(planet3);
+
+    DefaultModel* light_sphere = new DefaultModel("obj/sphere.obj", "light_m", "sphere", glm::scale(glm::translate(glm::mat4(1.0f), lightPos), glm::vec3(0.003, 0.003, 0.003)));
+    light_sphere->material.Ka = lightColor;
+    light_sphere->rigid_status = false;
+    models.push_back(light_sphere);
 
     initializeModelsWithPhysics(models); // 모든 모델 Bullet world에 추가
 
