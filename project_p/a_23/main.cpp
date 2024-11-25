@@ -79,6 +79,32 @@ void move_arm_leg(Model& model) {
     const float rotationSpeed = 2.0f;    // 한 프레임당 회전 속도
     const float maxRotationAngle = 6.0f; // 최대 회전 각도 (10도)
 
+    model.modelMatrix[3] = Body::models[0].modelMatrix[3];
+
+    if (model.name == "left_leg") {
+        glm::mat4 matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(-2.0, -7.0, 0.0));
+        model.modelMatrix = matrix * model.modelMatrix;
+    }
+
+    if (model.name == "right_leg") {
+        glm::mat4 matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(2.0, -7.0, 0.0));
+        model.modelMatrix = matrix * model.modelMatrix;
+    }
+
+    if (model.name == "left_arm") {
+        glm::mat4 matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(-4.0, 0.0, 0.0));
+        model.modelMatrix = matrix * model.modelMatrix;
+    }
+
+    if (model.name == "right_arm") {
+        glm::mat4 matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(4.0, 0.0, 0.0));
+        model.modelMatrix = matrix * model.modelMatrix;
+    }
+
     // 현재 모델의 상태 가져오기
     auto& state = limbStates[model.name];
 
