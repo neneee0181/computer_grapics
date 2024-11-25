@@ -12,6 +12,9 @@
 #include "shaderMaker.h"
 #include "LoadWall.h"
 #include "LoadBody.h"
+#include "LoadBody1.h"
+#include "LoadBody2.h"
+#include "LoadBody3.h"
 
 using namespace std;
 
@@ -30,6 +33,8 @@ glm::mat4 view = glm::mat4(1.0f);
 
 //Å°
 unordered_map<char, bool> keyState;
+
+vector<Model> body1;
 
 void keyDown_s(const char& key) {
     keyState[key] = true;
@@ -494,6 +499,7 @@ int main(int argc, char** argv) {
 
 
     Body::load_obj(); // ¸ö obj ºÒ·¯¿È
+    Body1::load_obj();
     Wall::load_obj(); // º® obj ºÒ·¯¿È
 
     InitBuffer();
@@ -544,11 +550,14 @@ GLvoid drawScene() {
 
     glEnable(GL_DEPTH_TEST);
     Wall::draw(shaderProgramID, isKeyPressed_s);
+
     Body::draw(shaderProgramID, isKeyPressed_s, bodyRo);
+    Body1::draw(shaderProgramID, isKeyPressed_s, bodyRo);
 
     glDisable(GL_DEPTH_TEST);
 
     Body::draw_rigidBody(shaderProgramID);
+    Body1::draw_rigidBody(shaderProgramID);
     Wall::draw_rigidBody(shaderProgramID);
 
     glutSwapBuffers();
@@ -564,4 +573,5 @@ void InitBuffer() {
     //-----------------------------------------------------------------------------------------------------------
     Wall::initBuffer();
     Body::initBuffer();
+    Body1::initBuffer();
 }

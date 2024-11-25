@@ -145,6 +145,9 @@
     <ClInclude Include="CustomContactResultCallback.h" />
     <ClInclude Include="filetobuf.h" />
     <ClInclude Include="LoadBody.h" />
+    <ClInclude Include="LoadBody1.h" />
+    <ClInclude Include="LoadBody2.h" />
+    <ClInclude Include="LoadBody3.h" />
     <ClInclude Include="LoadHurdle.h" />
     <ClInclude Include="LoadMtl.h" />
     <ClInclude Include="LoadObj.h" />
