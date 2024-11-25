@@ -135,7 +135,14 @@ void move_arm_leg(Model& model) {
 glm::mat4 bodyRo = glm::mat4(1.0f);
 bool isGround = false;
 int arrow = 0;
+void timer2(int value) {
+    for (auto& model : Body::models) {
 
+        collision_wall_check(model);
+    }
+    glutPostRedisplay();
+    glutTimerFunc(90, timer2, 0);
+}
 void timer(int value) {
 
 
@@ -172,8 +179,6 @@ void timer(int value) {
             model.modelMatrix = matrix * model.modelMatrix;
             bodyRo = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
         }
-
-        collision_wall_check(model);
 
         if (model.name == "body") {
             if (arrow == 0) { // w
@@ -339,6 +344,20 @@ void collision_wall_check(Model& model) {
                         }
                         
                     }
+                    else if (wallModel.name == "barigate3" || wallModel.name == "barigate4" || wallModel.name == "barigate5") {
+                        if (arrow == 0) {
+                            arrow = 2;
+                        }
+                        else if (arrow == 1) {
+                            arrow = 3;
+                        }
+                        else if (arrow == 2) {
+                            arrow = 0;
+                        }
+                        else if (arrow == 3) {
+                            arrow = 1;
+                        }
+                    }
                     //else {
                     //    if (arrow == 0) { //w
                     //        glm::mat4 matrix = glm::mat4(1.0f);
@@ -484,6 +503,7 @@ int main(int argc, char** argv) {
     glutKeyboardFunc(keyDown);
     glutKeyboardUpFunc(keyUp);
     glutSpecialFunc(keySpecial);
+    glutTimerFunc(0, timer2, 0);
     glutMainLoop();
 
     return 0;
