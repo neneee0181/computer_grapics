@@ -12,10 +12,10 @@
 
 class SierpinskiModel : public Model {
 public:
-    SierpinskiModel(glm::mat4 start_matrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)), int depth = 5) : depth(depth) {
+    SierpinskiModel(int depth = 5) : depth(depth) {
         generateSierpinski(); // 시어핀스키 삼각형 데이터 생성
         //this->material.Ka = glm::vec3(0.1, 0.4, 0.7);
-        this->matrix = start_matrix * this->matrix;
+        this->material.Ka = glm::vec3(0.7, 0.1, 0.1);
         this->name = "sierpinski";
         this->type = "sierpinski";
         this->rigid_status = false;
@@ -117,8 +117,8 @@ public:
             glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
             // 렌더링 이후 기본값으로 초기화
-           /* glm::mat4 identity = glm::mat4(1.0f);
-            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(identity));*/
+            glm::mat4 identity = glm::mat4(1.0f);
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(identity));
 
             glBindVertexArray(0); // VAO 해제
         }

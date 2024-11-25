@@ -41,14 +41,21 @@ int main(int argc, char** argv) {
     initPhysics(); // Bullet 초기화 함수 호출
 
     DefaultModel* board_model = new DefaultModel("obj/board.obj", "board", "box", glm::scale(glm::mat4(1.0f), glm::vec3(1.0, 1.0, 1.0))); // 실제 모델 가져오기
-    board_model->material.Ka = glm::vec3(0.5, 0.5, 0.5);
+    board_model->material.Ka = glm::vec3(0.7, 0.7, 0.7);
     models.push_back(board_model);
 
-    DefaultModel* pira_model = new DefaultModel("obj/piramid.obj", "pira", "box", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.05, 0.05, 0.05)), glm::vec3(0.0, 5.1, 0.0)));
+    DefaultModel* pira_model = new DefaultModel("obj/piramid.obj", "pira", "box", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.05, 0.043, 0.05)), glm::vec3(0.0, 5.0, 0.0)));
     pira_model->material.Ka = glm::vec3(0.1,0.4,0.7);
+    pira_model->rigid_status = false;
     models.push_back(pira_model);
 
-    SierpinskiModel* sp_model = new SierpinskiModel(glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)));
+    SierpinskiModel* sp_model = new SierpinskiModel(1);
+    glm::mat4 sp_m = glm::mat4(1.0f);
+    sp_m = glm::scale(sp_m, glm::vec3(0.5, 0.5, 0.5));
+    sp_m = glm::translate(sp_m, glm::vec3(0.0, 0.0, 0.5));
+    sp_m = glm::rotate(sp_m, glm::radians(-30.0f), glm::vec3(1.0, 0.0, 0.0));
+    sp_m = glm::translate(sp_m, glm::vec3(0.0, 0.5, 0.0));
+    sp_model->matrix = sp_m * sp_model->matrix;
     models.push_back(sp_model);
 
     initializeModelsWithPhysics(models); // 모든 모델 Bullet world에 추가
@@ -67,7 +74,7 @@ int main(int argc, char** argv) {
 
 GLvoid drawScene() {
 
-    glClearColor(1.0, 1.0, 1.0, 1.0f);
+    glClearColor(0.0, 0.0, 0.0, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
