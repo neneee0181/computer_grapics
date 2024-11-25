@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
     planet2->rigid_status = false;
     models.push_back(planet2);
 
-    DefaultModel* planet3 = new DefaultModel("obj/sphere.obj", "planet3", "sphere", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.6, 0.5, -0.4)), glm::vec3(0.01, 0.01, 0.01)));
+    DefaultModel* planet3 = new DefaultModel("obj/sphere.obj", "planet3", "sphere", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-0.6, 0.5, -0.4)), glm::vec3(0.01, 0.01, 0.01)));
     planet3->material.Ka = glm::vec3(0.0, 0.0, 1.0);
     planet3->rigid_status = false;
     models.push_back(planet3);

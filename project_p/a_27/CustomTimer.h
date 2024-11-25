@@ -63,6 +63,41 @@ void timer(int value) {
 	}
 
 
+	// Planet 공전
+	for (auto& model : models) {
+		glm::vec3 center = glm::vec3(0.0, 0.0, 0.0); // 공전 중심
+		glm::mat4 rotation = glm::mat4(1.0f);
+
+		if (model->name == "planet1") {
+			// 공전을 위한 변환
+			rotation = glm::translate(rotation, center);
+			rotation = glm::rotate(rotation, glm::radians(0.5f), glm::vec3(1.0, 0.0, 0.0));
+			rotation = glm::rotate(rotation, glm::radians(0.5f), glm::vec3(0.0, 1.0, 0.0));
+
+			rotation = glm::translate(rotation, -center);
+		}
+
+		if (model->name == "planet2") {
+			// 공전을 위한 변환
+			rotation = glm::translate(rotation, center);
+			rotation = glm::rotate(rotation, glm::radians(0.5f), glm::vec3(1.0, 0.0, 0.0));
+			rotation = glm::rotate(rotation, glm::radians(-0.5f), glm::vec3(0.0, 1.0, 0.0));
+
+			rotation = glm::translate(rotation, -center);
+		}
+
+		if (model->name == "planet3") {
+			// planet3 공전 (반대 방향)
+			rotation = glm::translate(rotation, center);
+			rotation = glm::rotate(rotation, glm::radians(-0.5f), glm::vec3(1.0, 0.0, 0.0)); // X축 반대 회전
+			rotation = glm::rotate(rotation, glm::radians(-0.5f), glm::vec3(0.0, 1.0, 0.0)); // Y축 반대 회전
+			rotation = glm::translate(rotation, -center);
+		}
+
+		// 모델의 변환 매트릭스 업데이트
+		model->matrix = rotation * model->matrix;
+	}
+
 	UpdateRigidBodyTransforms(models);
 	glutPostRedisplay();
 	glutTimerFunc(16, timer, ++value);
