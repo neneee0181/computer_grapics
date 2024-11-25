@@ -52,17 +52,17 @@ namespace Body1 {
         //¿ÞÂÊ ÆÈ
         matrix = glm::mat4(1.0f);
         Model model_left_arm = model_box;
-        matrix = glm::translate(matrix, glm::vec3(-3.0, -16.0, -2.0));
+        matrix = glm::translate(matrix, glm::vec3(-3.0, -13.0, -2.0));
         matrix = glm::scale(matrix, glm::vec3(1.4, 1.8, 1.4));
         matrix = glm::rotate(matrix, glm::radians(-45.0f), glm::vec3(0.0, 0.0, 1.0));
         model_left_arm.modelMatrix = matrix * model_left_arm.modelMatrix;
         model_left_arm.name = "left_arm";
         models.push_back(model_left_arm);
 
-        //¿ÞÂÊ ÆÈ
+        //¿À¸¥ÂÊ ÆÈ
         matrix = glm::mat4(1.0f);
         Model model_right_arm = model_box;
-        matrix = glm::translate(matrix, glm::vec3(3.0, -16.0, -2.0));
+        matrix = glm::translate(matrix, glm::vec3(3.0, -13.0, -2.0));
         matrix = glm::scale(matrix, glm::vec3(1.4, 1.8, 1.4));
         matrix = glm::rotate(matrix, glm::radians(45.0f), glm::vec3(0.0, 0.0, 1.0));
         model_right_arm.modelMatrix = matrix * model_right_arm.modelMatrix;
@@ -118,8 +118,16 @@ namespace Body1 {
 
                 
                 if (models[i].name == "body")
+                {
+                    models[i].modelMatrix[3].y -= 1.2;
                     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix * bodyRo));
+                    models[i].modelMatrix[3].y += 1.2;
+
+                }
                 else {
+                    if (models[i].name == "right_arm" || models[i].name == "left_arm") {
+                        models[i].modelMatrix[3].y -= 1.2;
+                    }
                     glm::mat4 matrix = glm::mat4(1.0f);
                     matrix = glm::translate(matrix, glm::vec3(models[0].modelMatrix[3]));
                     matrix = matrix * bodyRo;
@@ -127,6 +135,10 @@ namespace Body1 {
                     matrix = matrix * models[i].modelMatrix;
 
                     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(matrix));
+
+                    if (models[i].name == "right_arm" || models[i].name == "left_arm") {
+                        models[i].modelMatrix[3].y += 1.2;
+                    }
                 }
                 glUniform1i(modelStatus, 0);
                 if (isKeyPressed_s('1'))

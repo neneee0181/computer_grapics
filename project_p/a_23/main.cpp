@@ -34,7 +34,14 @@ glm::mat4 view = glm::mat4(1.0f);
 //키
 unordered_map<char, bool> keyState;
 
-vector<Model> body1;
+
+#include <deque> // 위치 기록을 위한 std::deque 사용
+
+std::deque<glm::vec3> bodyPositionHistory1; // Body 위치 기록을 저장할 큐
+std::deque<glm::vec3> bodyPositionHistory2; // Body 위치 기록을 저장할 큐
+std::deque<glm::vec3> bodyPositionHistory3; // Body 위치 기록을 저장할 큐
+
+const int historyLimit = 15; // 지연 시간 (예: 50 프레임)
 
 void keyDown_s(const char& key) {
     keyState[key] = true;
@@ -80,21 +87,21 @@ std::unordered_map<std::string, LimbState> limbStates = {
     {"right_leg", LimbState(-1)}
 };
 
-void move_arm_leg(Model& model) {
-    const float rotationSpeed = 2.0f;    // 한 프레임당 회전 속도
+void move_arm_leg(Model& model,const Model model2) {
+    const float rotationSpeed = 1.0f;    // 한 프레임당 회전 속도
     const float maxRotationAngle = 6.0f; // 최대 회전 각도 (10도)
 
-    model.modelMatrix[3] = Body::models[0].modelMatrix[3];
+    model.modelMatrix[3] = model2.modelMatrix[3];
 
     if (model.name == "left_leg") {
         glm::mat4 matrix = glm::mat4(1.0f);
-        matrix = glm::translate(matrix, glm::vec3(-2.0, -7.0, 0.0));
+        matrix = glm::translate(matrix, glm::vec3(-2.0, -8.0, 0.0));
         model.modelMatrix = matrix * model.modelMatrix;
     }
 
     if (model.name == "right_leg") {
         glm::mat4 matrix = glm::mat4(1.0f);
-        matrix = glm::translate(matrix, glm::vec3(2.0, -7.0, 0.0));
+        matrix = glm::translate(matrix, glm::vec3(2.0, -8.0, 0.0));
         model.modelMatrix = matrix * model.modelMatrix;
     }
 
@@ -148,8 +155,35 @@ void timer2(int value) {
     glutPostRedisplay();
     glutTimerFunc(90, timer2, 0);
 }
+
+// Body 움직임 처리
+void bodyMove(std::deque<glm::vec3>& positionHistory, vector<Model>& followerBody, glm::vec3 leaderPosition) {
+    // 현재 리더의 위치를 기록
+    positionHistory.push_back(leaderPosition);
+
+    // 기록 크기 제한 (historyLimit 이상이면 오래된 데이터 제거)
+    if (positionHistory.size() > historyLimit) {
+        positionHistory.pop_front(); // 가장 오래된 위치 제거
+    }
+
+    // 기록된 위치를 기반으로 followerBody의 위치를 업데이트
+    if (positionHistory.size() >= historyLimit) {
+        glm::vec3 delayedPosition = positionHistory.front(); // 가장 오래된 위치 가져오기
+        positionHistory.pop_front(); // 사용한 위치 삭제
+
+        for (auto& model : followerBody) {
+            glm::mat4 matrix = glm::mat4(1.0f); // 초기 변환 행렬
+            matrix = glm::translate(matrix, delayedPosition); // 지연된 위치로 변환
+            model.modelMatrix[3] = matrix[3]; // 모델 매트릭스의 위치만 갱신
+        }
+    }
+}
+
 void timer(int value) {
 
+    bodyMove(bodyPositionHistory1, Body1::models, Body::models[0].modelMatrix[3]);
+    bodyMove(bodyPositionHistory2, Body2::models, Body1::models[0].modelMatrix[3]);
+    bodyMove(bodyPositionHistory3, Body3::models, Body2::models[0].modelMatrix[3]);
 
     for (auto& model : Body::models) {
 
@@ -211,11 +245,23 @@ void timer(int value) {
 
     for (auto& model : Body::models) {
         if (model.name == "right_arm" || model.name == "left_arm" || model.name == "right_leg" || model.name == "left_leg")
-            move_arm_leg(model);
+            move_arm_leg(model, Body::models[0]);
     }
 
+    for (auto& model : Body1::models) {
+        if (model.name == "right_arm" || model.name == "left_arm" || model.name == "right_leg" || model.name == "left_leg")
+            move_arm_leg(model, Body1::models[0]);
+    }
 
+    for (auto& model : Body2::models) {
+        if (model.name == "right_arm" || model.name == "left_arm" || model.name == "right_leg" || model.name == "left_leg")
+            move_arm_leg(model, Body2::models[0]);
+    }
 
+    for (auto& model : Body3::models) {
+        if (model.name == "right_arm" || model.name == "left_arm" || model.name == "right_leg" || model.name == "left_leg")
+            move_arm_leg(model, Body3::models[0]);
+    }
 
     UpdateRigidBodyTransforms(Body::models, bodyRo);
 
@@ -499,7 +545,9 @@ int main(int argc, char** argv) {
 
 
     Body::load_obj(); // 몸 obj 불러옴
-    Body1::load_obj();
+    Body1::load_obj(); // Body1 로드
+    Body2::load_obj(); // Body2 로드
+    Body3::load_obj(); // Body3 로드
     Wall::load_obj(); // 벽 obj 불러옴
 
     InitBuffer();
@@ -550,14 +598,14 @@ GLvoid drawScene() {
 
     glEnable(GL_DEPTH_TEST);
     Wall::draw(shaderProgramID, isKeyPressed_s);
-
     Body::draw(shaderProgramID, isKeyPressed_s, bodyRo);
     Body1::draw(shaderProgramID, isKeyPressed_s, bodyRo);
-
+    Body2::draw(shaderProgramID, isKeyPressed_s, bodyRo);
+    Body3::draw(shaderProgramID, isKeyPressed_s, bodyRo);
     glDisable(GL_DEPTH_TEST);
 
     Body::draw_rigidBody(shaderProgramID);
-    Body1::draw_rigidBody(shaderProgramID);
+    //Body1::draw_rigidBody(shaderProgramID);
     Wall::draw_rigidBody(shaderProgramID);
 
     glutSwapBuffers();
@@ -574,4 +622,7 @@ void InitBuffer() {
     Wall::initBuffer();
     Body::initBuffer();
     Body1::initBuffer();
+    Body2::initBuffer();
+    Body3::initBuffer();
+
 }

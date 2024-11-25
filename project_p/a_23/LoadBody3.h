@@ -26,16 +26,16 @@ namespace Body3 {
         read_obj_file("obj/box1.obj", model_box, "box", "box");
 
         glm::mat4 matrix = glm::mat4(1.0f);
-        matrix = glm::translate(matrix, glm::vec3(0.0, -15.2, 0.0));
-        matrix = glm::scale(matrix, glm::vec3(0.6, 0.6, 0.6));
+        matrix = glm::translate(matrix, glm::vec3(0.0, -15.2, -2.0));
+        matrix = glm::scale(matrix, glm::vec3(0.3, 0.3, 0.3));
         model_body.modelMatrix = matrix * model_body.modelMatrix;
         models.push_back(model_body);
 
         //¿ÞÂÊ ¹ß
         matrix = glm::mat4(1.0f);
         Model model_left_leg = model_box;
-        matrix = glm::translate(matrix, glm::vec3(-2.0, -23.0, 0.0));
-        matrix = glm::scale(matrix, glm::vec3(1.5, 1.9, 1.5));
+        matrix = glm::translate(matrix, glm::vec3(-2, -20.0, -2.0));
+        matrix = glm::scale(matrix, glm::vec3(1.2, 1.6, 1.2));
         model_left_leg.modelMatrix = matrix * model_left_leg.modelMatrix;
         model_left_leg.name = "left_leg";
         models.push_back(model_left_leg);
@@ -43,8 +43,8 @@ namespace Body3 {
         //¿À¸¥ÂÊ ¹ß
         matrix = glm::mat4(1.0f);
         Model model_right_leg = model_box;
-        matrix = glm::translate(matrix, glm::vec3(2.0, -23.0, 0.0));
-        matrix = glm::scale(matrix, glm::vec3(1.5, 1.9, 1.5));
+        matrix = glm::translate(matrix, glm::vec3(2.0, -20.0, -2.0));
+        matrix = glm::scale(matrix, glm::vec3(1.2, 1.6, 1.2));
         model_right_leg.modelMatrix = matrix * model_right_leg.modelMatrix;
         model_right_leg.name = "right_leg";
         models.push_back(model_right_leg);
@@ -52,18 +52,18 @@ namespace Body3 {
         //¿ÞÂÊ ÆÈ
         matrix = glm::mat4(1.0f);
         Model model_left_arm = model_box;
-        matrix = glm::translate(matrix, glm::vec3(-4.0, -16.0, 0.0));
-        matrix = glm::scale(matrix, glm::vec3(1.5, 1.9, 1.5));
+        matrix = glm::translate(matrix, glm::vec3(-2.0, -13.0, -2.0));
+        matrix = glm::scale(matrix, glm::vec3(1.2, 1.6, 1.2));
         matrix = glm::rotate(matrix, glm::radians(-45.0f), glm::vec3(0.0, 0.0, 1.0));
         model_left_arm.modelMatrix = matrix * model_left_arm.modelMatrix;
         model_left_arm.name = "left_arm";
         models.push_back(model_left_arm);
 
-        //¿ÞÂÊ ÆÈ
+        //¿À¸¥ÂÊ ÆÈ
         matrix = glm::mat4(1.0f);
         Model model_right_arm = model_box;
-        matrix = glm::translate(matrix, glm::vec3(4.0, -16.0, 0.0));
-        matrix = glm::scale(matrix, glm::vec3(1.5, 1.9, 1.5));
+        matrix = glm::translate(matrix, glm::vec3(2.0, -13.0, -2.0));
+        matrix = glm::scale(matrix, glm::vec3(1.2, 1.6, 1.2));
         matrix = glm::rotate(matrix, glm::radians(45.0f), glm::vec3(0.0, 0.0, 1.0));
         model_right_arm.modelMatrix = matrix * model_right_arm.modelMatrix;
         model_right_arm.name = "right_arm";
@@ -116,10 +116,18 @@ namespace Body3 {
                     glUniform1f(NsLoc, models[i].material.Ns);
                 }
 
-                
+
                 if (models[i].name == "body")
+                {
+                    models[i].modelMatrix[3].y -= 5.0;
                     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(models[i].modelMatrix * bodyRo));
+                    models[i].modelMatrix[3].y += 5.0;
+
+                }
                 else {
+                    if (models[i].name == "right_arm" || models[i].name == "left_arm") {
+                        models[i].modelMatrix[3].y -= 5.0;
+                    }
                     glm::mat4 matrix = glm::mat4(1.0f);
                     matrix = glm::translate(matrix, glm::vec3(models[0].modelMatrix[3]));
                     matrix = matrix * bodyRo;
@@ -127,6 +135,10 @@ namespace Body3 {
                     matrix = matrix * models[i].modelMatrix;
 
                     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(matrix));
+
+                    if (models[i].name == "right_arm" || models[i].name == "left_arm") {
+                        models[i].modelMatrix[3].y += 5.0;
+                    }
                 }
                 glUniform1i(modelStatus, 0);
                 if (isKeyPressed_s('1'))
