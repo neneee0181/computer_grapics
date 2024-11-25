@@ -23,9 +23,11 @@ namespace Wall{
 
     void load_obj() {
 
-        Model model_1, model_2, box;
+        Model model_1, model_2, box, cylinder_model;
         read_obj_file("obj/plane1.obj", model_1, "plane", "box");
         read_obj_file("obj/big_box.obj", box, "box", "box");
+        read_obj_file("obj/cylinder.obj", cylinder_model, "cylinder", "cylinder");
+
 
         glm::mat4 matrix = glm::mat4(1.0f);
         matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, 0.0));
@@ -152,6 +154,24 @@ namespace Wall{
         box_5.material.Ka = glm::vec3(0.4, 0.4, 0.4);
         box_5.name = "barigate5";
         models.push_back(box_5);
+
+        Model cylinder1 = cylinder_model;
+        matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(-20.0, 0.0, 20.0));
+        matrix = glm::scale(matrix, glm::vec3(0.8, 5.0, 0.8));
+        cylinder1.modelMatrix = matrix * cylinder1.modelMatrix;
+        cylinder1.material.Ka = glm::vec3(1.0, 0.4, 0.4);
+        cylinder1.name = "cylinder1";
+        models.push_back(cylinder1);
+
+        Model cylinder2 = cylinder_model;
+        matrix = glm::mat4(1.0f);
+        matrix = glm::translate(matrix, glm::vec3(20.0, 0.0, -20.0));
+        matrix = glm::scale(matrix, glm::vec3(0.8, 5.0, 0.8));
+        cylinder2.modelMatrix = matrix * cylinder2.modelMatrix;
+        cylinder2.material.Ka = glm::vec3(0.4, 0.4, 1.0);
+        cylinder2.name = "cylinder2";
+        models.push_back(cylinder2);
 
         // 5x5 크기의 바닥 설치
         const float spacing = 10; // 각 plane의 크기 (x와 z 간 간격)

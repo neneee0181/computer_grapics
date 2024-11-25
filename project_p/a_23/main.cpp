@@ -153,8 +153,8 @@ void timer(int value) {
             grav_matrix = glm::translate(grav_matrix, glm::vec3(0.0, -speed, 0.0));
             model.modelMatrix = grav_matrix * model.modelMatrix;
         }
-        
-       
+
+
         if (arrow == 0) { // w
             glm::mat4 matrix = glm::mat4(1.0f);
             matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, speed));
@@ -213,7 +213,7 @@ void timer(int value) {
 
 
     UpdateRigidBodyTransforms(Body::models, bodyRo);
-    
+
     glutPostRedisplay();
     glutTimerFunc(16, timer, 0);
 }
@@ -230,7 +230,7 @@ JumpState jumpState;
 const float floorHeight = -18.0f;
 
 void jumpTimer(int value) {
-   // 점프 중인지 확인
+    // 점프 중인지 확인
     if (!jumpState.jumping) {
         return; // 점프 중이 아니면 타이머 종료
     }
@@ -342,9 +342,9 @@ void collision_wall_check(Model& model) {
                             bari_s = 3;
                             glutTimerFunc(0, bariTimer1, 0);
                         }
-                        
+
                     }
-                    else if (wallModel.name == "barigate3" || wallModel.name == "barigate4" || wallModel.name == "barigate5") {
+                    else if (wallModel.name == "barigate3" || wallModel.name == "barigate4" || wallModel.name == "barigate5" || wallModel.name == "cylinder1" || wallModel.name == "cylinder2") {
                         if (arrow == 0) {
                             arrow = 2;
                         }
@@ -492,7 +492,7 @@ int main(int argc, char** argv) {
 
     initPhysics(); // Bullet 초기화 함수 호출
 
-   
+
     Body::load_obj(); // 몸 obj 불러옴
     Wall::load_obj(); // 벽 obj 불러옴
 
