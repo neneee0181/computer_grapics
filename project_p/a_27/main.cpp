@@ -8,9 +8,9 @@
 #include "KeyBoard.h"
 #include "Camera.h"
 #include "Light.h"
+#include "CustomTimer.h"
+#include "Root.h"
 
-random_device rd;
-mt19937 gen(rd());
 uniform_real_distribution<> snow_location_dis_x(-0.65, 0.65);
 
 using namespace std;
@@ -18,9 +18,6 @@ using namespace std;
 void InitBuffer();
 GLvoid drawScene(GLvoid);
 GLvoid Reshape(int w, int h);
-
-//¸ðµ¨
-vector<Model*> models;
 
 int main(int argc, char** argv) {
 
@@ -31,7 +28,7 @@ int main(int argc, char** argv) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
     glutInitWindowPosition(100, 200);
     glutInitWindowSize(width, height);
-    glutCreateWindow("opengl template v8");
+    glutCreateWindow("27¹ø");
 
     glewExperimental = GL_TRUE;
     if (glewInit() != GLEW_OK) {
@@ -96,6 +93,7 @@ int main(int argc, char** argv) {
     glutKeyboardFunc(keyDown);
     glutKeyboardUpFunc(keyUp);
     glutSpecialFunc(keySpecial);
+    glutTimerFunc(0, timer, 0);
     glutMainLoop();
 
     return 0;

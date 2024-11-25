@@ -34,6 +34,9 @@
     <Filter Include="헤더 파일\key">
       <UniqueIdentifier>{8bb47035-3184-4901-abf7-5f5af779cd40}</UniqueIdentifier>
     </Filter>
+    <Filter Include="헤더 파일\Timer">
+      <UniqueIdentifier>{0d81ecc2-c9dc-46bc-bd58-dced6394ec90}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vertex.glsl">
@@ -82,6 +85,12 @@
     </ClInclude>
     <ClInclude Include="SierpinskiModel.h">
       <Filter>헤더 파일\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomTimer.h">
+      <Filter>헤더 파일\Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="Root.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
