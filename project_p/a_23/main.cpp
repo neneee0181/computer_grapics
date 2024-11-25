@@ -108,6 +108,7 @@ void move_arm_leg(Model& model) {
 
 glm::mat4 bodyRo = glm::mat4(1.0f);
 bool isGround = false;
+int arrow = 0;
 
 void timer(int value) {
 
@@ -120,26 +121,26 @@ void timer(int value) {
             model.modelMatrix = grav_matrix * model.modelMatrix;
         }
         
-
-        if (keyState['w']) {
+       
+        if (arrow == 0) { // w
             glm::mat4 matrix = glm::mat4(1.0f);
             matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, speed));
             model.modelMatrix = matrix * model.modelMatrix;
             bodyRo = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0, 1.0, 0.0));
         }
-        if (keyState['a']) {
+        if (arrow == 1) { //a
             glm::mat4 matrix = glm::mat4(1.0f);
             matrix = glm::translate(matrix, glm::vec3(-speed, 0.0, 0.0));
             model.modelMatrix = matrix * model.modelMatrix;
             bodyRo = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0, 1.0, 0.0));
         }
-        if (keyState['s']) {
+        if (arrow == 2) { // s
             glm::mat4 matrix = glm::mat4(1.0f);
             matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, -speed));
             model.modelMatrix = matrix * model.modelMatrix;
             bodyRo = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
         }
-        if (keyState['d']) {
+        if (arrow == 3) { // d
             glm::mat4 matrix = glm::mat4(1.0f);
             matrix = glm::translate(matrix, glm::vec3(speed, 0.0, 0.0));
             model.modelMatrix = matrix * model.modelMatrix;
@@ -148,14 +149,37 @@ void timer(int value) {
 
         collision_wall_check(model);
 
-    }
-    
-    if (keyState['w'] || keyState['a'] || keyState['s'] || keyState['d']) {
-        for (auto& model : Body::models) {
-            if (model.name == "right_arm" || model.name == "left_arm" || model.name == "right_leg" || model.name == "left_leg")
-                move_arm_leg(model);
+        if (model.name == "body") {
+            if (arrow == 0) { // w
+                if (model.modelMatrix[3].z > 20) {
+                    arrow = 2;
+                }
+            }
+            if (arrow == 2) { // s
+                if (model.modelMatrix[3].z < -20) {
+                    arrow = 0;
+                }
+            }
+            if (arrow == 1) { // a
+                if (model.modelMatrix[3].x < -20) {
+                    arrow = 3;
+                }
+            }
+            if (arrow == 3) { // a
+                if (model.modelMatrix[3].x > 20) {
+                    arrow = 1;
+                }
+            }
         }
     }
+
+    for (auto& model : Body::models) {
+        if (model.name == "right_arm" || model.name == "left_arm" || model.name == "right_leg" || model.name == "left_leg")
+            move_arm_leg(model);
+    }
+
+
+
 
     UpdateRigidBodyTransforms(Body::models, bodyRo);
     
@@ -289,28 +313,29 @@ void collision_wall_check(Model& model) {
                         }
                         
                     }
-                    else {
-                        if (keyState['a']) {
-                            glm::mat4 matrix = glm::mat4(1.0f);
-                            matrix = glm::translate(matrix, glm::vec3(speed * 3, 0.0, 0.0));
-                            model.modelMatrix = matrix * model.modelMatrix;
-                        }
-                        if (keyState['w']) {
-                            glm::mat4 matrix = glm::mat4(1.0f);
-                            matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, -speed * 3));
-                            model.modelMatrix = matrix * model.modelMatrix;
-                        }
-                        if (keyState['s']) {
-                            glm::mat4 matrix = glm::mat4(1.0f);
-                            matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, speed * 3));
-                            model.modelMatrix = matrix * model.modelMatrix;
-                        }
-                        if (keyState['d']) {
-                            glm::mat4 matrix = glm::mat4(1.0f);
-                            matrix = glm::translate(matrix, glm::vec3(-speed * 3, 0.0, 0.0));
-                            model.modelMatrix = matrix * model.modelMatrix;
-                        }
-                    }
+                    //else {
+                    //    if (arrow == 0) { //w
+                    //        glm::mat4 matrix = glm::mat4(1.0f);
+                    //        matrix = glm::translate(matrix, glm::vec3(speed, 0.0, 0.0));
+                    //        model.modelMatrix = matrix * model.modelMatrix;
+                    //        arrow = 2;
+                    //    }
+                    //    if (arrow == 1) { //a
+                    //        glm::mat4 matrix = glm::mat4(1.0f);
+                    //        matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, -speed));
+                    //        model.modelMatrix = matrix * model.modelMatrix;
+                    //    }
+                    //    if (arrow == 2) { // s
+                    //        glm::mat4 matrix = glm::mat4(1.0f);
+                    //        matrix = glm::translate(matrix, glm::vec3(0.0, 0.0, speed));
+                    //        model.modelMatrix = matrix * model.modelMatrix;
+                    //    }
+                    //    if (arrow == 3) { //d
+                    //        glm::mat4 matrix = glm::mat4(1.0f);
+                    //        matrix = glm::translate(matrix, glm::vec3(-speed, 0.0, 0.0));
+                    //        model.modelMatrix = matrix * model.modelMatrix;
+                    //    }
+                    //}
                 }
             }
         }
@@ -344,6 +369,18 @@ void keyDown(unsigned char key, int x, int y) {
 
     switch (key)
     {
+    case 'w':
+        arrow = 0;
+        break;
+    case 's':
+        arrow = 2;
+        break;
+    case 'a':
+        arrow = 1;
+        break;
+    case 'd':
+        arrow = 3;
+        break;
     case 'j':
         // 점프 초기화
         jumpState = { true, 1.0f, 0.05f, 10.0f }; // 초기 속도와 중력 설정
