@@ -8,6 +8,7 @@
 
 #include "Camera.h"
 #include "Root.h"
+#include "Light.h"
 
 //키
 std::unordered_map<char, bool> keyState;
@@ -123,6 +124,48 @@ void keyDown(unsigned char key, int x, int y) {
         sp_model->matrix = sp_m * sp_model->matrix;
         sp_model->initBuffer();
         models.push_back(sp_model);
+        break;
+    }
+    case 'n': // 조명을 중심으로 가까워지게 이동
+    {
+        const float minDistance = 0.5f; // 최소 거리
+        glm::vec3 direction = glm::normalize(-lightPos); // 중심 방향 벡터
+        float currentDistance = glm::length(lightPos); // 현재 중심까지의 거리
+
+        if (currentDistance > minDistance) { // 최소 거리 이상일 때만 이동
+            lightPos += direction * 0.1f; // 방향으로 0.1씩 이동
+            for (auto& model : models) {
+                if (model->name != "light_m") continue;
+                model->matrix = glm::translate(glm::mat4(1.0f), direction * 0.1f) * model->matrix; // 모델 이동
+            }
+        }
+        break;
+    }
+    case 'f': // 조명을 중심에서 멀어지게 이동
+    {
+        const float maxDistance = 10.0f; // 최대 거리
+        glm::vec3 direction = glm::normalize(-lightPos); // 중심 방향 벡터
+        float currentDistance = glm::length(lightPos); // 현재 중심까지의 거리
+
+        if (currentDistance < maxDistance) { // 최대 거리 이하일 때만 이동
+            lightPos -= direction * 0.1f; // 방향의 반대 방향으로 0.1씩 이동
+            for (auto& model : models) {
+                if (model->name != "light_m") continue;
+                model->matrix = glm::translate(glm::mat4(1.0f), -direction * 0.1f) * model->matrix; // 모델 이동
+            }
+        }
+        break;
+    }
+    case '+': // 조명 세기 증가
+    {
+        lightColor += glm::vec3(0.1f, 0.1f, 0.1f); // 조명 세기 증가
+        if (lightColor.x > 1.0f) lightColor = glm::vec3(1.0f); // 최대값 제한
+        break;
+    }
+    case '-': // 조명 세기 감소
+    {
+        lightColor -= glm::vec3(0.1f, 0.1f, 0.1f); // 조명 세기 감소
+        if (lightColor.x < 0.1f) lightColor = glm::vec3(0.1f); // 최소값 제한
         break;
     }
     case 'q':
