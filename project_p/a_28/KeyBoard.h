@@ -13,6 +13,7 @@
 
 //키
 std::unordered_map<char, bool> keyState;
+std::uniform_real_distribution<> random_color_dis(0.0, 1.0);
 
 void keyDown_s(const char& key) {
     keyState[key] = !keyState[key];
@@ -37,12 +38,39 @@ void keyUp(unsigned char key, int x, int y) {
     glutPostRedisplay();
 }
 
+int lightIndex = 0; // p 키로 이동할 때 사용할 위치 인덱스
+
+
 void keyDown(unsigned char key, int x, int y) {
 
     keyDown_s(key);
 
     switch (key)
     {
+    case 'p':
+    {
+        static glm::vec3 lightPositions[4] = {
+            glm::vec3(1.0f, lightPos.y, 0.0f),   // (1, y, 0)
+            glm::vec3(-1.0f, lightPos.y, 0.0f),  // (-1, y, 0)
+            glm::vec3(0.0f, lightPos.y, 1.0f),   // (0, y, 1)
+            glm::vec3(0.0f, lightPos.y, -1.0f)   // (0, y, -1)
+        };
+
+        // 조명 위치 업데이트
+        lightPos = lightPositions[lightIndex];
+
+        // 조명 모델 위치도 이동
+        for (auto& model : models) {
+            if (model->name != "light_m") continue;
+            model->matrix[3] = glm::vec4(lightPos, 1.0);
+            //model->matrix = glm::translate(glm::mat4(1.0f), lightPos);
+        }
+
+        // 다음 위치로 인덱스 순환
+        lightIndex = (lightIndex + 1) % 4;
+
+        break;
+    }
     case '0':
     {
         models.pop_back();
@@ -169,6 +197,9 @@ void keyDown(unsigned char key, int x, int y) {
         if (lightColor.x < 0.1f) lightColor = glm::vec3(0.1f); // 최소값 제한
         break;
     }
+    case 'c':
+        lightColor = glm::vec3(random_color_dis(gen), random_color_dis(gen), random_color_dis(gen));
+        break;
     case 'q':
         std::cout << " 프로그램 종료 " << std::endl;
         exit(0);
