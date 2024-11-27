@@ -30,7 +30,6 @@ public:
     }
 
     const void draw(GLint shaderProgramID, bool (*isKeyPressed_s)(const char&)) override {
-
         GLint modelStatus = glGetUniformLocation(shaderProgramID, "modelStatus");
         GLint modelLoc = glGetUniformLocation(shaderProgramID, "model");
         GLint normalLoc = glGetUniformLocation(shaderProgramID, "normalMatrix");
@@ -40,16 +39,45 @@ public:
             glLineWidth(1.0f);
 
             // 텍스처가 있는 경우
-            if (this->material.hasTexture && this->material.textureID != 0) {
-                glActiveTexture(GL_TEXTURE0); // 텍스처 유닛 0 활성화
-                glBindTexture(GL_TEXTURE_2D, this->material.textureID); // 텍스처 바인딩
-                glUniform1i(glGetUniformLocation(shaderProgramID, "texture1"), 0); // 텍스처 샘플러에 텍스처 유닛 전달
-                glUniform1i(glGetUniformLocation(shaderProgramID, "hasTexture"), 1); // 텍스처 활성화 상태 전달
+            if (this->material.hasTexture) {
+                // Environment Texture (map_Ka)
+                if (material.ambientTextureID != 0) {
+                    glActiveTexture(GL_TEXTURE0);
+                    glBindTexture(GL_TEXTURE_2D, material.ambientTextureID);
+                    glUniform1i(glGetUniformLocation(shaderProgramID, "map_Ka"), 0);
+                    glUniform1i(glGetUniformLocation(shaderProgramID, "hasKaTexture"), 1);
+                }
+                else {
+                    glUniform1i(glGetUniformLocation(shaderProgramID, "hasKaTexture"), 0);
+                }
+
+                // Diffuse Texture (map_Kd)
+                if (material.diffuseTextureID != 0) {
+                    glActiveTexture(GL_TEXTURE1);
+                    glBindTexture(GL_TEXTURE_2D, material.diffuseTextureID);
+                    glUniform1i(glGetUniformLocation(shaderProgramID, "map_Kd"), 1);
+                    glUniform1i(glGetUniformLocation(shaderProgramID, "hasKdTexture"), 1);
+                }
+                else {
+                    glUniform1i(glGetUniformLocation(shaderProgramID, "hasKdTexture"), 0);
+                }
+
+                // Specular Texture (map_Ks)
+                if (material.specularTextureID != 0) {
+                    glActiveTexture(GL_TEXTURE2);
+                    glBindTexture(GL_TEXTURE_2D, material.specularTextureID);
+                    glUniform1i(glGetUniformLocation(shaderProgramID, "map_Ks"), 2);
+                    glUniform1i(glGetUniformLocation(shaderProgramID, "hasKsTexture"), 1);
+                }
+                else {
+                    glUniform1i(glGetUniformLocation(shaderProgramID, "hasKsTexture"), 0);
+                }
             }
-            // 텍스처가 없는 경우 기본 재질 색상 사용
+            // 텍스처가 없는 경우 기본 재질 속성만 사용
             else {
                 glUniform1i(glGetUniformLocation(shaderProgramID, "hasTexture"), 0);
 
+                // 기본 재질 속성 전달
                 GLint KaLoc = glGetUniformLocation(shaderProgramID, "Ka");
                 GLint KdLoc = glGetUniformLocation(shaderProgramID, "Kd");
                 GLint KsLoc = glGetUniformLocation(shaderProgramID, "Ks");
@@ -77,18 +105,16 @@ public:
             // 삼각형 렌더링
             glDrawElements(GL_TRIANGLES, this->faces.size() * 3, GL_UNSIGNED_INT, 0);
 
-            // 렌더링 후 초기화
+            // 렌더링 이후 기본값으로 초기화
             glm::mat4 identity = glm::mat4(1.0f);
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(identity));
 
+            // VAO 및 텍스처 바인딩 해제
             glBindVertexArray(0);
-
-            // 텍스처 바인딩 해제
-            if (this->material.hasTexture) {
-                glBindTexture(GL_TEXTURE_2D, 0);
-            }
+            glBindTexture(GL_TEXTURE_2D, 0);
         }
     }
+
 
     const void draw_rigidBody(GLuint shaderProgramID) override {
         if (this->rigidBody) {

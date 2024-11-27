@@ -11,11 +11,15 @@
 // 텍스처 로드 함수
 GLuint load_texture(const std::string& path) {
     int width, height, nrChannels;
-    unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0); // 이미지 로드
 
+    // 이미지 로드
+    unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
+
+    // 텍스처 로드 실패 처리
     if (!data) {
-        std::cerr << "Failed to load texture: " << path << std::endl;
-        return 0; // 0은 OpenGL에서 무효한 텍스처 ID를 의미
+        std::cerr << "[ERROR] Failed to load texture: " << path << std::endl;
+        std::cerr << "Reason: " << stbi_failure_reason() << std::endl; // 추가 디버깅 메시지
+        throw std::runtime_error("Texture loading failed: " + path); // 예외 발생
     }
 
     // OpenGL에 텍스처 생성
@@ -34,7 +38,8 @@ GLuint load_texture(const std::string& path) {
     glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D); // Mipmap 생성
 
-    stbi_image_free(data); // 메모리 해제
+    // 메모리 해제
+    stbi_image_free(data);
 
     return textureID; // 텍스처 ID 반환
 }

@@ -29,12 +29,20 @@ struct Face {
 };
 
 struct Material {
-    glm::vec3 Ka;  // 환경광 색상
-    glm::vec3 Kd;  // 난반사광 색상
-    glm::vec3 Ks;  // 반사광 색상
+    glm::vec3 Ka;  // 환경광 계수
+    glm::vec3 Kd;  // 난반사광 계수
+    glm::vec3 Ks;  // 반사광 계수
     float Ns;      // 반짝임 강도
-    std::string map_Kd;  // 텍스처 이미지 경로 (선택적)
-    GLuint textureID;  // 텍스처 ID 필드 추가
+
+    std::string map_Ka; // 환경광 텍스처 파일 경로
+    std::string map_Kd; // 난반사광 텍스처 파일 경로
+    std::string map_Ks; // 반사광 텍스처 파일 경로
+
+    GLuint ambientTextureID = 0;  // 환경광 텍스처 ID
+    GLuint diffuseTextureID = 0;  // 난반사광 텍스처 ID
+    GLuint specularTextureID = 0; // 반사광 텍스처 ID
+
+    //GLuint textureID;  // 텍스처 ID 필드 추가
     bool hasTexture;  // 텍스처가 있는지 여부
 };
 

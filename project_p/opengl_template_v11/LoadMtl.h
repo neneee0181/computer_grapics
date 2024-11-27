@@ -37,18 +37,38 @@ void read_mtl_file(const std::string& filename, Material& material) {
         else if (prefix == "Ns") {  // 반짝임 강도
             ss >> material.Ns;
         }
-        else if (prefix == "map_Kd") {  // 텍스처 파일 경로
-            ss >> material.map_Kd;
-            // OpenGL 텍스처 로드
-
-            material.textureID = load_texture("obj/" + material.map_Kd);
-            if (material.textureID != 0) {
-                std::cout << "Texture loaded: " << material.map_Kd << std::endl;
-                hasTexture = true;
+        else if (prefix == "map_Ka") {  // 환경광 텍스처 경로
+            ss >> material.map_Ka;
+            material.ambientTextureID = load_texture("obj/" + material.map_Ka);
+            if (material.ambientTextureID != 0) {
+                std::cout << "Ambient texture loaded: " << material.map_Ka << std::endl;
             }
             else {
-                std::cerr << "Failed to load texture: " << material.map_Kd << std::endl;
+                std::cerr << "Failed to load ambient texture: " << material.map_Ka << std::endl;
             }
+            hasTexture = true;
+        }
+        else if (prefix == "map_Kd") {  // 난반사광 텍스처 경로
+            ss >> material.map_Kd;
+            material.diffuseTextureID = load_texture("obj/" + material.map_Kd);
+            if (material.diffuseTextureID != 0) {
+                std::cout << "Diffuse texture loaded: " << material.map_Kd << std::endl;
+            }
+            else {
+                std::cerr << "Failed to load diffuse texture: " << material.map_Kd << std::endl;
+            }
+            hasTexture = true;
+        }
+        else if (prefix == "map_Ks") {  // 반사광 텍스처 경로
+            ss >> material.map_Ks;
+            material.specularTextureID = load_texture("obj/" + material.map_Ks);
+            if (material.specularTextureID != 0) {
+                std::cout << "Specular texture loaded: " << material.map_Ks << std::endl;
+            }
+            else {
+                std::cerr << "Failed to load specular texture: " << material.map_Ks << std::endl;
+            }
+            hasTexture = true;
         }
     }
 
