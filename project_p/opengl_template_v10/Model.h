@@ -26,6 +26,7 @@ struct Face {
     unsigned int v1, v2, v3;  // 정점 인덱스
     unsigned int t1, t2, t3;  // 텍스처 좌표 인덱스 (선택적)
     unsigned int n1, n2, n3;  // 법선 벡터 인덱스
+    int materialIndex;        // 이 Face가 사용하는 Material의 인덱스
 };
 
 struct Material {
@@ -50,7 +51,7 @@ public:
     glm::mat4 translateMatrix = glm::mat4(1.0f);  // 모델이 이동한 위치를 저장할 벡터
     glm::mat4 rotateMatrix = glm::mat4(1.0f);    // 모델의 초기 회전 행렬
 
-    Material material;
+    std::vector<Material> materials; // 여러 재질(Material)을 저장
 
     std::string name;
     std::string type; // 모델 도형 타입 ex) box, sphere, cylinder

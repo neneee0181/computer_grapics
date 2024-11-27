@@ -14,8 +14,8 @@ C:\Users\kevin\mine\computer_grapics\project_p\a_28\DefaultModel.h(76,65): warni
 C:\Users\kevin\mine\computer_grapics\project_p\a_28\main.cpp(76,33): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
 C:\Users\kevin\mine\computer_grapics\project_p\a_28\main.cpp(82,37): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   코드를 생성하고 있습니다.
-  2 of 1207 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
-    1 functions were new in current compilation
-    6 functions had inline decision re-evaluated but remain unchanged
+  0 of 1207 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
   코드를 생성했습니다.
   a_28.vcxproj -> C:\Users\kevin\mine\computer_grapics\project_p\x64\Release\a_28.exe

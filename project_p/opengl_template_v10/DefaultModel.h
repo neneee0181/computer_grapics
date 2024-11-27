@@ -38,38 +38,60 @@ public:
         if (this->model_status) {
             glBindVertexArray(this->vao);
             glLineWidth(1.0f);
-            if (this->material.hasTexture) {
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, this->material.textureID);
-                glUniform1i(glGetUniformLocation(shaderProgramID, "texture1"), 0);
-                glUniform1i(glGetUniformLocation(shaderProgramID, "hasTexture"), 1);
-                glBindTexture(GL_TEXTURE_2D, 0);
+
+            // Face를 하나씩 처리
+            for (size_t faceIndex = 0; faceIndex < this->faces.size(); ++faceIndex) {
+                const Face& face = this->faces[faceIndex];
+                int materialIndex = face.materialIndex;
+
+                // 유효한 Material이 있는 경우 처리
+                if (materialIndex >= 0 && materialIndex < this->materials.size()) {
+                    const Material& material = this->materials[materialIndex];
+
+                    // 텍스처가 있는 경우
+                    if (material.hasTexture) {
+                        glActiveTexture(GL_TEXTURE0);
+                        glBindTexture(GL_TEXTURE_2D, material.textureID);
+                        glUniform1i(glGetUniformLocation(shaderProgramID, "texture1"), 0);
+                        glUniform1i(glGetUniformLocation(shaderProgramID, "hasTexture"), 1);
+                    }
+                    // 텍스처가 없는 경우 (기본 색상 사용)
+                    else {
+                        glUniform1i(glGetUniformLocation(shaderProgramID, "hasTexture"), 0);
+
+                        GLint KaLoc = glGetUniformLocation(shaderProgramID, "Ka");
+                        GLint KdLoc = glGetUniformLocation(shaderProgramID, "Kd");
+                        GLint KsLoc = glGetUniformLocation(shaderProgramID, "Ks");
+                        GLint NsLoc = glGetUniformLocation(shaderProgramID, "Ns");
+
+                        glUniform3fv(KaLoc, 1, glm::value_ptr(material.Ka));
+                        glUniform3fv(KdLoc, 1, glm::value_ptr(material.Kd));
+                        glUniform3fv(KsLoc, 1, glm::value_ptr(material.Ks));
+                        glUniform1f(NsLoc, material.Ns);
+                    }
+                }
+
+                // 모델 매트릭스와 법선 매트릭스 전달
+                glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(this->matrix));
+                glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(this->matrix)));
+                glUniformMatrix3fv(normalLoc, 1, GL_FALSE, glm::value_ptr(normalMatrix));
+
+                // 폴리곤 모드 설정
+                glUniform1i(modelStatus, 0);
+                if (isKeyPressed_s('1'))
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                else
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+                // Face를 렌더링 (현재 Face만)
+                glDrawElementsBaseVertex(
+                    GL_TRIANGLES,
+                    3, // 삼각형당 3개의 인덱스
+                    GL_UNSIGNED_INT,
+                    (void*)(faceIndex * 3 * sizeof(unsigned int)),
+                    0
+                );
             }
-            else {
-                glUniform1i(glGetUniformLocation(shaderProgramID, "hasTexture"), 0);
-
-                GLint KaLoc = glGetUniformLocation(shaderProgramID, "Ka");
-                GLint KdLoc = glGetUniformLocation(shaderProgramID, "Kd");
-                GLint KsLoc = glGetUniformLocation(shaderProgramID, "Ks");
-                GLint NsLoc = glGetUniformLocation(shaderProgramID, "Ns");
-
-                glUniform3fv(KaLoc, 1, glm::value_ptr(this->material.Ka));
-                glUniform3fv(KdLoc, 1, glm::value_ptr(this->material.Kd));
-                glUniform3fv(KsLoc, 1, glm::value_ptr(this->material.Ks));
-                glUniform1f(NsLoc, this->material.Ns);
-            }
-
-
-            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(this->matrix));
-            glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(this->matrix)));
-            glUniformMatrix3fv(normalLoc, 1, GL_FALSE, glm::value_ptr(normalMatrix));
-
-            glUniform1i(modelStatus, 0);
-            if (isKeyPressed_s('1'))
-                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            else
-                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            glDrawElements(GL_TRIANGLES, this->faces.size() * 3, GL_UNSIGNED_INT, 0);
 
             // 렌더링 이후 기본값으로 초기화
             glm::mat4 identity = glm::mat4(1.0f);
@@ -78,6 +100,7 @@ public:
             glBindVertexArray(0);
         }
     }
+
 
     const void draw_rigidBody(GLuint shaderProgramID) override {
         if (this->rigidBody) {
