@@ -40,6 +40,7 @@ public:
             glLineWidth(1.0f);
 
             // Face를 하나씩 처리
+            cout << faces.size() << endl;
             for (size_t faceIndex = 0; faceIndex < this->faces.size(); ++faceIndex) {
                 const Face& face = this->faces[faceIndex];
                 int materialIndex = face.materialIndex;
@@ -70,6 +71,8 @@ public:
                         glUniform1f(NsLoc, material.Ns);
                     }
                 }
+
+               
 
                 // 모델 매트릭스와 법선 매트릭스 전달
                 glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(this->matrix));
@@ -109,58 +112,60 @@ public:
     }
 
     void initBuffer() override {
-
-        glGenVertexArrays(1, &vao);
+        glGenVertexArrays(1, &vao); // VAO 생성
         glBindVertexArray(vao);
 
         // VBO 생성
         glGenBuffers(4, vbos);
 
-        // 정점 버퍼 설정
+        // 1. 정점 버퍼 설정
         glBindBuffer(GL_ARRAY_BUFFER, vbos[0]);
         glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(glm::vec3), this->vertices.data(), GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);  // location 0에 정점 할당
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0); // location 0에 정점 할당
         glEnableVertexAttribArray(0);
 
-        // **법선 데이터를 normalFaces 기반으로 재구성**
-        vector<glm::vec3> restructuredNormals; // Face에 맞는 법선을 저장할 벡터
+        // 2. 법선 데이터를 normalFaces 기반으로 재구성
+        vector<glm::vec3> restructuredNormals;
         for (size_t j = 0; j < this->normalFaces.size(); ++j) {
-            unsigned int normalIndex = this->normalFaces[j]; // normalFaces에서 법선 인덱스 가져오기
-            const Normal& normal = this->normals[normalIndex]; // 인덱스에 해당하는 법선 가져오기
-            restructuredNormals.push_back(glm::vec3(normal.nx, normal.ny, normal.nz)); // glm::vec3로 변환 후 추가
+            unsigned int normalIndex = this->normalFaces[j];
+            if (normalIndex < this->normals.size()) {
+                const Normal& normal = this->normals[normalIndex];
+                restructuredNormals.push_back(glm::vec3(normal.nx, normal.ny, normal.nz));
+            }
         }
 
         // 법선 버퍼 설정
-        glBindBuffer(GL_ARRAY_BUFFER, vbos[1]);  // 법선용 VBO
+        glBindBuffer(GL_ARRAY_BUFFER, vbos[1]);
         glBufferData(GL_ARRAY_BUFFER, restructuredNormals.size() * sizeof(glm::vec3), restructuredNormals.data(), GL_STATIC_DRAW);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);  // location 1에 법선 할당
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0); // location 1에 법선 할당
         glEnableVertexAttribArray(1);
 
-        // 텍스처 좌표 VBO 설정
-        vector<glm::vec2> faceTexCoords; // Face에 맞는 텍스처 좌표를 저장
+        // 3. 텍스처 좌표 VBO 설정
+        vector<glm::vec2> faceTexCoords;
         if (!this->texCoords.empty()) {
             for (const Face& face : this->faces) {
-                faceTexCoords.push_back(glm::vec2(
-                    this->texCoords[face.t1].u,
-                    this->texCoords[face.t1].v
-                ));
-                faceTexCoords.push_back(glm::vec2(
-                    this->texCoords[face.t2].u,
-                    this->texCoords[face.t2].v
-                ));
-                faceTexCoords.push_back(glm::vec2(
-                    this->texCoords[face.t3].u,
-                    this->texCoords[face.t3].v
-                ));
+                // 디버깅 로그 추가
+                std::cout << "face.t1: " << face.t1 << ", face.t2: " << face.t2 << ", face.t3: " << face.t3 << std::endl;
+                std::cout << "texCoords.size(): " << this->texCoords.size() << std::endl;
+
+                if (face.t1 < this->texCoords.size() && face.t2 < this->texCoords.size() && face.t3 < this->texCoords.size()) {
+                    faceTexCoords.push_back(glm::vec2(this->texCoords[face.t1].u, this->texCoords[face.t1].v));
+                    faceTexCoords.push_back(glm::vec2(this->texCoords[face.t2].u, this->texCoords[face.t2].v));
+                    faceTexCoords.push_back(glm::vec2(this->texCoords[face.t3].u, this->texCoords[face.t3].v));
+                }
+                else {
+                    std::cerr << "ERROR: Texture coordinate index out of range for face: "
+                        << &face - &this->faces[0] << std::endl;
+                }
             }
 
-            glBindBuffer(GL_ARRAY_BUFFER, vbos[2]);  // 텍스처 좌표용 VBO
+            glBindBuffer(GL_ARRAY_BUFFER, vbos[2]); // 텍스처 좌표용 VBO
             glBufferData(GL_ARRAY_BUFFER, faceTexCoords.size() * sizeof(glm::vec2), faceTexCoords.data(), GL_STATIC_DRAW);
-            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);  // location 2에 텍스처 좌표 할당
+            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0); // location 2에 텍스처 좌표 할당
             glEnableVertexAttribArray(2);
         }
 
-        // 면 인덱스 데이터 (EBO) 설정
+        // 4. 면 인덱스 데이터 (EBO) 설정
         vector<unsigned int> indices;
         for (const Face& face : this->faces) {
             indices.push_back(face.v1);
@@ -173,7 +178,20 @@ public:
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
-        glBindVertexArray(0); // VAO 바인딩 해제
+        // 5. 텍스처 이미지 활성화 및 설정
+        for (const auto& material : this->materials) {
+            if (material.hasTexture) {
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, material.textureID);
 
+                // 텍스처 매핑 방식 설정 (선형 필터링과 반복 설정)
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            }
+        }
+
+        glBindVertexArray(0); // VAO 바인딩 해제
     }
 };

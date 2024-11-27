@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
 
     initPhysics(); // Bullet 초기화 함수 호출
 
-    DefaultModel* default_model = new DefaultModel("obj/Crate1.obj", "Crate1", "box", glm::scale(glm::mat4(1.0f), glm::vec3(4.0, 4.0, 4.0))); // 실제 모델 가져오기
+    DefaultModel* default_model = new DefaultModel("obj/BlockQuestion.obj", "BlockQuestion", "box", glm::scale(glm::mat4(1.0f), glm::vec3(4.0, 4.0, 4.0))); // 실제 모델 가져오기
     models.push_back(default_model);
 
     initializeModelsWithPhysics(models); // 모든 모델 Bullet world에 추가

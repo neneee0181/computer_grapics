@@ -83,6 +83,9 @@
     <ClInclude Include="tiny_obj_loader.h">
       <Filter>헤더 파일\Load</Filter>
     </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>헤더 파일\Load</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
