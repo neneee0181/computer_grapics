@@ -124,6 +124,26 @@ public:
 
     void initBuffer() override {
 
+        std::cout << "Starting initBuffer. Total faces: " << this->faces.size() << "\n";
+
+        for (size_t i = 0; i < this->faces.size(); ++i) {
+            const Face& face = this->faces[i];
+
+            std::cout << "Face " << i << ":\n";
+            std::cout << "  v1: " << face.v1 << ", vt1: " << face.t1 << ", vn1: " << face.n1 << "\n";
+            std::cout << "  v2: " << face.v2 << ", vt2: " << face.t2 << ", vn2: " << face.n2 << "\n";
+            std::cout << "  v3: " << face.v3 << ", vt3: " << face.t3 << ", vn3: " << face.n3 << "\n";
+
+            // 추가 디버깅: 텍스처 좌표 출력
+            if (face.t1 < this->texCoords.size() && face.t2 < this->texCoords.size() && face.t3 < this->texCoords.size()) {
+                std::cout << "  Texture Coordinates:\n";
+                std::cout << "    vt1: (" << this->texCoords[face.t1].u << ", " << this->texCoords[face.t1].v << ")\n";
+                std::cout << "    vt2: (" << this->texCoords[face.t2].u << ", " << this->texCoords[face.t2].v << ")\n";
+                std::cout << "    vt3: (" << this->texCoords[face.t3].u << ", " << this->texCoords[face.t3].v << ")\n";
+            }
+
+        }
+
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
 
@@ -150,27 +170,30 @@ public:
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);  // location 1에 법선 할당
         glEnableVertexAttribArray(1);
 
-        // 텍스처 좌표 VBO 설정
-        vector<glm::vec2> faceTexCoords; // Face에 맞는 텍스처 좌표를 저장
+        // 텍스처 좌표 VBO 설정 (uvw 처리)
+        vector<glm::vec3> faceTexCoords; // Face에 맞는 텍스처 좌표를 저장
         if (!this->texCoords.empty()) {
             for (const Face& face : this->faces) {
-                faceTexCoords.push_back(glm::vec2(
+                faceTexCoords.push_back(glm::vec3(
                     this->texCoords[face.t1].u,
-                    this->texCoords[face.t1].v
+                    this->texCoords[face.t1].v,
+                    this->texCoords[face.t1].w
                 ));
-                faceTexCoords.push_back(glm::vec2(
+                faceTexCoords.push_back(glm::vec3(
                     this->texCoords[face.t2].u,
-                    this->texCoords[face.t2].v
+                    this->texCoords[face.t2].v,
+                    this->texCoords[face.t2].w
                 ));
-                faceTexCoords.push_back(glm::vec2(
+                faceTexCoords.push_back(glm::vec3(
                     this->texCoords[face.t3].u,
-                    this->texCoords[face.t3].v
+                    this->texCoords[face.t3].v,
+                    this->texCoords[face.t3].w
                 ));
             }
 
             glBindBuffer(GL_ARRAY_BUFFER, vbos[2]);  // 텍스처 좌표용 VBO
-            glBufferData(GL_ARRAY_BUFFER, faceTexCoords.size() * sizeof(glm::vec2), faceTexCoords.data(), GL_STATIC_DRAW);
-            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);  // location 2에 텍스처 좌표 할당
+            glBufferData(GL_ARRAY_BUFFER, faceTexCoords.size() * sizeof(glm::vec3), faceTexCoords.data(), GL_STATIC_DRAW);
+            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);  // location 2에 텍스처 좌표 할당 (3개 값)
             glEnableVertexAttribArray(2);
         }
 

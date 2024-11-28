@@ -33,8 +33,8 @@ GLuint load_texture(const std::string& path) {
     glBindTexture(GL_TEXTURE_2D, textureID);      // 생성한 텍스처를 2D 텍스처로 바인딩
 
     // 텍스처 래핑(Wrapping) 옵션 설정 (S축과 T축 모두 반복)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // U축 반복
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // V축 반복
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // U축 반복
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // V축 반복
 
     // 텍스처 필터링 옵션 설정
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // 축소 시 Mipmap + 선형 보간

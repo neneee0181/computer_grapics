@@ -15,7 +15,7 @@ struct Vertex {
 };
 
 struct TextureCoord {
-    float u, v;
+    float u, v, w;
 };
 
 struct Normal {

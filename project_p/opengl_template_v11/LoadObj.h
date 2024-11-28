@@ -33,7 +33,14 @@ void read_obj_file(const std::string& filename, Model* model, std::string name, 
         }
         else if (prefix == "vt") {  // 텍스처 좌표 데이터를 읽을 때
             TextureCoord texCoord;
+
             ss >> texCoord.u >> texCoord.v;
+
+            // 만약 w 값이 있으면 추가로 읽음
+            if (!(ss >> texCoord.w)) {
+                texCoord.w = 0.0f; // 기본값을 0.0으로 설정
+            }
+
             model->texCoords.push_back(texCoord);
         }
         else if (prefix == "vn") {  // 법선 벡터 데이터를 읽을 때
