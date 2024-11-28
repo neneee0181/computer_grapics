@@ -14,6 +14,7 @@ void read_mtl_file(const std::string& filename, Material& material) {
     std::ifstream file("obj/" + filename);  // MTL 파일 열기
     if (!file.is_open()) {  // 파일 열기 실패 시 예외 처리
         //throw std::runtime_error("Error opening MTL file: " + filename);
+        cout << "mtl file open error" << endl;
         return;
     }
 

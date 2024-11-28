@@ -27,4 +27,4 @@ newmtl BlockQuestionMat01
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
 	map_Ka blockquestion02_alb.png
-	map_Kd blockquestion00_alb.png
+	map_Kd blockquestion02_alb.png
