@@ -124,26 +124,6 @@ public:
 
     void initBuffer() override {
 
-        std::cout << "Starting initBuffer. Total faces: " << this->faces.size() << "\n";
-
-        for (size_t i = 0; i < this->faces.size(); ++i) {
-            const Face& face = this->faces[i];
-
-            std::cout << "Face " << i << ":\n";
-            std::cout << "  v1: " << face.v1 << ", vt1: " << face.t1 << ", vn1: " << face.n1 << "\n";
-            std::cout << "  v2: " << face.v2 << ", vt2: " << face.t2 << ", vn2: " << face.n2 << "\n";
-            std::cout << "  v3: " << face.v3 << ", vt3: " << face.t3 << ", vn3: " << face.n3 << "\n";
-
-            // 추가 디버깅: 텍스처 좌표 출력
-            if (face.t1 < this->texCoords.size() && face.t2 < this->texCoords.size() && face.t3 < this->texCoords.size()) {
-                std::cout << "  Texture Coordinates:\n";
-                std::cout << "    vt1: (" << this->texCoords[face.t1].u << ", " << this->texCoords[face.t1].v << ")\n";
-                std::cout << "    vt2: (" << this->texCoords[face.t2].u << ", " << this->texCoords[face.t2].v << ")\n";
-                std::cout << "    vt3: (" << this->texCoords[face.t3].u << ", " << this->texCoords[face.t3].v << ")\n";
-            }
-
-        }
-
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
 
