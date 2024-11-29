@@ -13,6 +13,22 @@
 
 using namespace std;
 
+// std::tuple의 커스텀 해시 함수 정의
+struct TupleHash {
+    template <typename T>
+    static void hashCombine(std::size_t& seed, const T& value) {
+        std::hash<T> hasher;
+        seed ^= hasher(value) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+    }
+
+    template <typename... Types>
+    std::size_t operator()(const std::tuple<Types...>& tuple) const {
+        std::size_t seed = 0;
+        std::apply([&seed](const auto&... args) { ((hashCombine(seed, args)), ...); }, tuple);
+        return seed;
+    }
+};
+
 class DefaultModel : public Model {
 public:
     DefaultModel(){}
@@ -135,74 +151,88 @@ public:
     }
 
     void initBuffer() override {
-
-        for (const Face& face : this->faces) {
-            std::cout << "Face Indices: "
-                << "v1=" << face.v1 << ", v2=" << face.v2 << ", v3=" << face.v3 << " | "
-                << "t1=" << face.t1 << ", t2=" << face.t2 << ", t3=" << face.t3 << std::endl;
-
-            std::cout << "Texture Coords: "
-                << "t1=(" << this->texCoords[face.t1].u << ", " << this->texCoords[face.t1].v << "), "
-                << "t2=(" << this->texCoords[face.t2].u << ", " << this->texCoords[face.t2].v << "), "
-                << "t3=(" << this->texCoords[face.t3].u << ", " << this->texCoords[face.t3].v << ")"
-                << std::endl;
-        }
-
+        // Step 1: VAO 생성 및 바인딩
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
 
-        // VBO 생성
-        glGenBuffers(4, vbos);
+        // Step 2: 복합 인덱스를 단일화된 정점 데이터로 변환
+        std::unordered_map<std::tuple<unsigned int, unsigned int, unsigned int>, unsigned int, TupleHash> uniqueVertices;
+        std::vector<glm::vec3> vertexBuffer;   // 위치 데이터
+        std::vector<glm::vec3> normalBuffer;   // 법선 데이터
+        std::vector<glm::vec2> texCoordBuffer; // 텍스처 좌표 데이터
+        std::vector<unsigned int> indices;    // 단일화된 인덱스 배열
 
-        // **정점 버퍼 설정**
+        for (const Face& face : this->faces) {
+            for (int i = 0; i < 3; i++) { // 삼각형의 세 정점 처리
+                // 복합 인덱스 생성
+                unsigned int vertexIndex = (i == 0) ? face.v1 : (i == 1) ? face.v2 : face.v3;
+                unsigned int texCoordIndex = (i == 0) ? face.t1 : (i == 1) ? face.t2 : face.t3;
+                unsigned int normalIndex = (i == 0) ? face.n1 : (i == 1) ? face.n2 : face.n3;
+                std::tuple<unsigned int, unsigned int, unsigned int> key = std::make_tuple(vertexIndex, texCoordIndex, normalIndex);
+
+                // 고유한 정점인지 확인
+                if (uniqueVertices.count(key) == 0) {
+                    // 새로운 정점 추가
+                    uniqueVertices[key] = static_cast<unsigned int>(vertexBuffer.size());
+
+                    // 위치 추가
+                    vertexBuffer.push_back(glm::vec3(
+                        this->vertices[vertexIndex].x,
+                        this->vertices[vertexIndex].y,
+                        this->vertices[vertexIndex].z
+                    ));
+
+                    // 텍스처 좌표 추가 (존재하면)
+                    if (texCoordIndex != static_cast<unsigned int>(-1)) {
+                        texCoordBuffer.push_back(glm::vec2(
+                            this->texCoords[texCoordIndex].u,
+                            this->texCoords[texCoordIndex].v
+                        ));
+                    }
+                    else {
+                        texCoordBuffer.push_back(glm::vec2(0.0f, 0.0f));
+                    }
+
+                    // 법선 추가
+                    normalBuffer.push_back(glm::vec3(
+                        this->normals[normalIndex].nx,
+                        this->normals[normalIndex].ny,
+                        this->normals[normalIndex].nz
+                    ));
+                }
+
+                // 인덱스 추가
+                indices.push_back(uniqueVertices[key]);
+            }
+        }
+
+        // Step 3: VBO 설정 - 위치 데이터
+        glGenBuffers(1, &vbos[0]);
         glBindBuffer(GL_ARRAY_BUFFER, vbos[0]);
-        glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(Vertex), this->vertices.data(), GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0); // location 0에 정점 할당
+        glBufferData(GL_ARRAY_BUFFER, vertexBuffer.size() * sizeof(glm::vec3), vertexBuffer.data(), GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
         glEnableVertexAttribArray(0);
 
-        // **법선 버퍼 재구성 및 설정**
-        std::vector<glm::vec3> restructuredNormals;
-        for (const Face& face : this->faces) {
-            // 각 Face의 법선 인덱스를 사용하여 glm::vec3로 변환 후 추가
-            restructuredNormals.push_back(glm::vec3(this->normals[face.n1].nx, this->normals[face.n1].ny, this->normals[face.n1].nz));
-            restructuredNormals.push_back(glm::vec3(this->normals[face.n2].nx, this->normals[face.n2].ny, this->normals[face.n2].nz));
-            restructuredNormals.push_back(glm::vec3(this->normals[face.n3].nx, this->normals[face.n3].ny, this->normals[face.n3].nz));
-        }
-
+        // Step 4: VBO 설정 - 법선 데이터
+        glGenBuffers(1, &vbos[1]);
         glBindBuffer(GL_ARRAY_BUFFER, vbos[1]);
-        glBufferData(GL_ARRAY_BUFFER, restructuredNormals.size() * sizeof(glm::vec3), restructuredNormals.data(), GL_STATIC_DRAW);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0); // location 1에 법선 할당
+        glBufferData(GL_ARRAY_BUFFER, normalBuffer.size() * sizeof(glm::vec3), normalBuffer.data(), GL_STATIC_DRAW);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
         glEnableVertexAttribArray(1);
 
-        // **텍스처 좌표 재구성 및 설정**
-        std::vector<glm::vec2> faceTexCoords;
-        if (!this->texCoords.empty()) {
-            for (const Face& face : this->faces) {
-                faceTexCoords.push_back(glm::vec2(this->texCoords[face.t1].u, this->texCoords[face.t1].v));
-                faceTexCoords.push_back(glm::vec2(this->texCoords[face.t2].u, this->texCoords[face.t2].v));
-                faceTexCoords.push_back(glm::vec2(this->texCoords[face.t3].u, this->texCoords[face.t3].v));
-            }
+        // Step 5: VBO 설정 - 텍스처 좌표 데이터
+        glGenBuffers(1, &vbos[2]);
+        glBindBuffer(GL_ARRAY_BUFFER, vbos[2]);
+        glBufferData(GL_ARRAY_BUFFER, texCoordBuffer.size() * sizeof(glm::vec2), texCoordBuffer.data(), GL_STATIC_DRAW);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (void*)0);
+        glEnableVertexAttribArray(2);
 
-            glBindBuffer(GL_ARRAY_BUFFER, vbos[2]);
-            glBufferData(GL_ARRAY_BUFFER, faceTexCoords.size() * sizeof(glm::vec2), faceTexCoords.data(), GL_STATIC_DRAW);
-            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0); // location 2에 텍스처 좌표 할당
-            glEnableVertexAttribArray(2);
-        }
-
-        // **인덱스 버퍼 설정 (EBO)**
-        std::vector<unsigned int> indices;
-        for (const Face& face : this->faces) {
-            indices.push_back(face.v1);
-            indices.push_back(face.v2);
-            indices.push_back(face.v3);
-        }
-
-        GLuint ebo;
-        glGenBuffers(1, &ebo);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+        // Step 6: EBO 설정 - 인덱스 데이터
+        glGenBuffers(1, &vbos[3]);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[3]);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
-        // VAO 바인딩 해제
+        // Step 7: VAO 바인딩 해제
         glBindVertexArray(0);
     }
 };

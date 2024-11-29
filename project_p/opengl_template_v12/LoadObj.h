@@ -9,6 +9,13 @@
 #include "Model.h"
 #include "LoadMtl.h"
 
+
+struct FullVertex {
+    glm::vec3 position;  // 정점 위치
+    glm::vec3 normal;    // 법선
+    glm::vec2 texCoord;  // 텍스처 좌표
+};
+
 // OBJ 파일을 읽어와서 모델 데이터를 파싱하는 함수
 void read_obj_file(const std::string& filename, Model* model, std::string name, std::string type) {
     std::ifstream file(filename);  // 파일 읽기 모드로 열기
@@ -146,4 +153,5 @@ void read_obj_file(const std::string& filename, Model* model, std::string name, 
     }
 
     file.close();  // 파일 닫기
+
 }
