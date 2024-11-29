@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include"include/btBulletDynamicsCommon.h"
 
 struct Vertex {
@@ -51,7 +52,7 @@ public:
     glm::mat4 translateMatrix = glm::mat4(1.0f);  // 모델이 이동한 위치를 저장할 벡터
     glm::mat4 rotateMatrix = glm::mat4(1.0f);    // 모델의 초기 회전 행렬
 
-    std::vector<Material> materials; // 여러 재질(Material)을 저장
+    std::unordered_map<std::string, Material> materials; // 여러 재질(Material)을 저장
 
     std::string name;
     std::string type; // 모델 도형 타입 ex) box, sphere, cylinder

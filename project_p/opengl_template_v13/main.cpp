@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
 
     initPhysics(); // Bullet 초기화 함수 호출
 
-    DefaultModel* default_model = new DefaultModel("obj/straight_road.obj", "straight_road", "sphere", glm::scale(glm::mat4(1.0f), glm::vec3(10.0, 10.0, 10.0))); // 실제 모델 가져오기
+    DefaultModel* default_model = new DefaultModel("obj/paragon_red.obj", "straight_road", "sphere", glm::scale(glm::mat4(1.0f), glm::vec3(80.0, 80.0, 80.0))); // 실제 모델 가져오기
     models.push_back(default_model);
 
     // 디버깅 출력
@@ -50,6 +50,9 @@ int main(int argc, char** argv) {
 
     InitBuffer();   
 
+    // 초기 프레임 강제 렌더링
+    drawScene();  // 디스플레이 콜백 함수 직접 호출
+    
     glutDisplayFunc(drawScene);
     glutReshapeFunc(Reshape);
     glutKeyboardFunc(keyDown);

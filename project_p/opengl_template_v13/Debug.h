@@ -63,5 +63,5 @@ void debug_material(const Material& material) {
             << " (ID: " << material.specularTextureID << ")" << std::endl;
     }
 
-    std::cout << "Has Texture: " << (material.hasTexture ? "Yes" : "No") << std::endl;
+    std::cout << "Has Texture: " << (material.hasTexture_s ? "Yes" : "No") << std::endl;
 }
