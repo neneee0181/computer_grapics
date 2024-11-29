@@ -1,5 +1,5 @@
 ﻿  filetobuf.cpp
   main.cpp
-C:\Users\kevin\mine\computer_grapics\project_p\opengl_template_v6\Model.h(8,9): error C1083: 포함 파일을 열 수 없습니다. 'include/btBulletDynamicsCommon.h': No such file or directory
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v6\Model.h(8,9): error C1083: 포함 파일을 열 수 없습니다. 'include/btBulletDynamicsCommon.h': No such file or directory
   (소스 파일 '../opengl_template_v6/main.cpp'을(를) 컴파일하는 중)
   
