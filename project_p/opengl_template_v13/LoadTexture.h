@@ -48,7 +48,7 @@ Texture load_texture(const std::string& path, const std::string& type) {
     // 텍스처 ID를 Texture 구조체에 저장
     texture.id = textureID;
 
-    std::cout << "[INFO] Texture loaded: " << path << " (ID: " << textureID << ")" << std::endl;
+    //std::cout << "[INFO] Texture loaded: " << path << " (ID: " << textureID << ")" << std::endl;
 
     return texture;  // Texture 구조체 반환
 }

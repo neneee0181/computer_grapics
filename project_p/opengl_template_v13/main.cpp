@@ -7,6 +7,7 @@
 #include "Camera.h"
 #include "Light.h"
 #include "Debug.h"
+#include "LoadProgress.h"
 
 using namespace std;
 
@@ -26,7 +27,7 @@ int main(int argc, char** argv) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
     glutInitWindowPosition(100, 200);
     glutInitWindowSize(width, height);
-    glutCreateWindow("opengl template v12");
+    glutCreateWindow("opengl template v15");
 
     glewExperimental = GL_TRUE;
     if (glewInit() != GLEW_OK) {
@@ -40,11 +41,11 @@ int main(int argc, char** argv) {
 
     initPhysics(); // Bullet 초기화 함수 호출
 
-    DefaultModel* default_model = new DefaultModel("obj/paragon_red.obj", "straight_road", "sphere", glm::scale(glm::mat4(1.0f), glm::vec3(80.0, 80.0, 80.0))); // 실제 모델 가져오기
-    models.push_back(default_model);
+    loadModelWithProgress <DefaultModel>("obj/straight_road.obj", "straight_road", "sphere", glm::scale(glm::mat4(1.0f), glm::vec3(10.0, 10.0, 10.0)), models);
 
     // 디버깅 출력
-    //debug_model(default_model);
+    debug_model(models.back());
+    debug_materials(models.back()->materials);
 
     initializeModelsWithPhysics(models); // 모든 모델 Bullet world에 추가
 

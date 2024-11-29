@@ -29,7 +29,6 @@ void read_mtl_file(const std::string& filename, std::unordered_map<std::string, 
             ss >> currentMaterial;
             materials[currentMaterial] = Material(); // 새 재질 추가
             materials[currentMaterial].name = currentMaterial;
-            std::cout << "[INFO] Found new material: " << currentMaterial << std::endl;
         }
         else if (prefix == "Ka") {  // 환경광 색상
             ss >> materials[currentMaterial].Ka.x >> materials[currentMaterial].Ka.y >> materials[currentMaterial].Ka.z;
@@ -46,14 +45,12 @@ void read_mtl_file(const std::string& filename, std::unordered_map<std::string, 
         else if (prefix == "map_Ka") {  // 환경광 텍스처 경로 (Ambient Texture)
             std::string texturePath;
             ss >> texturePath;
-            std::cout << "[INFO] Found Ambient Texture: " << texturePath << std::endl;
-
             Texture ambientTexture = load_texture("obj/" + texturePath, "ambient");
             if (ambientTexture.id != 0) {
                 materials[currentMaterial].textures.push_back(ambientTexture);
                 materials[currentMaterial].map_Ka = texturePath;
-                std::cout << "[SUCCESS] Ambient texture loaded: " << texturePath
-                    << " (ID: " << ambientTexture.id << ")" << std::endl;
+                /*std::cout << "[SUCCESS] Ambient texture loaded: " << texturePath
+                    << " (ID: " << ambientTexture.id << ")" << std::endl;*/
             }
             else {
                 std::cerr << "[ERROR] Failed to load Ambient texture: " << texturePath << std::endl;
@@ -62,14 +59,12 @@ void read_mtl_file(const std::string& filename, std::unordered_map<std::string, 
         else if (prefix == "map_Kd") {  // 난반사광 텍스처 경로 (Diffuse Texture)
             std::string texturePath;
             ss >> texturePath;
-            std::cout << "[INFO] Found Diffuse Texture: " << texturePath << std::endl;
-
             Texture diffuseTexture = load_texture("obj/" + texturePath, "diffuse");
             if (diffuseTexture.id != 0) {
                 materials[currentMaterial].textures.push_back(diffuseTexture);
                 materials[currentMaterial].map_Kd = texturePath;
-                std::cout << "[SUCCESS] Diffuse texture loaded: " << texturePath
-                    << " (ID: " << diffuseTexture.id << ")" << std::endl;
+               /* std::cout << "[SUCCESS] Diffuse texture loaded: " << texturePath
+                    << " (ID: " << diffuseTexture.id << ")" << std::endl;*/
             }
             else {
                 std::cerr << "[ERROR] Failed to load Diffuse texture: " << texturePath << std::endl;
@@ -78,14 +73,13 @@ void read_mtl_file(const std::string& filename, std::unordered_map<std::string, 
         else if (prefix == "map_Ks") {  // 반사광 텍스처 경로 (Specular Texture)
             std::string texturePath;
             ss >> texturePath;
-            std::cout << "[INFO] Found Specular Texture: " << texturePath << std::endl;
 
             Texture specularTexture = load_texture("obj/" + texturePath, "specular");
             if (specularTexture.id != 0) {
                 materials[currentMaterial].textures.push_back(specularTexture);
                 materials[currentMaterial].map_Ks = texturePath;
-                std::cout << "[SUCCESS] Specular texture loaded: " << texturePath
-                    << " (ID: " << specularTexture.id << ")" << std::endl;
+                /*std::cout << "[SUCCESS] Specular texture loaded: " << texturePath
+                    << " (ID: " << specularTexture.id << ")" << std::endl;*/
             }
             else {
                 std::cerr << "[ERROR] Failed to load Specular texture: " << texturePath << std::endl;
@@ -97,9 +91,6 @@ void read_mtl_file(const std::string& filename, std::unordered_map<std::string, 
     for (const auto& [name, material] : materials) {
         materials.at(name).hasTexture_s = !material.textures.empty();
     }
-
-    std::cout << "[INFO] Finished reading MTL file: " << filename << std::endl;
-    std::cout << "[INFO] Total Materials Loaded: " << materials.size() << std::endl;
 
     file.close();  // 파일 닫기
 }
