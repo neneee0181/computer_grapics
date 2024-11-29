@@ -35,6 +35,7 @@ public:
         GLint normalLoc = glGetUniformLocation(shaderProgramID, "normalMatrix");
 
         if (this->model_status) {
+            // VAO 바인딩
             glBindVertexArray(this->vao);
             glLineWidth(1.0f);
 
@@ -97,21 +98,32 @@ public:
             glUniform1i(modelStatus, 0);
 
             // 렌더링 모드 (1번 키로 와이어프레임 전환)
-            if (isKeyPressed_s('1'))
+            if (isKeyPressed_s('1')) {
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            else
+            }
+            else {
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            }
 
             // 삼각형 렌더링
             glDrawElements(GL_TRIANGLES, this->faces.size() * 3, GL_UNSIGNED_INT, 0);
 
-            // 렌더링 이후 기본값으로 초기화
-            glm::mat4 identity = glm::mat4(1.0f);
-            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(identity));
+            // OpenGL 상태 초기화
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // 렌더링 모드 초기화
 
-            // VAO 및 텍스처 바인딩 해제
-            glBindVertexArray(0);
+            // 텍스처 상태 초기화
+            glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, 0);
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, 0);
+            glActiveTexture(GL_TEXTURE2);
+            glBindTexture(GL_TEXTURE_2D, 0);
+
+            // VAO 바인딩 해제
+            
+            
+            
+            (0);
         }
     }
 
@@ -123,6 +135,19 @@ public:
     }
 
     void initBuffer() override {
+
+        for (const Face& face : this->faces) {
+            std::cout << "Face Indices: "
+                << "v1=" << face.v1 << ", v2=" << face.v2 << ", v3=" << face.v3 << " | "
+                << "t1=" << face.t1 << ", t2=" << face.t2 << ", t3=" << face.t3 << std::endl;
+
+            std::cout << "Texture Coords: "
+                << "t1=(" << this->texCoords[face.t1].u << ", " << this->texCoords[face.t1].v << "), "
+                << "t2=(" << this->texCoords[face.t2].u << ", " << this->texCoords[face.t2].v << "), "
+                << "t3=(" << this->texCoords[face.t3].u << ", " << this->texCoords[face.t3].v << ")"
+                << std::endl;
+        }
+
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
 

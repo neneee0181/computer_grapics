@@ -56,7 +56,7 @@ void main() {
     vec3 result = ambient + diffuse + specular;
 
     // 8. 최종 출력
-    FragColor = vec4(Normal * 0.5 + 0.5, 1.0);
+    FragColor = vec4(texture(map_Kd, TexCoords).rgb, 1.0);
 }
 
 

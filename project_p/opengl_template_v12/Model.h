@@ -4,6 +4,9 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <unordered_map>
+#include <tuple>
+
 #include"include/btBulletDynamicsCommon.h"
 
 struct Vertex {

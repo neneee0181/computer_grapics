@@ -1,10 +1,254 @@
 ﻿  main.cpp
-C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\DefaultModel.h(106,61): warning C4267: '인수': 'size_t'에서 'GLsizei'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(14,8): error C2011: 'Vertex': 'struct' 형식 재정의
+  (소스 파일 'main.cpp'을(를) 컴파일하는 중)
+      C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Model.h(9,8):
+      'Vertex' 선언을 참조하십시오.
+  
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(31,39): error C2027: 정의되지 않은 형식 'Vertex'을(를) 사용했습니다.
+  (소스 파일 'main.cpp'을(를) 컴파일하는 중)
+      C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Model.h(9,8):
+      'Vertex' 선언을 참조하십시오.
+  
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(31,75): error C2027: 정의되지 않은 형식 'Vertex'을(를) 사용했습니다.
+  (소스 파일 'main.cpp'을(를) 컴파일하는 중)
+      C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Model.h(9,8):
+      'Vertex' 선언을 참조하십시오.
+  
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(31,117): error C2027: 정의되지 않은 형식 'Vertex'을(를) 사용했습니다.
+  (소스 파일 'main.cpp'을(를) 컴파일하는 중)
+      C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Model.h(9,8):
+      'Vertex' 선언을 참조하십시오.
+  
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(32,39): error C2027: 정의되지 않은 형식 'Vertex'을(를) 사용했습니다.
+  (소스 파일 'main.cpp'을(를) 컴파일하는 중)
+      C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Model.h(9,8):
+      'Vertex' 선언을 참조하십시오.
+  
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(32,75): error C2027: 정의되지 않은 형식 'Vertex'을(를) 사용했습니다.
+  (소스 파일 'main.cpp'을(를) 컴파일하는 중)
+      C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Model.h(9,8):
+      'Vertex' 선언을 참조하십시오.
+  
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(33,39): error C2027: 정의되지 않은 형식 'Vertex'을(를) 사용했습니다.
+  (소스 파일 'main.cpp'을(를) 컴파일하는 중)
+      C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Model.h(9,8):
+      'Vertex' 선언을 참조하십시오.
+  
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(33,73): error C2027: 정의되지 않은 형식 'Vertex'을(를) 사용했습니다.
+  (소스 파일 'main.cpp'을(를) 컴파일하는 중)
+      C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Model.h(9,8):
+      'Vertex' 선언을 참조하십시오.
+  
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(33,113): error C2027: 정의되지 않은 형식 'Vertex'을(를) 사용했습니다.
+  (소스 파일 'main.cpp'을(를) 컴파일하는 중)
+      C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Model.h(9,8):
+      'Vertex' 선언을 참조하십시오.
+  
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(104,24): error C2079: 'vertex'은(는) 정의되지 않은 struct 'Vertex'을(를) 사용합니다.
   (소스 파일 'main.cpp'을(를) 컴파일하는 중)
   
-  코드를 생성하고 있습니다.
-  37 of 1159 functions ( 3.2%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    58 functions had inline decision re-evaluated but remain unchanged
-  코드를 생성했습니다.
-  opengl_template_v12.vcxproj -> C:\Users\neneee\computer_grapics-main\project_p\x64\Release\opengl_template_v12.exe
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(104,33): error C2440: '초기화 중': 'initializer list'에서 'int'(으)로 변환할 수 없습니다.
+  (소스 파일 'main.cpp'을(를) 컴파일하는 중)
+      C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(104,33):
+      이니셜라이저에 요소가 너무 많습니다.
+  
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(110,36): error C2672: 'std::_Hash<std::_Umap_traits<_Kty,_Ty,std::_Uhash_compare<_Kty,_Hasher,_Keyeq>,_Alloc,false>>::find': 일치하는 오버로드된 함수가 없습니다.
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(110,36): error C2672:         with
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(110,36): error C2672:         [
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(110,36): error C2672:             _Kty=Vertex,
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(110,36): error C2672:             _Ty=unsigned int,
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(110,36): error C2672:             _Hasher=std::hash<Vertex>,
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(110,36): error C2672:             _Keyeq=std::equal_to<Vertex>,
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(110,36): error C2672:             _Alloc=std::allocator<std::pair<const Vertex,unsigned int>>
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(110,36): error C2672:         ]
+  (소스 파일 'main.cpp'을(를) 컴파일하는 중)
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\xhash(1229,31):
+      'std::_List_const_iterator<std::_List_val<std::_List_simple_types<_Ty>>> std::_Hash<std::_Umap_traits<_Kty,unsigned int,std::_Uhash_compare<_Kty,_Hasher,_Keyeq>,_Alloc,false>>::find(const _Kty &) const'일 수 있습니다.
+          with
+          [
+              _Ty=std::pair<const Vertex,unsigned int>,
+              _Kty=Vertex,
+              _Hasher=std::hash<Vertex>,
+              _Keyeq=std::equal_to<Vertex>,
+              _Alloc=std::allocator<std::pair<const Vertex,unsigned int>>
+          ]
+          C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(110,41):
+          '초기화 중': 'int'에서 'const _Kty &'(으)로 변환할 수 없습니다.
+          with
+          [
+              _Kty=Vertex
+          ]
+              C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(110,41):
+              원인: 'int'에서 'const _Kty'(으)로 변환할 수 없습니다.
+          with
+          [
+              _Kty=Vertex
+          ]
+              C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(110,41):
+              정의되지 않은 형식 'Vertex'을(를) 사용했습니다.
+              C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Model.h(9,8):
+              'Vertex' 선언을 참조하십시오.
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\xhash(1224,25):
+      또는       'std::_List_iterator<std::_List_val<std::_List_simple_types<_Ty>>> std::_Hash<std::_Umap_traits<_Kty,unsigned int,std::_Uhash_compare<_Kty,_Hasher,_Keyeq>,_Alloc,false>>::find(const _Kty &)'
+          with
+          [
+              _Ty=std::pair<const Vertex,unsigned int>,
+              _Kty=Vertex,
+              _Hasher=std::hash<Vertex>,
+              _Keyeq=std::equal_to<Vertex>,
+              _Alloc=std::allocator<std::pair<const Vertex,unsigned int>>
+          ]
+          C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(110,41):
+          '초기화 중': 'int'에서 'const _Kty &'(으)로 변환할 수 없습니다.
+          with
+          [
+              _Kty=Vertex
+          ]
+              C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(110,41):
+              원인: 'int'에서 'const _Kty'(으)로 변환할 수 없습니다.
+          with
+          [
+              _Kty=Vertex
+          ]
+              C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(110,41):
+              정의되지 않은 형식 'Vertex'을(를) 사용했습니다.
+              C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Model.h(9,8):
+              'Vertex' 선언을 참조하십시오.
+  
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(112,21): error C2679: 이항 '[': 오른쪽 피연산자로 'int' 형식을 사용하는 연산자가 없거나 허용되는 변환이 없습니다.
+  (소스 파일 'main.cpp'을(를) 컴파일하는 중)
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\unordered_map(432,18):
+      'unsigned int &std::unordered_map<Vertex,unsigned int,std::hash<Vertex>,std::equal_to<Vertex>,std::allocator<std::pair<const Vertex,unsigned int>>>::operator [](const Vertex &)'일 수 있습니다.
+          C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(112,21):
+          'unsigned int &std::unordered_map<Vertex,unsigned int,std::hash<Vertex>,std::equal_to<Vertex>,std::allocator<std::pair<const Vertex,unsigned int>>>::operator [](const Vertex &)': 인수 2을(를) 'int'에서 'const Vertex &'(으)로 변환할 수 없습니다.
+              C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(112,36):
+              원인: 'int'에서 'const Vertex'(으)로 변환할 수 없습니다.
+              C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(112,36):
+              정의되지 않은 형식 'Vertex'을(를) 사용했습니다.
+              C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Model.h(9,8):
+              'Vertex' 선언을 참조하십시오.
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\unordered_map(259,18):
+      또는       'unsigned int &std::unordered_map<Vertex,unsigned int,std::hash<Vertex>,std::equal_to<Vertex>,std::allocator<std::pair<const Vertex,unsigned int>>>::operator [](Vertex &&)'
+          C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(112,21):
+          'unsigned int &std::unordered_map<Vertex,unsigned int,std::hash<Vertex>,std::equal_to<Vertex>,std::allocator<std::pair<const Vertex,unsigned int>>>::operator [](Vertex &&)': 인수 2을(를) 'int'에서 'Vertex &&'(으)로 변환할 수 없습니다.
+              C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(112,36):
+              원인: 'int'에서 'Vertex'(으)로 변환할 수 없습니다.
+              C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(112,36):
+              정의되지 않은 형식 'Vertex'을(를) 사용했습니다.
+              C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Model.h(9,8):
+              'Vertex' 선언을 참조하십시오.
+      C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(112,21):
+      인수 목록 '(std::unordered_map<Vertex,unsigned int,std::hash<Vertex>,std::equal_to<Vertex>,std::allocator<std::pair<const Vertex,unsigned int>>>, int)'을(를) 일치시키는 동안
+  
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(113,30): error C2665: 'std::vector<Vertex,std::allocator<Vertex>>::push_back': 모든 인수 형식을 변환할 수 있는 오버로드된 함수가 없습니다.
+  (소스 파일 'main.cpp'을(를) 컴파일하는 중)
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\vector(870,23):
+      'void std::vector<Vertex,std::allocator<Vertex>>::push_back(_Ty &&)'일 수 있습니다.
+          with
+          [
+              _Ty=Vertex
+          ]
+          C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(113,30):
+          'void std::vector<Vertex,std::allocator<Vertex>>::push_back(_Ty &&)': 인수 1을(를) 'int'에서 '_Ty &&'(으)로 변환할 수 없습니다.
+          with
+          [
+              _Ty=Vertex
+          ]
+              C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(113,40):
+              원인: 'int'에서 '_Ty'(으)로 변환할 수 없습니다.
+          with
+          [
+              _Ty=Vertex
+          ]
+              C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(113,40):
+              정의되지 않은 형식 'Vertex'을(를) 사용했습니다.
+              C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Model.h(9,8):
+              'Vertex' 선언을 참조하십시오.
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\vector(866,23):
+      또는       'void std::vector<Vertex,std::allocator<Vertex>>::push_back(const _Ty &)'
+          with
+          [
+              _Ty=Vertex
+          ]
+          C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(113,30):
+          'void std::vector<Vertex,std::allocator<Vertex>>::push_back(const _Ty &)': 인수 1을(를) 'int'에서 'const _Ty &'(으)로 변환할 수 없습니다.
+          with
+          [
+              _Ty=Vertex
+          ]
+              C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(113,40):
+              원인: 'int'에서 'const _Ty'(으)로 변환할 수 없습니다.
+          with
+          [
+              _Ty=Vertex
+          ]
+              C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(113,40):
+              정의되지 않은 형식 'Vertex'을(를) 사용했습니다.
+              C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Model.h(9,8):
+              'Vertex' 선언을 참조하십시오.
+      C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(113,30):
+      인수 목록 '(int)'을(를) 일치시키는 동안
+  
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(117,35): error C2679: 이항 '[': 오른쪽 피연산자로 'int' 형식을 사용하는 연산자가 없거나 허용되는 변환이 없습니다.
+  (소스 파일 'main.cpp'을(를) 컴파일하는 중)
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\unordered_map(432,18):
+      'unsigned int &std::unordered_map<Vertex,unsigned int,std::hash<Vertex>,std::equal_to<Vertex>,std::allocator<std::pair<const Vertex,unsigned int>>>::operator [](const Vertex &)'일 수 있습니다.
+          C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(117,35):
+          'unsigned int &std::unordered_map<Vertex,unsigned int,std::hash<Vertex>,std::equal_to<Vertex>,std::allocator<std::pair<const Vertex,unsigned int>>>::operator [](const Vertex &)': 인수 2을(를) 'int'에서 'const Vertex &'(으)로 변환할 수 없습니다.
+              C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(117,50):
+              원인: 'int'에서 'const Vertex'(으)로 변환할 수 없습니다.
+              C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(117,50):
+              정의되지 않은 형식 'Vertex'을(를) 사용했습니다.
+              C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Model.h(9,8):
+              'Vertex' 선언을 참조하십시오.
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\unordered_map(259,18):
+      또는       'unsigned int &std::unordered_map<Vertex,unsigned int,std::hash<Vertex>,std::equal_to<Vertex>,std::allocator<std::pair<const Vertex,unsigned int>>>::operator [](Vertex &&)'
+          C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(117,35):
+          'unsigned int &std::unordered_map<Vertex,unsigned int,std::hash<Vertex>,std::equal_to<Vertex>,std::allocator<std::pair<const Vertex,unsigned int>>>::operator [](Vertex &&)': 인수 2을(를) 'int'에서 'Vertex &&'(으)로 변환할 수 없습니다.
+              C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(117,50):
+              원인: 'int'에서 'Vertex'(으)로 변환할 수 없습니다.
+              C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(117,50):
+              정의되지 않은 형식 'Vertex'을(를) 사용했습니다.
+              C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Model.h(9,8):
+              'Vertex' 선언을 참조하십시오.
+      C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(117,35):
+      인수 목록 '(std::unordered_map<Vertex,unsigned int,std::hash<Vertex>,std::equal_to<Vertex>,std::allocator<std::pair<const Vertex,unsigned int>>>, int)'을(를) 일치시키는 동안
+  
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\LoadObj.h(127,12): error C2039: 'indices': 'Model'의 멤버가 아닙니다.
+  (소스 파일 'main.cpp'을(를) 컴파일하는 중)
+      C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Model.h(50,7):
+      'Model' 선언을 참조하십시오.
+  
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\BulletPhysics.h(42,65): error C2027: 정의되지 않은 형식 'Vertex'을(를) 사용했습니다.
+  (소스 파일 'main.cpp'을(를) 컴파일하는 중)
+      C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Model.h(9,8):
+      'Vertex' 선언을 참조하십시오.
+  
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\BulletPhysics.h(42,75): error C2027: 정의되지 않은 형식 'Vertex'을(를) 사용했습니다.
+  (소스 파일 'main.cpp'을(를) 컴파일하는 중)
+      C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Model.h(9,8):
+      'Vertex' 선언을 참조하십시오.
+  
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\BulletPhysics.h(42,85): error C2027: 정의되지 않은 형식 'Vertex'을(를) 사용했습니다.
+  (소스 파일 'main.cpp'을(를) 컴파일하는 중)
+      C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Model.h(9,8):
+      'Vertex' 선언을 참조하십시오.
+  
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\DefaultModel.h(109,61): warning C4267: '인수': 'size_t'에서 'GLsizei'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  (소스 파일 'main.cpp'을(를) 컴파일하는 중)
+  
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Debug.h(19,62): error C2027: 정의되지 않은 형식 'Vertex'을(를) 사용했습니다.
+  (소스 파일 'main.cpp'을(를) 컴파일하는 중)
+      C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Model.h(9,8):
+      'Vertex' 선언을 참조하십시오.
+  
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Debug.h(20,33): error C2027: 정의되지 않은 형식 'Vertex'을(를) 사용했습니다.
+  (소스 파일 'main.cpp'을(를) 컴파일하는 중)
+      C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Model.h(9,8):
+      'Vertex' 선언을 참조하십시오.
+  
+C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Debug.h(20,65): error C2027: 정의되지 않은 형식 'Vertex'을(를) 사용했습니다.
+  (소스 파일 'main.cpp'을(를) 컴파일하는 중)
+      C:\Users\neneee\computer_grapics-main\project_p\opengl_template_v12\Model.h(9,8):
+      'Vertex' 선언을 참조하십시오.
+  
