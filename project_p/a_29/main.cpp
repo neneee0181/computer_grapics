@@ -15,8 +15,32 @@ void InitBuffer();
 GLvoid drawScene(GLvoid);
 GLvoid Reshape(int w, int h);
 
-//모델
-vector<Model*> models;
+
+void timer(int value){
+
+    glm::mat4 matrix = glm::mat4(1.0f);
+    for (auto& model : models) {
+        if (keyState['x']) {
+            matrix = glm::rotate(matrix, glm::radians(0.5f), glm::vec3(1.0, 0.0, 0.0));
+            model->matrix = matrix * model->matrix;
+        }
+        else if (keyState['X']) {
+            matrix = glm::rotate(matrix, glm::radians(-0.5f), glm::vec3(1.0, 0.0, 0.0));
+            model->matrix = matrix * model->matrix;
+        }
+        else if (keyState['y']) {
+            matrix = glm::rotate(matrix, glm::radians(0.5f), glm::vec3(0.0, 1.0, 0.0));
+            model->matrix = matrix * model->matrix;
+        }
+        else if (keyState['Y']) {
+            matrix = glm::rotate(matrix, glm::radians(-0.5f), glm::vec3(0.0, 1.0, 0.0));
+            model->matrix = matrix * model->matrix;
+        }
+    }
+   
+    glutPostRedisplay();
+    glutTimerFunc(16, timer, 0);
+}
 
 int main(int argc, char** argv) {
 
@@ -41,7 +65,8 @@ int main(int argc, char** argv) {
 
     initPhysics(); // Bullet 초기화 함수 호출
 
-    loadModelWithProgress <DefaultModel>("pira.obj", "obj/", "straight_road", "sphere", glm::scale(glm::mat4(1.0f), glm::vec3(1.0, 1.0, 1.0)), models);
+    loadModelWithProgress <DefaultModel>("pira.obj", "obj/", "pira", "sphere", glm::scale(glm::mat4(1.0f), glm::vec3(1.0, 1.0, 1.0)), models);
+    loadModelWithProgress <DefaultModel>("squ.obj", "obj/", "squ", "sphere", glm::scale(glm::mat4(1.0f), glm::vec3(1.0, 1.0, 1.0)), models);
 
     // 디버깅 출력
     /*debug_model(models.back());
@@ -59,6 +84,7 @@ int main(int argc, char** argv) {
     glutKeyboardFunc(keyDown);
     glutKeyboardUpFunc(keyUp);
     glutSpecialFunc(keySpecial);
+    glutTimerFunc(0, timer, 0);
     glutMainLoop(); 
 
     return 0;
@@ -98,7 +124,16 @@ GLvoid drawScene() {
    
     glEnable(GL_DEPTH_TEST);
     for (const auto& model : models) { // 실제 모델 draw
-        model->draw(shaderProgramID, isKeyPressed_s);
+        if (keyState['c']) {
+            if (model->name == "pira") {
+                model->draw(shaderProgramID, isKeyPressed_s);
+            }
+        }
+        else if (keyState['p']) {
+            if (model->name == "squ") {
+                model->draw(shaderProgramID, isKeyPressed_s);
+            }
+        }
     }
     glDisable(GL_DEPTH_TEST);
 

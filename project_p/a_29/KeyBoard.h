@@ -6,8 +6,11 @@
 #include <gl/glm/glm/gtc/matrix_transform.hpp>
 #include <unordered_map>
 
+#include "LoadProgress.h"
 #include "Camera.h"
 
+//모델
+vector<Model*> models;
 //키
 std::unordered_map<char, bool> keyState;
 
@@ -44,6 +47,13 @@ void keyDown(unsigned char key, int x, int y) {
         std::cout << " 프로그램 종료 " << std::endl;
         exit(0);
         break;
+    case 's':
+    {
+        models.clear();
+        loadModelWithProgress <DefaultModel>("pira.obj", "obj/", "pira", "sphere", glm::scale(glm::mat4(1.0f), glm::vec3(1.0, 1.0, 1.0)), models);
+        loadModelWithProgress <DefaultModel>("squ.obj", "obj/", "squ", "sphere", glm::scale(glm::mat4(1.0f), glm::vec3(1.0, 1.0, 1.0)), models);
+        break;
+    }
     default:
         break;
     }
