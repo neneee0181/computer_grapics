@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector> 
 #include <algorithm>  // std::sort 사용을 위한 헤더
+#include <random>
 
 #include "shaderMaker.h"
 #include "DefaultModel.h"
@@ -9,6 +10,7 @@
 #include "Light.h"
 #include "Debug.h"
 #include "LoadProgress.h"
+#include "SierpinskiModel.h"
 
 using namespace std;
 
@@ -21,6 +23,10 @@ float calculateDistanceToCamera(const Model* model, const glm::vec3& cameraPosit
 vector<Model*> models;
 std::vector<Model*> opaqueModels;
 std::vector<Model*> transparentModels;
+
+std::random_device rd;
+std::mt19937 gen(rd());
+uniform_real_distribution<> snow_location_dis_x(-0.65, 0.65);
 
 int main(int argc, char** argv) {
 
@@ -45,10 +51,35 @@ int main(int argc, char** argv) {
 
     initPhysics(); // Bullet 초기화 함수 호출
 
-    loadModelWithProgress <DefaultModel>("squ.obj", "obj/", "squ", "box", glm::scale(glm::mat4(1.0f), glm::vec3(1.0, 1.0, 1.0)), models);
-    loadModelWithProgress <DefaultModel>("pira.obj", "obj/", "pira", "box", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, 15.0)), glm::vec3(1.0, 1.0, 1.0)), models);
+    //loadModelWithProgress <DefaultModel>("squ.obj", "obj/", "squ", "box", glm::scale(glm::mat4(1.0f), glm::vec3(1.0, 1.0, 1.0)), models);
+    //loadModelWithProgress <DefaultModel>("pira.obj", "obj/", "pira", "box", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, 15.0)), glm::vec3(1.0, 1.0, 1.0)), models);
+    loadModelWithProgress <DefaultModel>("board.obj", "obj/", "board", "box", glm::scale(glm::mat4(1.0f), glm::vec3(1.0, 1.0, 1.0)), models);
+    loadModelWithProgress <DefaultModel>("piramid.obj", "obj/", "pira", "box", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.05, 0.043, 0.05)), glm::vec3(0.0, 5.0, 0.0)), models);
+    loadModelWithProgress <DefaultModel>("sphere.obj", "obj/", "light_m", "box", glm::scale(glm::translate(glm::mat4(1.0f), lightPos), glm::vec3(0.003, 0.003, 0.003)), models);
+
+    for (int i = 0; i < 5; ++i) {
+        loadModelWithProgress <DefaultModel>("Snowflake.obj", "obj/", "snow", "sphere", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(snow_location_dis_x(gen), 1.5, snow_location_dis_x(gen))), glm::vec3(0.1, 0.1, 0.1)), models);
+    }
+
+    loadModelWithProgress <DefaultModel>("squ.obj", "obj/", "squ", "box", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.01, 0.06, 0.01)), glm::vec3(60.0, 5.0, 0.0)), models);
+    loadModelWithProgress <DefaultModel>("squ.obj", "obj/", "squ", "box", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.01, 0.06, 0.01)), glm::vec3(-60.0, 5.0, 0.0)), models);
+    loadModelWithProgress <DefaultModel>("squ.obj", "obj/", "squ", "box", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.01, 0.06, 0.01)), glm::vec3(0.0, 5.0, 60.0)), models);
+    loadModelWithProgress <DefaultModel>("squ.obj", "obj/", "squ", "box", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.01, 0.06, 0.01)), glm::vec3(0.0, 5.0, -60.0)), models);
+
+    //SierpinskiModel* sp_model = new SierpinskiModel(1);
+    //glm::mat4 sp_m = glm::mat4(1.0f);
+    //sp_m = glm::scale(sp_m, glm::vec3(0.5, 0.5, 0.5));
+    //sp_m = glm::translate(sp_m, glm::vec3(0.0, 0.0, 0.5));
+    //sp_m = glm::rotate(sp_m, glm::radians(-30.0f), glm::vec3(1.0, 0.0, 0.0));
+    //sp_m = glm::translate(sp_m, glm::vec3(0.0, 0.5, 0.0));
+    //sp_model->matrix = sp_m * sp_model->matrix;
+    //models.push_back(sp_model);
 
     for (const auto& model : models) {
+        if (model->name == "sierpinski") {
+            opaqueModels.push_back(model);
+            continue;
+        }
         bool isTransparent = false;
         for (const auto& [materialName, material] : model->materials) {
             if (material.d < 1.0f) { // 투명 재질 여부 확인
@@ -87,7 +118,7 @@ int main(int argc, char** argv) {
 
 GLvoid drawScene() {
 
-    glClearColor(1.0, 1.0, 1.0, 1.0f);
+    glClearColor(0.0, 0.0, 0.0, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 

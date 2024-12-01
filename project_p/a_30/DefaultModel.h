@@ -46,7 +46,6 @@ public:
     }
 
     const void draw(GLint shaderProgramID, bool (*isKeyPressed_s)(const char&)) override {
-        GLint modelStatus = glGetUniformLocation(shaderProgramID, "modelStatus");
         GLint modelLoc = glGetUniformLocation(shaderProgramID, "model");
         GLint normalLoc = glGetUniformLocation(shaderProgramID, "normalMatrix");
         GLint alphaLoc = glGetUniformLocation(shaderProgramID, "materialAlpha"); // 투명도 유니폼
@@ -55,32 +54,34 @@ public:
             // VAO 바인딩
             glBindVertexArray(this->vao);
 
-            // 법선 행렬 계산 (한 번만 계산)
+            // **법선 행렬 계산**
             glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(this->matrix)));
             glUniformMatrix3fv(normalLoc, 1, GL_FALSE, glm::value_ptr(normalMatrix));
 
-            // 텍스처별로 렌더링 수행
+            // **모델 행렬 갱신**
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(this->matrix));
+
             GLuint lastBoundTextureID = 0; // 이전 텍스처 ID 추적
             for (const auto& [materialName, ebo] : this->textureEBOs) {
-                // 현재 재질 가져오기
                 auto it = this->materials.find(materialName);
                 if (it == this->materials.end()) {
 #ifdef DEBUG_MODE
                     std::cerr << "No material found for: " << materialName << std::endl;
 #endif
-                    continue; // 해당 재질이 없으면 건너뜀
+                    continue;
                 }
+
                 const Material& material = it->second;
 
-                // 깊이 버퍼와 블렌딩 설정
-                if (material.d < 1.0f) {  // 투명한 경우
+                // **블렌딩 및 깊이 버퍼 설정**
+                if (material.d < 1.0f) { // 투명한 경우
                     glEnable(GL_BLEND);
                     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                    glDepthMask(GL_FALSE); // 깊이 버퍼 쓰기 비활성화
+                    glDepthMask(GL_FALSE);
                 }
-                else {  // 불투명한 경우
+                else { // 불투명한 경우
                     glDisable(GL_BLEND);
-                    glDepthMask(GL_TRUE); // 깊이 버퍼 쓰기 활성화
+                    glDepthMask(GL_TRUE);
                 }
 
                 // 텍스처 바인딩
@@ -96,12 +97,10 @@ public:
                         glUniform1i(glGetUniformLocation(shaderProgramID, "hasKdTexture"), 1);
                         textureBound = true;
                     }
-                    // (동일 방식으로 ambient 및 specular 텍스처 처리)
                 }
 
-                glUniform1f(alphaLoc, material.d); // d 값을 materialAlpha 유니폼으로 전달
+                glUniform1f(alphaLoc, material.d); // 투명도 전달
 
-                // 텍스처가 없으면 기본 재질 색상 설정
                 if (!textureBound) {
                     glUniform1i(glGetUniformLocation(shaderProgramID, "hasTexture"), 0);
 
@@ -116,40 +115,19 @@ public:
                     glUniform1f(NsLoc, material.Ns);
                 }
 
-                // EBO 바인딩
+                // **EBO 렌더링**
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-
-                // 텍스처에 해당하는 Face 데이터 렌더링
                 glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(textureGroups[materialName].size()), GL_UNSIGNED_INT, 0);
-
-                // 렌더링 모드 (1번 키로 와이어프레임 전환)
-                if (isKeyPressed_s('1')) {
-                    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-                }
-                else {
-                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-                }
             }
 
-            // 모델 매트릭스 전달
-            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(this->matrix));
-
-            // 상태 복구
-            glDepthMask(GL_TRUE); // 깊이 버퍼 쓰기 활성화
-            glDisable(GL_BLEND);  // 블렌딩 비활성화
+            // **렌더링 후 상태 복구**
+            glDepthMask(GL_TRUE);
+            glDisable(GL_BLEND);
 
             // OpenGL 상태 초기화
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // 렌더링 모드 초기화
-
-            // 텍스처 상태 초기화
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, 0);
-            glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_2D, 0);
-            glActiveTexture(GL_TEXTURE2);
-            glBindTexture(GL_TEXTURE_2D, 0);
-
-            // VAO 바인딩 해제
             glBindVertexArray(0);
         }
     }
