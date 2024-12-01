@@ -19,6 +19,8 @@ float calculateDistanceToCamera(const Model* model, const glm::vec3& cameraPosit
 
 //모델
 vector<Model*> models;
+std::vector<Model*> opaqueModels;
+std::vector<Model*> transparentModels;
 
 int main(int argc, char** argv) {
 
@@ -46,23 +48,39 @@ int main(int argc, char** argv) {
     loadModelWithProgress <DefaultModel>("squ.obj", "obj/", "squ", "box", glm::scale(glm::mat4(1.0f), glm::vec3(1.0, 1.0, 1.0)), models);
     loadModelWithProgress <DefaultModel>("pira.obj", "obj/", "pira", "box", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, 15.0)), glm::vec3(1.0, 1.0, 1.0)), models);
 
+    for (const auto& model : models) {
+        bool isTransparent = false;
+        for (const auto& [materialName, material] : model->materials) {
+            if (material.d < 1.0f) { // 투명 재질 여부 확인
+                isTransparent = true;
+                break;
+            }
+        }
+        if (isTransparent) {
+            transparentModels.push_back(model);
+        }
+        else {
+            opaqueModels.push_back(model);
+        }
+    }
+
     // 디버깅 출력
     /*debug_model(models.back());
     debug_materials(models.back()->materials);*/
 
     initializeModelsWithPhysics(models); // 모든 모델 Bullet world에 추가
 
-    InitBuffer();   
+    InitBuffer();
 
     // 초기 프레임 강제 렌더링
     drawScene();  // 디스플레이 콜백 함수 직접 호출
-    
+
     glutDisplayFunc(drawScene);
     glutReshapeFunc(Reshape);
     glutKeyboardFunc(keyDown);
     glutKeyboardUpFunc(keyUp);
     glutSpecialFunc(keySpecial);
-    glutMainLoop(); 
+    glutMainLoop();
 
     return 0;
 }
@@ -100,16 +118,39 @@ GLvoid drawScene() {
     glUniform3fv(lightColorLoc, 1, glm::value_ptr(lightColor));
 
     // **투명 모델 정렬 (카메라와의 거리 기준)**
-    std::sort(models.begin(), models.end(), [](Model* a, Model* b) {
-        float distanceA = calculateDistanceToCamera(a, cameraPos); // 글로벌 변수 접근
-        float distanceB = calculateDistanceToCamera(b, cameraPos); // 글로벌 변수 접근
-        return distanceA > distanceB;
+    std::sort(transparentModels.begin(), transparentModels.end(), [](Model* a, Model* b) {
+        float distanceA = calculateDistanceToCamera(a, cameraPos);
+        float distanceB = calculateDistanceToCamera(b, cameraPos);
+        return distanceA > distanceB; // 멀리 있는 모델을 먼저 렌더링
         });
 
+    // 깊이 테스트 활성화
     glEnable(GL_DEPTH_TEST);
-    for (const auto& model : models) { // 실제 모델 draw
+
+    // 1. 불투명 모델 렌더링
+    for (const auto& model : opaqueModels) {
         model->draw(shaderProgramID, isKeyPressed_s);
     }
+
+    // 2. 깊이 버퍼 쓰기 비활성화
+    glDepthMask(GL_FALSE);
+
+    // 블렌딩 활성화
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // 3. 투명 모델 렌더링 (정렬된 순서로)
+    for (const auto& model : transparentModels) {
+        model->draw(shaderProgramID, isKeyPressed_s);
+    }
+
+    // 블렌딩 비활성화
+    glDisable(GL_BLEND);
+
+    // 깊이 버퍼 쓰기 다시 활성화
+    glDepthMask(GL_TRUE);
+
+    // 깊이 테스트 비활성화
     glDisable(GL_DEPTH_TEST);
 
     //for (const auto& model : models) { // 모델 bb draw

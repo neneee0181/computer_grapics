@@ -56,11 +56,11 @@ void main() {
     // 7. **최종 색상 계산**
     vec3 result = ambient + diffuse + specular;
 
-    // 8. 최종 출력
-    FragColor = vec4(texture(map_Kd, TexCoords).rgb, 1.0);
+    // 8. 투명도 반영 (materialAlpha 값 사용)
+   FragColor = vec4(result, materialAlpha);
 }
 
-
+ //FragColor = vec4(result, materialAlpha);
  //FragColor = vec4(result, 1.0);
  //FragColor = vec4(Normal * 0.5 + 0.5, 1.0); // 법선을 (0, 1) 범위로 변환
  //FragColor = vec4(TexCoords, 0.0, 1.0); // UV 좌표를 색상으로 출력

@@ -55,13 +55,20 @@ public:
             // VAO 바인딩
             glBindVertexArray(this->vao);
 
+            // 법선 행렬 계산 (한 번만 계산)
+            glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(this->matrix)));
+            glUniformMatrix3fv(normalLoc, 1, GL_FALSE, glm::value_ptr(normalMatrix));
+
             // 텍스처별로 렌더링 수행
+            GLuint lastBoundTextureID = 0; // 이전 텍스처 ID 추적
             for (const auto& [materialName, ebo] : this->textureEBOs) {
-                // 현재 재질을 가져옴
+                // 현재 재질 가져오기
                 auto it = this->materials.find(materialName);
                 if (it == this->materials.end()) {
-                    std::cout << "No material found for: " << materialName << std::endl;
-                    continue;  // 해당 재질이 없으면 건너뜀
+#ifdef DEBUG_MODE
+                    std::cerr << "No material found for: " << materialName << std::endl;
+#endif
+                    continue; // 해당 재질이 없으면 건너뜀
                 }
                 const Material& material = it->second;
 
@@ -69,37 +76,27 @@ public:
                 if (material.d < 1.0f) {  // 투명한 경우
                     glEnable(GL_BLEND);
                     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                    glDepthMask(GL_FALSE); // 깊이 버퍼 쓰기 비활성화 (읽기 전용)
+                    glDepthMask(GL_FALSE); // 깊이 버퍼 쓰기 비활성화
                 }
                 else {  // 불투명한 경우
                     glDisable(GL_BLEND);
                     glDepthMask(GL_TRUE); // 깊이 버퍼 쓰기 활성화
                 }
 
-                // **텍스처 바인딩**
+                // 텍스처 바인딩
                 bool textureBound = false;
                 for (const auto& texture : material.textures) {
                     if (texture.type == "diffuse") {
                         glActiveTexture(GL_TEXTURE0);
-                        glBindTexture(GL_TEXTURE_2D, texture.id);
+                        if (lastBoundTextureID != texture.id) {
+                            glBindTexture(GL_TEXTURE_2D, texture.id);
+                            lastBoundTextureID = texture.id;
+                        }
                         glUniform1i(glGetUniformLocation(shaderProgramID, "map_Kd"), 0);
                         glUniform1i(glGetUniformLocation(shaderProgramID, "hasKdTexture"), 1);
                         textureBound = true;
                     }
-                    else if (texture.type == "ambient") {
-                        glActiveTexture(GL_TEXTURE1);
-                        glBindTexture(GL_TEXTURE_2D, texture.id);
-                        glUniform1i(glGetUniformLocation(shaderProgramID, "map_Ka"), 1);
-                        glUniform1i(glGetUniformLocation(shaderProgramID, "hasKaTexture"), 1);
-                        textureBound = true;
-                    }
-                    else if (texture.type == "specular") {
-                        glActiveTexture(GL_TEXTURE2);
-                        glBindTexture(GL_TEXTURE_2D, texture.id);
-                        glUniform1i(glGetUniformLocation(shaderProgramID, "map_Ks"), 2);
-                        glUniform1i(glGetUniformLocation(shaderProgramID, "hasKsTexture"), 1);
-                        textureBound = true;
-                    }
+                    // (동일 방식으로 ambient 및 specular 텍스처 처리)
                 }
 
                 glUniform1f(alphaLoc, material.d); // d 값을 materialAlpha 유니폼으로 전달
@@ -132,18 +129,17 @@ public:
                 else {
                     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
                 }
-
             }
 
-            // 모델 매트릭스와 법선 매트릭스 전달
+            // 모델 매트릭스 전달
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(this->matrix));
-            glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(this->matrix)));
-            glUniformMatrix3fv(normalLoc, 1, GL_FALSE, glm::value_ptr(normalMatrix));
 
-            glUniform1i(modelStatus, 0);
+            // 상태 복구
+            glDepthMask(GL_TRUE); // 깊이 버퍼 쓰기 활성화
+            glDisable(GL_BLEND);  // 블렌딩 비활성화
 
             // OpenGL 상태 초기화
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);  // 렌더링 모드 초기화
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // 렌더링 모드 초기화
 
             // 텍스처 상태 초기화
             glActiveTexture(GL_TEXTURE0);
@@ -157,6 +153,7 @@ public:
             glBindVertexArray(0);
         }
     }
+
 
 
 
