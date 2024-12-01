@@ -79,6 +79,7 @@ public:
     glm::mat4 rotateMatrix = glm::mat4(1.0f);    // 모델의 초기 회전 행렬
 
     std::unordered_map<std::string, Material> materials;
+    float speed = 0.1;
 
     std::string name;
     std::string type; // 모델 도형 타입 ex) box, sphere, cylinder

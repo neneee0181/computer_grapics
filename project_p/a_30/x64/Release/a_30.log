@@ -1,10 +1,13 @@
 ﻿  main.cpp
+C:\Users\neneee\computer_grapics-main\project_p\a_30\Model.h(82,19): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
+  (소스 파일 'main.cpp'을(를) 컴파일하는 중)
+  
 C:\Users\neneee\computer_grapics-main\project_p\a_30\SierpinskiModel.h(198,32): warning C4267: '초기화 중': 'size_t'에서 'unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   (소스 파일 'main.cpp'을(를) 컴파일하는 중)
   
   코드를 생성하고 있습니다.
-  0 of 2013 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+  2 of 2066 functions (<0.1%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+    13 functions had inline decision re-evaluated but remain unchanged
   코드를 생성했습니다.
   a_30.vcxproj -> C:\Users\neneee\computer_grapics-main\project_p\x64\Release\a_30.exe

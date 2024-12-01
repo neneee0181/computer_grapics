@@ -28,7 +28,15 @@ uniform vec3 Ks;           // 기본 반사광 계수
 uniform float Ns;          // 반짝임 강도 (Shininess)
 uniform float materialAlpha;     // 투명도 (0 = 완전 투명, 1 = 불투명)
 
+uniform bool lightEnabled;  // 조명 활성화 여부
+
 void main() {
+
+    if (lightEnabled) {
+        FragColor = vec4(Ka, 1.0);
+        return;
+    }
+
     // 1. 법선 벡터 정규화
     vec3 norm = normalize(Normal);
 
