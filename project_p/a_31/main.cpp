@@ -17,6 +17,7 @@ GLvoid Reshape(int w, int h);
 
 //¸ðµ¨
 vector<Model*> models;
+vector<Model*> back_models;
 
 int main(int argc, char** argv) {
 
@@ -41,7 +42,8 @@ int main(int argc, char** argv) {
 
     initPhysics(); // Bullet ÃÊ±âÈ­ ÇÔ¼ö È£Ãâ
 
-    loadModelWithProgress <DefaultModel>("kronos.obj", "obj/car/kronos/", "straight_road", "sphere", glm::scale(glm::mat4(1.0f), glm::vec3(10.0, 10.0, 10.0)), models);
+    loadModelWithProgress <DefaultModel>("squ.obj", "obj/", "squ", "sphere", glm::scale(glm::mat4(1.0f), glm::vec3(10.0, 10.0, 10.0)), models);
+    loadModelWithProgress <DefaultModel>("back.obj", "obj/", "back", "sphere", glm::scale(glm::mat4(1.0f), glm::vec3(1.0, 1.0, 1.0)), back_models);
 
     // µð¹ö±ë Ãâ·Â
     /*debug_model(models.back());
@@ -95,16 +97,22 @@ GLvoid drawScene() {
     GLint lightColorLoc = glGetUniformLocation(shaderProgramID, "lightColor");
     glUniform3fv(lightPosLoc, 1, glm::value_ptr(lightPos));
     glUniform3fv(lightColorLoc, 1, glm::value_ptr(lightColor));
-   
+
+    glEnable(GL_DEPTH_TEST);
+    for (const auto& model : back_models) {
+        model->draw(shaderProgramID, isKeyPressed_s);
+    }
+    glDisable(GL_DEPTH_TEST);
+
     glEnable(GL_DEPTH_TEST);
     for (const auto& model : models) { // ½ÇÁ¦ ¸ðµ¨ draw
         model->draw(shaderProgramID, isKeyPressed_s);
     }
     glDisable(GL_DEPTH_TEST);
 
-    for (const auto& model : models) { // ¸ðµ¨ bb draw
-        model->draw_rigidBody(shaderProgramID);
-    }
+    //for (const auto& model : models) { // ¸ðµ¨ bb draw
+    //    model->draw_rigidBody(shaderProgramID);
+    //}
 
     glutSwapBuffers();
 
@@ -118,6 +126,9 @@ GLvoid drawScene() {
 void InitBuffer() {
     //-----------------------------------------------------------------------------------------------------------
     for (const auto& model : models) { // ¸ðµç ¸ðµ¨ initBuffer
+        model->initBuffer();
+    }
+    for (const auto& model : back_models) { // ¸ðµç ¸ðµ¨ initBuffer
         model->initBuffer();
     }
 }
