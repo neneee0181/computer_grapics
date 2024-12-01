@@ -19,6 +19,32 @@ GLvoid Reshape(int w, int h);
 vector<Model*> models;
 vector<Model*> back_models;
 
+void timer(int value) {
+
+    glm::mat4 matrix = glm::mat4(1.0f);
+    for (auto& model : models) {
+        if (keyState['x']) {
+            matrix = glm::rotate(matrix, glm::radians(0.5f), glm::vec3(1.0, 0.0, 0.0));
+            model->matrix = matrix * model->matrix;
+        }
+        else if (keyState['X']) {
+            matrix = glm::rotate(matrix, glm::radians(-0.5f), glm::vec3(1.0, 0.0, 0.0));
+            model->matrix = matrix * model->matrix;
+        }
+        else if (keyState['y']) {
+            matrix = glm::rotate(matrix, glm::radians(0.5f), glm::vec3(0.0, 1.0, 0.0));
+            model->matrix = matrix * model->matrix;
+        }
+        else if (keyState['Y']) {
+            matrix = glm::rotate(matrix, glm::radians(-0.5f), glm::vec3(0.0, 1.0, 0.0));
+            model->matrix = matrix * model->matrix;
+        }
+    }
+
+    glutPostRedisplay();
+    glutTimerFunc(16, timer, 0);
+}
+
 int main(int argc, char** argv) {
 
     glutInit(&argc, argv);
@@ -42,8 +68,9 @@ int main(int argc, char** argv) {
 
     initPhysics(); // Bullet 초기화 함수 호출
 
-    loadModelWithProgress <DefaultModel>("squ.obj", "obj/", "squ", "sphere", glm::scale(glm::mat4(1.0f), glm::vec3(10.0, 10.0, 10.0)), models);
-    loadModelWithProgress <DefaultModel>("back.obj", "obj/", "back", "sphere", glm::scale(glm::mat4(1.0f), glm::vec3(1.0, 1.0, 1.0)), back_models);
+    loadModelWithProgress <DefaultModel>("pira.obj", "obj/", "pira", "sphere", glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)), models);
+    loadModelWithProgress <DefaultModel>("squ.obj", "obj/", "squ", "sphere", glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)), models);
+    loadModelWithProgress <DefaultModel>("back.obj", "obj/", "back", "sphere", glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(1.0, 1.0, 1.0)), glm::vec3(0.0, 0.0, -10.0)), back_models);
 
     // 디버깅 출력
     /*debug_model(models.back());
@@ -61,6 +88,7 @@ int main(int argc, char** argv) {
     glutKeyboardFunc(keyDown);
     glutKeyboardUpFunc(keyUp);
     glutSpecialFunc(keySpecial);
+    glutTimerFunc(0, timer, 0);
     glutMainLoop(); 
 
     return 0;
@@ -88,8 +116,18 @@ GLvoid drawScene() {
     unsigned int viewLocation = glGetUniformLocation(shaderProgramID, "viewTransform");
     glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
 
-    projection = glm::mat4(1.0f);
-    projection = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / static_cast<float>(height), 0.1f, 300.0f);
+    // **직각 투영 적용**
+    float aspectRatio = static_cast<float>(width) / static_cast<float>(height); // 화면의 종횡비
+    float orthoSize = 10.0f; // 직각 투영 영역 크기
+    projection = glm::ortho(
+        -orthoSize * aspectRatio,  // 왼쪽 경계
+        orthoSize * aspectRatio,  // 오른쪽 경계
+        -orthoSize,                // 아래 경계
+        orthoSize,                // 위 경계
+        0.1f,                     // 근평면
+        300.0f                    // 원평면
+    );
+
     unsigned int projectionLocation = glGetUniformLocation(shaderProgramID, "projectionTransform");
     glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, &projection[0][0]);
 
@@ -106,7 +144,16 @@ GLvoid drawScene() {
 
     glEnable(GL_DEPTH_TEST);
     for (const auto& model : models) { // 실제 모델 draw
-        model->draw(shaderProgramID, isKeyPressed_s);
+        if (keyState['c']) {
+            if (model->name == "pira") {
+                model->draw(shaderProgramID, isKeyPressed_s);
+            }
+        }
+        else if (keyState['p']) {
+            if (model->name == "squ") {
+                model->draw(shaderProgramID, isKeyPressed_s);
+            }
+        }
     }
     glDisable(GL_DEPTH_TEST);
 

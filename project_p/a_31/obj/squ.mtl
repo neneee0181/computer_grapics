@@ -3,7 +3,7 @@
 
 newmtl wire_057008136
 	Ns 32
-	d 0.5
+	d 1
 	Tr 0
 	Tf 1 1 1
 	illum 2
